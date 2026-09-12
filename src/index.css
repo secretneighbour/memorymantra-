@@ -1,0 +1,171 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cell-size: 80px;
+  --bg-color: #F4F4F0;
+  --text-color: #111111;
+  --accent-terracotta: #DE4A30;
+  --accent-sage: #10B981;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --cell-size: 104px;
+  }
+}
+
+html {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+/* Authentic Nothing India dot-matrix background */
+.dot-matrix-canvas {
+  background-image: radial-gradient(circle, rgba(17, 17, 17, 0.16) 1.2px, transparent 1.6px);
+  background-size: var(--cell-size) var(--cell-size);
+  background-position: calc(var(--cell-size) / 2) calc(var(--cell-size) / 2);
+}
+
+.dot-matrix-dark {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.22) 1.2px, transparent 1.6px);
+  background-size: var(--cell-size) var(--cell-size);
+  background-position: calc(var(--cell-size) / 2) calc(var(--cell-size) / 2);
+}
+
+/* Nothing-inspired Frosted Glass Surfaces */
+.frost-white-intense {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 226, 220, 0.95);
+}
+
+.frost-white-low {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.frost-dark-intense {
+  background: rgba(17, 17, 17, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.frost-card {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 226, 220, 0.85);
+}
+
+/* High Contrast Mode */
+.high-contrast {
+  --bg-color: #000000;
+  --text-color: #FFFFFF;
+}
+
+.high-contrast body {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+}
+
+.high-contrast .frost-card,
+.high-contrast .frost-white-intense {
+  background: #000000 !important;
+  border: 2px solid #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+
+.high-contrast button {
+  border: 2px solid currentColor !important;
+}
+
+/* Accessibility Font Sizing */
+[data-text-size="large"] {
+  font-size: 112.5%;
+}
+
+[data-text-size="extra-large"] {
+  font-size: 125%;
+}
+
+[data-text-size="large"] h1 {
+  font-size: 3rem;
+}
+
+[data-text-size="extra-large"] h1 {
+  font-size: 3.5rem;
+}
+
+[data-text-size="large"] p,
+[data-text-size="large"] button,
+[data-text-size="large"] span {
+  font-size: 1.15rem;
+}
+
+[data-text-size="extra-large"] p,
+[data-text-size="extra-large"] button,
+[data-text-size="extra-large"] span {
+  font-size: 1.35rem;
+}
+
+/* Reduced Motion Mode */
+.reduced-motion *,
+.reduced-motion *::before,
+.reduced-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* 3D Card Flip Essentials for Memory Match */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Nothing-style clean micro scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(17, 17, 17, 0.2);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(17, 17, 17, 0.4);
+}
