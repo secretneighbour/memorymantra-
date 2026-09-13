@@ -1,0 +1,6 @@
+{
+  "name": "SmritiCare",
+  "description": "AI-Based Cognitive Gaming and Memory Assistance Platform designed for elderly dementia and cognitive wellness in North Eastern India (NER)",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
