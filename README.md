@@ -29,7 +29,7 @@ Built with a high-contrast industrial aesthetic inspired by Nothing OS and Diete
 
 ### Prerequisites
 
-- **Node.js**: Version `18.0.0` or higher
+- **Nodejs**: Version `18.0.0` or higher
 - **npm** (v9+) or **yarn** / **pnpm**
 
 ### Installation Steps
