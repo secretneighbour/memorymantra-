@@ -7,21 +7,12 @@ import {
   Brain, 
   Sparkles, 
   ArrowRight, 
-  Heart, 
-  Activity, 
-  ShieldCheck, 
   Globe, 
   Cpu, 
-  Users, 
-  Stethoscope, 
-  Clock, 
-  CheckCircle,
-  Play,
-  Volume2,
-  Calendar,
+  Play, 
   Wifi
 } from 'lucide-react';
-import { NERLanguage } from '../types';
+import { nerLanguages } from '../data/translations';
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -45,16 +36,6 @@ export const LandingPage: React.FC = () => {
     navigate('/patient');
   };
 
-  const nerLanguages: { code: NERLanguage; name: string; native: string }[] = [
-    { code: 'en', name: 'English', native: 'English' },
-    { code: 'as', name: 'Assamese', native: 'অসমীয়া' },
-    { code: 'bn', name: 'Bengali', native: 'বাংলা' },
-    { code: 'mni', name: 'Meitei', native: 'মৈতৈলোন্' },
-    { code: 'kha', name: 'Khasi', native: 'Khasi' },
-    { code: 'lus', name: 'Mizo', native: 'Mizo' },
-    { code: 'nag', name: 'Nagamese', native: 'Nagamese' },
-  ];
-
   return (
     <div className="relative min-h-screen selection:bg-ner-terracotta selection:text-white">
       
@@ -67,37 +48,36 @@ export const LandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full frost-white-intense text-xs font-mono font-bold text-ner-black shadow-sm">
             <span className="w-2 h-2 rounded-full bg-ner-terracotta animate-pulse"></span>
-            <span>SIH 2026 • PS 26003</span>
+            <span>{t.sihBadge}</span>
           </div>
 
           <div className="hidden sm:flex items-center gap-3 text-xs font-mono text-ner-black/60">
             <span className="flex items-center gap-1.5">
-              <Wifi className="w-3.5 h-3.5 text-ner-sage" /> Low-Bandwidth Mode
+              <Wifi className="w-3.5 h-3.5 text-ner-sage" /> {t.lowBandwidth}
             </span>
             <span>•</span>
             <span>Guwahati {currentTime}</span>
           </div>
         </div>
 
-        {/* Center: Massive Nothing-style Architectural Typography & Widget Placements */}
+        {/* Center: Architectural Typography & Widget Placements */}
         <div className="max-w-7xl mx-auto w-full my-auto py-6 sm:py-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
             {/* Left 8 Columns: Huge Typography */}
             <div className="lg:col-span-8 space-y-4 sm:space-y-6">
               <span className="font-mono text-xs uppercase tracking-widest text-ner-terracotta font-bold block">
-                [ smriticare — 01 ]
+                {t.heroSubtitle}
               </span>
 
               <h1 className="text-4xl sm:text-7xl md:text-8xl font-bold tracking-tighter text-ner-black leading-[0.95] uppercase">
-                Helping every <br />
-                memory stay <br />
-                <span className="text-ner-terracotta">connected.</span>
+                {t.heroTitleLine1} <br />
+                {t.heroTitleLine2} <br />
+                <span className="text-ner-terracotta">{t.heroTitleLine3}</span>
               </h1>
 
               <p className="text-base sm:text-xl text-ner-black/70 font-light max-w-xl leading-relaxed pt-2">
-                An AI-assisted cognitive wellness and memory companion designed specifically 
-                for elderly communities across North Eastern India.
+                {t.heroDescription}
               </p>
 
               {/* Action Buttons */}
@@ -106,7 +86,7 @@ export const LandingPage: React.FC = () => {
                   onClick={handleStartCare}
                   className="h-12 px-8 rounded-full bg-ner-black text-white hover:bg-ner-black/85 transition-all text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2 shadow-lg active:scale-95"
                 >
-                  <span>Start Patient Care</span>
+                  <span>{t.btnStartPatientCare}</span>
                   <ArrowRight className="w-4 h-4 text-ner-terracotta" />
                 </button>
 
@@ -114,13 +94,13 @@ export const LandingPage: React.FC = () => {
                   onClick={() => setIsRoleModalOpen(true)}
                   className="h-12 px-6 rounded-full frost-white-intense text-ner-black hover:border-ner-black/50 transition-all text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm active:scale-95"
                 >
-                  <span>Role Switcher</span>
+                  <span>{t.btnRoleSwitcher}</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-ner-sage"></span>
                 </button>
 
                 <TTSButton
-                  text="Helping every memory stay connected. Welcome to SmritiCare, an AI-assisted cognitive platform for elderly dementia care in North Eastern India."
-                  label="Listen"
+                  text={t.ttsHeroIntro}
+                  label={t.btnListen}
                   size="md"
                 />
               </div>
@@ -132,10 +112,10 @@ export const LandingPage: React.FC = () => {
               <div className="frost-white-intense rounded-3xl p-5 border border-ner-border/90 shadow-md">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-[10px] font-mono uppercase tracking-widest text-ner-black/50 font-bold">
-                    Telemetry Node
+                    {t.telemetryNode}
                   </span>
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-ner-sage font-bold">
-                    Online
+                    {t.online}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
@@ -143,8 +123,8 @@ export const LandingPage: React.FC = () => {
                     NER
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm text-ner-black">8 States Monitored</h3>
-                    <p className="text-xs text-ner-black/60">Assam • Manipur • Meghalaya + 5</p>
+                    <h3 className="font-bold text-sm text-ner-black">{t.widgetTelemetryTitle}</h3>
+                    <p className="text-xs text-ner-black/60">{t.widgetTelemetrySubtitle}</p>
                   </div>
                 </div>
               </div>
@@ -153,16 +133,16 @@ export const LandingPage: React.FC = () => {
               <div className="frost-white-intense rounded-3xl p-5 border border-ner-border/90 shadow-md">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-[10px] font-mono uppercase tracking-widest text-ner-black/50 font-bold">
-                    Active Session
+                    {t.widgetSessionTitle}
                   </span>
                   <span className="text-xs font-bold text-ner-terracotta font-mono">
-                    86% Score
+                    {t.widgetSessionScore}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="font-bold text-sm text-ner-black">{activePatient.name}</h4>
-                    <p className="text-xs text-ner-black/60 mt-0.5">3/5 Daily Activities Completed</p>
+                    <p className="text-xs text-ner-black/60 mt-0.5">{t.widgetSessionActivities}</p>
                   </div>
                   <Link
                     to="/patient"
@@ -177,7 +157,7 @@ export const LandingPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Anchored Signature Nothing Bottom Callout Card */}
+        {/* Anchored Bottom Callout Card */}
         <div className="max-w-xl mx-auto w-full z-20">
           <div className="frost-white-intense rounded-3xl p-4 sm:p-5 shadow-2xl border border-ner-border/90 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3.5">
@@ -186,10 +166,10 @@ export const LandingPage: React.FC = () => {
               </div>
               <div>
                 <span className="text-[10px] font-mono uppercase tracking-widest text-ner-terracotta font-bold block">
-                  cognitive care ( ner )
+                  {t.heroBottomTag}
                 </span>
                 <h4 className="font-bold text-xs sm:text-sm text-ner-black">
-                  AI-Assisted Dementia Support
+                  {t.heroBottomTitle}
                 </h4>
               </div>
             </div>
@@ -198,27 +178,25 @@ export const LandingPage: React.FC = () => {
               onClick={() => setIsAICompanionOpen(true)}
               className="h-10 px-5 rounded-full bg-ner-black text-white hover:bg-ner-black/85 text-xs font-mono font-bold uppercase tracking-wider shrink-0 transition-transform active:scale-95"
             >
-              Ask AI Demo
+              {t.heroBottomBtn}
             </button>
           </div>
         </div>
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 2: THE CHALLENGE (Monolith stat columns, Nothing style)           */}
+      {/* SECTION 2: THE CHALLENGE (Monolith stat columns)                          */}
       {/* ========================================================================= */}
       <section id="challenge" className="min-h-svh flex flex-col justify-center py-24 px-6 sm:px-12 max-w-7xl mx-auto border-b border-ner-border/40">
         <div className="mb-16">
           <span className="text-xs font-mono uppercase tracking-widest text-ner-terracotta font-bold block mb-2">
-            [ problem statement ]
+            {t.challengeTag}
           </span>
           <h2 className="text-4xl sm:text-6xl font-bold tracking-tight text-ner-black max-w-3xl">
-            Cognitive care shouldn't depend on geography.
+            {t.challengeTitle}
           </h2>
           <p className="text-base sm:text-xl text-ner-black/70 max-w-2xl mt-4 font-light leading-relaxed">
-            In North Eastern India, rural topography creates immense barriers to 
-            specialist clinics. Families need continuous cognitive therapy that respects 
-            native dialects and cultural familiarities.
+            {t.challengeDescription}
           </p>
         </div>
 
@@ -226,61 +204,61 @@ export const LandingPage: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="frost-white-intense rounded-3xl p-8 hover:-translate-y-1 transition-all">
             <span className="text-5xl sm:text-7xl font-bold font-mono text-ner-black tracking-tight block">
-              24/7
+              {t.stat1Value}
             </span>
             <h3 className="font-bold text-base text-ner-black mt-4">
-              Continuous Engagement
+              {t.stat1Title}
             </h3>
             <p className="text-xs text-ner-black/60 mt-1 leading-relaxed">
-              Gentle routine reminders, nostalgic games, and constant peace of mind at home.
+              {t.stat1Desc}
             </p>
             <span className="inline-block mt-4 text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-ner-black/5 text-ner-black/50">
-              Simulation Metric
+              {t.stat1Tag}
             </span>
           </div>
 
           <div className="frost-white-intense rounded-3xl p-8 hover:-translate-y-1 transition-all">
             <span className="text-5xl sm:text-7xl font-bold font-mono text-ner-terracotta tracking-tight block">
-              04
+              {t.stat2Value}
             </span>
             <h3 className="font-bold text-base text-ner-black mt-4">
-              Core Cognitive Activities
+              {t.stat2Title}
             </h3>
             <p className="text-xs text-ner-black/60 mt-1 leading-relaxed">
-              Memory Match, Sequence Recall, Word Association, and Picture Recognition.
+              {t.stat2Desc}
             </p>
             <span className="inline-block mt-4 text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-ner-black/5 text-ner-black/50">
-              Interactive Modules
+              {t.stat2Tag}
             </span>
           </div>
 
           <div className="frost-white-intense rounded-3xl p-8 hover:-translate-y-1 transition-all">
             <span className="text-5xl sm:text-7xl font-bold font-mono text-ner-black tracking-tight block">
-              03
+              {t.stat3Value}
             </span>
             <h3 className="font-bold text-base text-ner-black mt-4">
-              Distinct Care Roles
+              {t.stat3Title}
             </h3>
             <p className="text-xs text-ner-black/60 mt-1 leading-relaxed">
-              Customized interfaces for Elderly Patients, Family Caregivers, and Doctors.
+              {t.stat3Desc}
             </p>
             <span className="inline-block mt-4 text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-ner-black/5 text-ner-black/50">
-              Care Ecosystem
+              {t.stat3Tag}
             </span>
           </div>
 
           <div className="frost-white-intense rounded-3xl p-8 hover:-translate-y-1 transition-all">
             <span className="text-5xl sm:text-7xl font-bold font-mono text-ner-sage tracking-tight block">
-              07+
+              {t.stat4Value}
             </span>
             <h3 className="font-bold text-base text-ner-black mt-4">
-              Regional Dialects
+              {t.stat4Title}
             </h3>
             <p className="text-xs text-ner-black/60 mt-1 leading-relaxed">
-              Assamese, Bengali, Meitei, Khasi, Mizo, Nagamese, and English.
+              {t.stat4Desc}
             </p>
             <span className="inline-block mt-4 text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-ner-black/5 text-ner-black/50">
-              Linguistic Care
+              {t.stat4Tag}
             </span>
           </div>
         </div>
@@ -292,21 +270,20 @@ export const LandingPage: React.FC = () => {
       <section className="py-24 px-6 sm:px-12 max-w-7xl mx-auto border-b border-ner-border/40">
         <div className="mb-16">
           <span className="text-xs font-mono uppercase tracking-widest text-ner-terracotta font-bold block mb-2">
-            [ methodology ]
+            {t.methodologyTag}
           </span>
           <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-ner-black">
-            Four steps to everyday cognitive vitality.
+            {t.methodologyTitle}
           </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="frost-white-intense rounded-3xl p-8 flex flex-col justify-between hover:border-ner-black/50 transition-all">
             <div>
-              <span className="font-mono text-lg font-bold text-ner-terracotta">01</span>
-              <h3 className="text-xl font-bold text-ner-black mt-3">Personalize</h3>
+              <span className="font-mono text-lg font-bold text-ner-terracotta">{t.step1Number}</span>
+              <h3 className="text-xl font-bold text-ner-black mt-3">{t.step1Title}</h3>
               <p className="text-xs text-ner-black/70 mt-2 leading-relaxed">
-                Adaptive profiling tailors text size, contrast mode, preferred North Eastern 
-                dialect, and familiar cultural motifs.
+                {t.step1Desc}
               </p>
             </div>
             <div className="mt-8 pt-4 border-t border-ner-border/60 text-2xl">⚙️</div>
@@ -314,11 +291,10 @@ export const LandingPage: React.FC = () => {
 
           <div className="frost-white-intense rounded-3xl p-8 flex flex-col justify-between hover:border-ner-black/50 transition-all">
             <div>
-              <span className="font-mono text-lg font-bold text-ner-sage">02</span>
-              <h3 className="text-xl font-bold text-ner-black mt-3">Play</h3>
+              <span className="font-mono text-lg font-bold text-ner-sage">{t.step2Number}</span>
+              <h3 className="text-xl font-bold text-ner-black mt-3">{t.step2Title}</h3>
               <p className="text-xs text-ner-black/70 mt-2 leading-relaxed">
-                Daily 5-minute cognitive exercises based on visual memory, sequence recall, 
-                and word association without clinical pressure.
+                {t.step2Desc}
               </p>
             </div>
             <div className="mt-8 pt-4 border-t border-ner-border/60 text-2xl">🧩</div>
@@ -326,11 +302,10 @@ export const LandingPage: React.FC = () => {
 
           <div className="frost-white-intense rounded-3xl p-8 flex flex-col justify-between hover:border-ner-black/50 transition-all">
             <div>
-              <span className="font-mono text-lg font-bold text-ner-calmBlue">03</span>
-              <h3 className="text-xl font-bold text-ner-black mt-3">Track</h3>
+              <span className="font-mono text-lg font-bold text-ner-calmBlue">{t.step3Number}</span>
+              <h3 className="text-xl font-bold text-ner-black mt-3">{t.step3Title}</h3>
               <p className="text-xs text-ner-black/70 mt-2 leading-relaxed">
-                Subtle engagement tracking across Memory, Attention, Recognition, and Sequence 
-                provides encouragement to patients.
+                {t.step3Desc}
               </p>
             </div>
             <div className="mt-8 pt-4 border-t border-ner-border/60 text-2xl">📊</div>
@@ -338,11 +313,10 @@ export const LandingPage: React.FC = () => {
 
           <div className="frost-white-intense rounded-3xl p-8 flex flex-col justify-between hover:border-ner-black/50 transition-all">
             <div>
-              <span className="font-mono text-lg font-bold text-ner-warmAmber">04</span>
-              <h3 className="text-xl font-bold text-ner-black mt-3">Support</h3>
+              <span className="font-mono text-lg font-bold text-ner-warmAmber">{t.step4Number}</span>
+              <h3 className="text-xl font-bold text-ner-black mt-3">{t.step4Title}</h3>
               <p className="text-xs text-ner-black/70 mt-2 leading-relaxed">
-                Care Circle connects family members and remote geriatricians with 
-                adherence status and wellbeing check-ins.
+                {t.step4Desc}
               </p>
             </div>
             <div className="mt-8 pt-4 border-t border-ner-border/60 text-2xl">🤝</div>
@@ -351,23 +325,23 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 4: COGNITIVE ACTIVITIES (Product cards, Nothing style)             */}
+      {/* SECTION 4: COGNITIVE ACTIVITIES                                           */}
       {/* ========================================================================= */}
       <section className="py-24 px-6 sm:px-12 max-w-7xl mx-auto border-b border-ner-border/40">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-16 gap-4">
           <div>
             <span className="text-xs font-mono uppercase tracking-widest text-ner-terracotta font-bold block mb-2">
-              [ cognitive activities ]
+              {t.activitiesTag}
             </span>
             <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-ner-black">
-              Cognitive games that feel familiar.
+              {t.activitiesTitle}
             </h2>
           </div>
           <Link
             to="/games"
             className="text-xs font-bold font-mono uppercase tracking-widest text-ner-black hover:text-ner-terracotta transition-colors flex items-center gap-1.5"
           >
-            <span>All Games Directory</span>
+            <span>{t.allGamesDirectory}</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -380,23 +354,22 @@ export const LandingPage: React.FC = () => {
               <div className="flex items-center justify-between mb-4">
                 <span className="text-4xl p-3 rounded-2xl bg-white border border-ner-border shadow-sm">🦏</span>
                 <span className="text-xs font-mono uppercase px-3 py-1 rounded-full bg-ner-black text-white font-semibold">
-                  Visual Recall
+                  {t.game1Tag}
                 </span>
               </div>
-              <h3 className="text-2xl font-bold text-ner-black">Memory Match</h3>
+              <h3 className="text-2xl font-bold text-ner-black">{t.game1Title}</h3>
               <p className="text-sm text-ner-black/70 mt-2 leading-relaxed">
-                Find matching pairs of beloved North Eastern heritage icons including 
-                Kaziranga Rhinos, fresh tea garden leaves, and Bihu Dhols.
+                {t.game1Desc}
               </p>
             </div>
             <div className="mt-8 pt-6 border-t border-ner-border flex items-center justify-between">
-              <span className="text-xs font-mono text-ner-black/60">5 Mins • 12 Cards</span>
+              <span className="text-xs font-mono text-ner-black/60">{t.game1Meta}</span>
               <button
                 onClick={() => navigate('/games/memory')}
                 className="h-10 px-5 rounded-full bg-ner-black text-white hover:bg-ner-black/85 text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
-                <span>Play Now</span>
+                <span>{t.btnPlayNow}</span>
               </button>
             </div>
           </div>
@@ -407,23 +380,22 @@ export const LandingPage: React.FC = () => {
               <div className="flex items-center justify-between mb-4">
                 <span className="text-4xl p-3 rounded-2xl bg-white border border-ner-border shadow-sm">⭐</span>
                 <span className="text-xs font-mono uppercase px-3 py-1 rounded-full bg-ner-sage text-white font-semibold">
-                  Pattern Reasoning
+                  {t.game2Tag}
                 </span>
               </div>
-              <h3 className="text-2xl font-bold text-ner-black">Sequence Recall</h3>
+              <h3 className="text-2xl font-bold text-ner-black">{t.game2Title}</h3>
               <p className="text-sm text-ner-black/70 mt-2 leading-relaxed">
-                Observe sequential patterns of nature symbols, then reproduce the rhythmic order 
-                at your own comfortable cadence.
+                {t.game2Desc}
               </p>
             </div>
             <div className="mt-8 pt-6 border-t border-ner-border flex items-center justify-between">
-              <span className="text-xs font-mono text-ner-black/60">6 Mins • 3 Levels</span>
+              <span className="text-xs font-mono text-ner-black/60">{t.game2Meta}</span>
               <button
                 onClick={() => navigate('/games/sequence')}
                 className="h-10 px-5 rounded-full bg-ner-black text-white hover:bg-ner-black/85 text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
-                <span>Play Now</span>
+                <span>{t.btnPlayNow}</span>
               </button>
             </div>
           </div>
@@ -434,23 +406,22 @@ export const LandingPage: React.FC = () => {
               <div className="flex items-center justify-between mb-4">
                 <span className="text-4xl p-3 rounded-2xl bg-white border border-ner-border shadow-sm">🍎</span>
                 <span className="text-xs font-mono uppercase px-3 py-1 rounded-full bg-ner-warmAmber text-white font-semibold">
-                  Verbal Fluency
+                  {t.game3Tag}
                 </span>
               </div>
-              <h3 className="text-2xl font-bold text-ner-black">Word Connect</h3>
+              <h3 className="text-2xl font-bold text-ner-black">{t.game3Title}</h3>
               <p className="text-sm text-ner-black/70 mt-2 leading-relaxed">
-                Identify natural conceptual links between everyday objects, fruits, and 
-                regional landmarks to strengthen lexical memory.
+                {t.game3Desc}
               </p>
             </div>
             <div className="mt-8 pt-6 border-t border-ner-border flex items-center justify-between">
-              <span className="text-xs font-mono text-ner-black/60">4 Mins • 5 Prompts</span>
+              <span className="text-xs font-mono text-ner-black/60">{t.game3Meta}</span>
               <button
                 onClick={() => navigate('/games/words')}
                 className="h-10 px-5 rounded-full bg-ner-black text-white hover:bg-ner-black/85 text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
-                <span>Play Now</span>
+                <span>{t.btnPlayNow}</span>
               </button>
             </div>
           </div>
@@ -461,23 +432,22 @@ export const LandingPage: React.FC = () => {
               <div className="flex items-center justify-between mb-4">
                 <span className="text-4xl p-3 rounded-2xl bg-white border border-ner-border shadow-sm">🧣</span>
                 <span className="text-xs font-mono uppercase px-3 py-1 rounded-full bg-ner-calmBlue text-white font-semibold">
-                  Episodic Memory
+                  {t.game4Tag}
                 </span>
               </div>
-              <h3 className="text-2xl font-bold text-ner-black">Picture Recognition</h3>
+              <h3 className="text-2xl font-bold text-ner-black">{t.game4Title}</h3>
               <p className="text-sm text-ner-black/70 mt-2 leading-relaxed">
-                Connect images of handwoven textiles, state birds, and natural wonders 
-                with nostalgic cultural narratives.
+                {t.game4Desc}
               </p>
             </div>
             <div className="mt-8 pt-6 border-t border-ner-border flex items-center justify-between">
-              <span className="text-xs font-mono text-ner-black/60">5 Mins • 4 Items</span>
+              <span className="text-xs font-mono text-ner-black/60">{t.game4Meta}</span>
               <button
                 onClick={() => navigate('/games/recognition')}
                 className="h-10 px-5 rounded-full bg-ner-black text-white hover:bg-ner-black/85 text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
-                <span>Play Now</span>
+                <span>{t.btnPlayNow}</span>
               </button>
             </div>
           </div>
@@ -485,38 +455,36 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 5: AI ASSISTANCE (Adaptive difficulty & simulated memory prompts) */}
+      {/* SECTION 5: AI ASSISTANCE                                                 */}
       {/* ========================================================================= */}
       <section className="py-24 px-6 sm:px-12 max-w-7xl mx-auto border-b border-ner-border/40">
         <div className="frost-white-intense rounded-3xl p-8 sm:p-14 border-2 border-ner-black shadow-xl">
           <div className="max-w-3xl space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ner-terracotta/10 text-ner-terracotta text-xs font-mono font-bold">
               <Cpu className="w-4 h-4" />
-              <span>AI-Assisted (Prototype Simulation)</span>
+              <span>{t.aiTag}</span>
             </div>
 
             <h2 className="text-3xl sm:text-5xl font-bold text-ner-black tracking-tight">
-              Simulated intelligence with deep human empathy.
+              {t.aiTitle}
             </h2>
 
             <p className="text-base sm:text-lg text-ner-black/75 leading-relaxed font-light">
-              SmritiCare conceptually utilizes adaptive AI models to monitor cognitive fatigue, 
-              modulate game speed dynamically, prompt daily memories, and summarize weekly 
-              wellbeing indicators for distant family members.
+              {t.aiDescription}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
               <div className="p-5 rounded-2xl bg-white border border-ner-border">
-                <h4 className="font-bold text-sm text-ner-black">Adaptive Pacing</h4>
-                <p className="text-xs text-ner-black/60 mt-1">Adjusts card timers if patient needs more time.</p>
+                <h4 className="font-bold text-sm text-ner-black">{t.aiFeature1Title}</h4>
+                <p className="text-xs text-ner-black/60 mt-1">{t.aiFeature1Desc}</p>
               </div>
               <div className="p-5 rounded-2xl bg-white border border-ner-border">
-                <h4 className="font-bold text-sm text-ner-black">Memory Prompts</h4>
-                <p className="text-xs text-ner-black/60 mt-1">Gentle conversational reminders for daily tasks.</p>
+                <h4 className="font-bold text-sm text-ner-black">{t.aiFeature2Title}</h4>
+                <p className="text-xs text-ner-black/60 mt-1">{t.aiFeature2Desc}</p>
               </div>
               <div className="p-5 rounded-2xl bg-white border border-ner-border">
-                <h4 className="font-bold text-sm text-ner-black">Caregiver Digest</h4>
-                <p className="text-xs text-ner-black/60 mt-1">Plain-language wellness summaries without medical jargon.</p>
+                <h4 className="font-bold text-sm text-ner-black">{t.aiFeature3Title}</h4>
+                <p className="text-xs text-ner-black/60 mt-1">{t.aiFeature3Desc}</p>
               </div>
             </div>
 
@@ -525,7 +493,7 @@ export const LandingPage: React.FC = () => {
                 onClick={() => setIsAICompanionOpen(true)}
                 className="h-12 px-7 rounded-full bg-ner-black text-white hover:bg-ner-black/85 text-xs font-mono font-bold uppercase tracking-wider inline-flex items-center gap-2 shadow-md"
               >
-                <span>Launch Interactive Companion Demo</span>
+                <span>{t.btnLaunchCompanion}</span>
                 <Sparkles className="w-3.5 h-3.5 text-ner-terracotta" />
               </button>
             </div>
@@ -534,18 +502,18 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 6: DESIGNED FOR NER (Multilingual, Cultural, Low-bandwidth)       */}
+      {/* SECTION 6: REGIONAL INCLUSION & INTERACTIVE LANGUAGE SELECTOR             */}
       {/* ========================================================================= */}
       <section className="py-24 px-6 sm:px-12 max-w-7xl mx-auto border-b border-ner-border/40">
         <div className="mb-16">
           <span className="text-xs font-mono uppercase tracking-widest text-ner-terracotta font-bold block mb-2">
-            [ regional inclusion ]
+            {t.nerTag}
           </span>
           <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-ner-black">
-            Built for North Eastern India.
+            {t.nerTitle}
           </h2>
           <p className="text-base sm:text-lg text-ner-black/70 max-w-2xl mt-3 font-light">
-            Designed to bridge linguistic, infrastructural, and digital accessibility gaps.
+            {t.nerDescription}
           </p>
         </div>
 
@@ -554,13 +522,13 @@ export const LandingPage: React.FC = () => {
           <div className="lg:col-span-6 frost-white-intense rounded-3xl p-8 space-y-4">
             <div className="flex items-center gap-2 text-xs font-mono text-ner-terracotta uppercase font-bold">
               <Globe className="w-4 h-4" />
-              <span>Interactive Language Demonstration</span>
+              <span>{t.demoLangHeader}</span>
             </div>
             <h3 className="text-2xl font-bold text-ner-black">
-              Try switching regional dialects:
+              {t.demoLangTitle}
             </h3>
             <p className="text-xs text-ner-black/60">
-              Tap any dialect below to update the entire interface greetings and labels.
+              {t.demoLangDesc}
             </p>
 
             <div className="grid grid-cols-2 gap-2.5 pt-2">
@@ -576,7 +544,7 @@ export const LandingPage: React.FC = () => {
                 >
                   <span className="text-xs font-bold block">{l.native}</span>
                   <span className={`text-[10px] ${language === l.code ? 'text-white/60' : 'text-ner-black/50'}`}>
-                    {l.name}
+                    {l.displayLabel}
                   </span>
                 </button>
               ))}
@@ -590,10 +558,9 @@ export const LandingPage: React.FC = () => {
                 📶
               </div>
               <div>
-                <h4 className="font-bold text-base text-ner-black">Low-Bandwidth Friendly</h4>
+                <h4 className="font-bold text-base text-ner-black">{t.infra1Title}</h4>
                 <p className="text-xs text-ner-black/70 mt-1 leading-relaxed">
-                  Engineered with lightweight SVGs and local state storage so that rural 
-                  health sub-centers with intermittent 2G/3G connectivity can run smoothly.
+                  {t.infra1Desc}
                 </p>
               </div>
             </div>
@@ -603,10 +570,9 @@ export const LandingPage: React.FC = () => {
                 🎨
               </div>
               <div>
-                <h4 className="font-bold text-base text-ner-black">Culturally Familiar Motifs</h4>
+                <h4 className="font-bold text-base text-ner-black">{t.infra2Title}</h4>
                 <p className="text-xs text-ner-black/70 mt-1 leading-relaxed">
-                  Games reference Gamosa, Hornbill, Rhinos, and Cheraw bamboo dances rather 
-                  than alien symbols, creating natural nostalgic comfort.
+                  {t.infra2Desc}
                 </p>
               </div>
             </div>
@@ -616,10 +582,9 @@ export const LandingPage: React.FC = () => {
                 👴
               </div>
               <div>
-                <h4 className="font-bold text-base text-ner-black">Elder-Centric Accessibility</h4>
+                <h4 className="font-bold text-base text-ner-black">{t.infra3Title}</h4>
                 <p className="text-xs text-ner-black/70 mt-1 leading-relaxed">
-                  Target touch elements exceed 60px height. High contrast modes and built-in 
-                  Text-To-Speech read instructions aloud with one touch.
+                  {t.infra3Desc}
                 </p>
               </div>
             </div>
@@ -628,17 +593,17 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 7: FINAL CALLOUT SECTION BEFORE DARK FOOTER                      */}
+      {/* SECTION 7: FINAL CALLOUT SECTION                                          */}
       {/* ========================================================================= */}
       <section className="py-28 px-6 sm:px-12 text-center max-w-4xl mx-auto">
         <span className="text-xs font-mono uppercase tracking-widest text-ner-terracotta font-bold block mb-3">
-          [ cognitive care • sih 2026 ]
+          {t.ctaTag}
         </span>
         <h2 className="text-4xl sm:text-7xl font-bold tracking-tight text-ner-black uppercase">
-          Technology should help people remember what matters.
+          {t.ctaTitle}
         </h2>
         <p className="text-base sm:text-xl text-ner-black/70 mt-6 max-w-2xl mx-auto font-light leading-relaxed">
-          Experience the complete frontend care ecosystem crafted for elderly dementia patients, caregivers, and clinicians.
+          {t.ctaDesc}
         </p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
@@ -646,7 +611,7 @@ export const LandingPage: React.FC = () => {
             onClick={handleStartCare}
             className="h-14 px-10 rounded-full bg-ner-black text-white hover:bg-ner-black/85 transition-all text-sm font-mono font-bold uppercase tracking-wider shadow-xl active:scale-95 flex items-center gap-2"
           >
-            <span>Enter SmritiCare</span>
+            <span>{t.btnEnterApp}</span>
             <ArrowRight className="w-4 h-4 text-ner-terracotta" />
           </button>
         </div>

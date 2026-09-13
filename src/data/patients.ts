@@ -37,9 +37,9 @@ export const mockPatients: Patient[] = [
       engagement: 90,
     },
     recentActivities: [
-      { id: 'act-1', title: 'Heritage Memory Match', gameType: 'memory', completedAt: 'Today, 10:45 AM', score: 88, durationMinutes: 6 },
-      { id: 'act-2', title: 'Brahmaputra Word Connect', gameType: 'words', completedAt: 'Today, 02:15 PM', score: 92, durationMinutes: 5 },
-      { id: 'act-3', title: 'Visual Pattern Recall', gameType: 'sequence', completedAt: 'Today, 04:30 PM', score: 80, durationMinutes: 7 },
+      { id: 'act-1', title: 'Heritage Memory Match', gameType: 'memory', completedAt: 'Today, 10:45 AM', score: 88, durationMinutes: 6, accuracy: 88, responseTimeSeconds: 2.1, attempts: 1, mistakes: 1 },
+      { id: 'act-2', title: 'Brahmaputra Word Connect', gameType: 'words', completedAt: 'Today, 02:15 PM', score: 92, durationMinutes: 5, accuracy: 92, responseTimeSeconds: 1.9, attempts: 1, mistakes: 0 },
+      { id: 'act-3', title: 'Visual Pattern Recall', gameType: 'sequence', completedAt: 'Today, 04:30 PM', score: 80, durationMinutes: 7, accuracy: 80, responseTimeSeconds: 2.5, attempts: 2, mistakes: 2 },
     ]
   },
   {
@@ -78,8 +78,8 @@ export const mockPatients: Patient[] = [
       engagement: 82,
     },
     recentActivities: [
-      { id: 'act-4', title: 'Loktak Picture Recognition', gameType: 'recognition', completedAt: 'Today, 09:30 AM', score: 85, durationMinutes: 5 },
-      { id: 'act-5', title: 'Daily Word Associations', gameType: 'words', completedAt: 'Today, 11:15 AM', score: 78, durationMinutes: 6 },
+      { id: 'act-4', title: 'Loktak Picture Recognition', gameType: 'recognition', completedAt: 'Today, 09:30 AM', score: 85, durationMinutes: 5, accuracy: 85, responseTimeSeconds: 2.3, attempts: 1, mistakes: 1 },
+      { id: 'act-5', title: 'Daily Word Associations', gameType: 'words', completedAt: 'Today, 11:15 AM', score: 78, durationMinutes: 6, accuracy: 78, responseTimeSeconds: 2.6, attempts: 1, mistakes: 2 },
     ]
   },
   {
@@ -118,8 +118,8 @@ export const mockPatients: Patient[] = [
       engagement: 94,
     },
     recentActivities: [
-      { id: 'act-6', title: 'Living Root Bridge Match', gameType: 'memory', completedAt: 'Today, 08:30 AM', score: 94, durationMinutes: 4 },
-      { id: 'act-7', title: 'Music & Dhol Sequence', gameType: 'sequence', completedAt: 'Today, 11:00 AM', score: 88, durationMinutes: 6 },
+      { id: 'act-6', title: 'Living Root Bridge Match', gameType: 'memory', completedAt: 'Today, 08:30 AM', score: 94, durationMinutes: 4, accuracy: 94, responseTimeSeconds: 1.8, attempts: 1, mistakes: 0 },
+      { id: 'act-7', title: 'Music & Dhol Sequence', gameType: 'sequence', completedAt: 'Today, 11:00 AM', score: 88, durationMinutes: 6, accuracy: 88, responseTimeSeconds: 2.0, attempts: 1, mistakes: 1 },
     ]
   },
   {
@@ -158,7 +158,7 @@ export const mockPatients: Patient[] = [
       engagement: 78,
     },
     recentActivities: [
-      { id: 'act-8', title: 'Cheraw Rhythm Match', gameType: 'sequence', completedAt: 'Today, 10:15 AM', score: 76, durationMinutes: 5 },
+      { id: 'act-8', title: 'Cheraw Rhythm Match', gameType: 'sequence', completedAt: 'Today, 10:15 AM', score: 76, durationMinutes: 5, accuracy: 76, responseTimeSeconds: 2.7, attempts: 1, mistakes: 2 },
     ]
   }
 ];

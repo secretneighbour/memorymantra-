@@ -4,10 +4,13 @@
 
 :root {
   --cell-size: 80px;
-  --bg-color: #F4F4F0;
+  --bg-color: #F5F5F2;
   --text-color: #111111;
-  --accent-terracotta: #DE4A30;
+  --accent-red: #E10600;
+  --accent-darkred: #9B0000;
   --accent-sage: #10B981;
+  --accent-blue: #3B82F6;
+  --border-color: #E2E2DC;
 }
 
 @media (min-width: 768px) {
@@ -30,22 +33,22 @@ body {
   min-height: 100svh;
 }
 
-/* Authentic Nothing India dot-matrix background */
+/* Nothing-inspired Dot-Matrix Canvas */
 .dot-matrix-canvas {
-  background-image: radial-gradient(circle, rgba(17, 17, 17, 0.16) 1.2px, transparent 1.6px);
+  background-image: radial-gradient(circle, rgba(17, 17, 17, 0.14) 1.2px, transparent 1.6px);
   background-size: var(--cell-size) var(--cell-size);
   background-position: calc(var(--cell-size) / 2) calc(var(--cell-size) / 2);
 }
 
 .dot-matrix-dark {
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.22) 1.2px, transparent 1.6px);
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.2) 1.2px, transparent 1.6px);
   background-size: var(--cell-size) var(--cell-size);
   background-position: calc(var(--cell-size) / 2) calc(var(--cell-size) / 2);
 }
 
 /* Nothing-inspired Frosted Glass Surfaces */
 .frost-white-intense {
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(226, 226, 220, 0.95);
@@ -59,23 +62,26 @@ body {
 }
 
 .frost-dark-intense {
-  background: rgba(17, 17, 17, 0.85);
+  background: rgba(17, 17, 17, 0.88);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .frost-card {
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(226, 226, 220, 0.85);
 }
 
-/* High Contrast Mode */
+/* ========================================================================= */
+/* SECTION 25: DELIBERATE HIGH CONTRAST BLACK + WHITE + RED ACCESSIBILITY THEME */
+/* ========================================================================= */
 .high-contrast {
   --bg-color: #000000;
   --text-color: #FFFFFF;
+  --border-color: #FFFFFF;
 }
 
 .high-contrast body {
@@ -83,47 +89,154 @@ body {
   color: #FFFFFF !important;
 }
 
+.high-contrast .dot-matrix-canvas {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.25) 1.5px, transparent 1.6px) !important;
+}
+
 .high-contrast .frost-card,
-.high-contrast .frost-white-intense {
-  background: #000000 !important;
+.high-contrast .frost-white-intense,
+.high-contrast .frost-dark-intense,
+.high-contrast [class*="bg-white"],
+.high-contrast [class*="bg-ner-offwhite"] {
+  background-color: #000000 !important;
+  border: 2px solid #FFFFFF !important;
+  color: #FFFFFF !important;
+  box-shadow: none !important;
+}
+
+.high-contrast h1,
+.high-contrast h2,
+.high-contrast h3,
+.high-contrast h4,
+.high-contrast h5,
+.high-contrast h6 {
+  color: #FFFFFF !important;
+}
+
+.high-contrast p,
+.high-contrast span:not(.hc-accent) {
+  color: #E5E5E5 !important;
+}
+
+/* High-Contrast Buttons */
+.high-contrast button,
+.high-contrast a[class*="rounded"] {
+  background-color: #000000 !important;
   border: 2px solid #FFFFFF !important;
   color: #FFFFFF !important;
 }
 
-.high-contrast button {
-  border: 2px solid currentColor !important;
+.high-contrast button:hover,
+.high-contrast a[class*="rounded"]:hover {
+  background-color: #1A1A1A !important;
+  border-color: #FFFFFF !important;
 }
 
-/* Accessibility Font Sizing */
+/* High-Contrast Active & Urgent Highlights: RED ONLY */
+.high-contrast .hc-accent,
+.high-contrast [class*="bg-ner-terracotta"],
+.high-contrast [class*="bg-rose-"],
+.high-contrast [class*="bg-amber-"] {
+  background-color: #FF0000 !important;
+  border-color: #FF0000 !important;
+  color: #FFFFFF !important;
+}
+
+.high-contrast [class*="text-ner-terracotta"],
+.high-contrast [class*="text-rose-"],
+.high-contrast [class*="text-amber-"] {
+  color: #FF0000 !important;
+}
+
+.high-contrast [class*="border-ner-terracotta"],
+.high-contrast [class*="border-rose-"] {
+  border-color: #FF0000 !important;
+}
+
+/* High-contrast charts */
+.high-contrast .recharts-surface {
+  background-color: #000000 !important;
+}
+
+.high-contrast .recharts-cartesian-grid line {
+  stroke: #444444 !important;
+}
+
+.high-contrast .recharts-text {
+  fill: #FFFFFF !important;
+}
+
+.high-contrast .recharts-line-curve {
+  stroke: #FF0000 !important;
+  stroke-width: 3px !important;
+}
+
+.high-contrast .recharts-bar-rectangle path {
+  fill: #FF0000 !important;
+}
+
+.high-contrast .recharts-tooltip-wrapper {
+  color: #000000 !important;
+}
+
+/* High-Contrast Inputs and Form Controls */
+.high-contrast input {
+  background-color: #000000 !important;
+  border: 2px solid #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+
+.high-contrast input:focus {
+  border-color: #FF0000 !important;
+  outline: 2px solid #FF0000 !important;
+}
+
+.high-contrast input::placeholder {
+  color: #888888 !important;
+}
+
+/* ========================================================================= */
+/* ACCESSIBILITY FONT SCALING (A- / A / A+ / A++)                             */
+/* ========================================================================= */
+[data-text-size="small"] {
+  font-size: 92.5%;
+}
+
+[data-text-size="normal"] {
+  font-size: 100%;
+}
+
 [data-text-size="large"] {
-  font-size: 112.5%;
+  font-size: 115%;
 }
 
 [data-text-size="extra-large"] {
-  font-size: 125%;
+  font-size: 130%;
 }
 
 [data-text-size="large"] h1 {
-  font-size: 3rem;
+  font-size: 3.2rem;
 }
 
 [data-text-size="extra-large"] h1 {
-  font-size: 3.5rem;
+  font-size: 3.8rem;
 }
 
 [data-text-size="large"] p,
 [data-text-size="large"] button,
 [data-text-size="large"] span {
-  font-size: 1.15rem;
+  font-size: 1.18rem;
 }
 
 [data-text-size="extra-large"] p,
 [data-text-size="extra-large"] button,
 [data-text-size="extra-large"] span {
-  font-size: 1.35rem;
+  font-size: 1.38rem;
 }
 
-/* Reduced Motion Mode */
+/* ========================================================================= */
+/* REDUCED MOTION MODE                                                       */
+/* ========================================================================= */
 .reduced-motion *,
 .reduced-motion *::before,
 .reduced-motion *::after {
@@ -151,7 +264,7 @@ body {
   transform: rotateY(180deg);
 }
 
-/* Nothing-style clean micro scrollbar */
+/* Micro scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;

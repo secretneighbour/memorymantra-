@@ -1,11 +1,13 @@
 import React from 'react';
 import { useRole } from '../context/RoleContext';
+import { useAccessibility } from '../context/AccessibilityContext';
 import { useNavigate } from 'react-router-dom';
 import { User, Users, Stethoscope, Check, X, ShieldAlert, Sparkles } from 'lucide-react';
 import { UserRole } from '../types';
 
 export const RoleSwitcherModal: React.FC = () => {
   const { role, setRole, isRoleModalOpen, setIsRoleModalOpen } = useRole();
+  const { t } = useAccessibility();
   const navigate = useNavigate();
 
   if (!isRoleModalOpen) return null;
@@ -22,44 +24,44 @@ export const RoleSwitcherModal: React.FC = () => {
   }[] = [
     {
       id: 'patient',
-      title: 'Elderly / Patient Mode',
-      persona: 'Ananya Sharma, Age 72 (Guwahati, Assam)',
-      tagline: 'High accessibility, gentle pacing, large buttons, encouraging feedback.',
+      title: t.rolePatientTitle,
+      persona: t.rolePatientPersona,
+      tagline: t.rolePatientTagline,
       icon: <User className="w-6 h-6 text-ner-terracotta" />,
-      badge: 'Gentle & Clear UI',
+      badge: t.rolePatientBadge,
       path: '/patient',
       benefits: [
-        'Extra large touch targets & 18px+ text',
-        'Daily memory journey & 4 working cognitive games',
-        'Direct speech-assisted companion & daily routine'
+        t.rolePatientBenefit1,
+        t.rolePatientBenefit2,
+        t.rolePatientBenefit3
       ]
     },
     {
       id: 'caregiver',
-      title: 'Caregiver / Family Circle',
-      persona: 'Rohan Sharma (Son & Primary Guardian)',
-      tagline: 'Activity telemetry, medication adherence, alert notifications, and mood check-in.',
+      title: t.roleCaregiverTitle,
+      persona: t.roleCaregiverPersona,
+      tagline: t.roleCaregiverTagline,
       icon: <Users className="w-6 h-6 text-ner-sage" />,
-      badge: 'Family Visibility',
+      badge: t.roleCaregiverBadge,
       path: '/caregiver',
       benefits: [
-        'Real-time daily game completion metrics',
-        'Medication reminder tracking & adherence',
-        'Encouraging note broadcasts & mood status'
+        t.roleCaregiverBenefit1,
+        t.roleCaregiverBenefit2,
+        t.roleCaregiverBenefit3
       ]
     },
     {
       id: 'doctor',
-      title: 'Healthcare Clinician',
-      persona: 'Dr. Debabrata Roy (Consultant Geriatrician)',
-      tagline: 'Multi-patient roster, cognitive domain analytics, longitudinal wellness trends.',
+      title: t.doctorRoleTitle,
+      persona: t.doctorRolePersona,
+      tagline: t.doctorRoleTagline,
       icon: <Stethoscope className="w-6 h-6 text-ner-calmBlue" />,
-      badge: 'Clinical Telemetry',
+      badge: t.doctorRoleBadge,
       path: '/doctor',
       benefits: [
-        'Multi-patient roster across North East states',
-        'Domain radar charts (Memory, Attention, Recognition)',
-        'Patient drill-down modal & longitudinal engagement'
+        t.doctorRoleBenefit1,
+        t.doctorRoleBenefit2,
+        t.doctorRoleBenefit3
       ]
     }
   ];
@@ -78,14 +80,14 @@ export const RoleSwitcherModal: React.FC = () => {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-ner-terracotta/10 text-ner-terracotta border border-ner-terracotta/20">
-                <Sparkles className="w-3 h-3" /> SIH 2026 Presentation Switcher
+                <Sparkles className="w-3 h-3" /> {t.roleModalTag}
               </span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-ner-black">
-              Select Demonstration Role
+              {t.roleSwitcherTitle}
             </h2>
             <p className="text-ner-black/60 text-sm mt-1">
-              Experience the customized interface designed for each stakeholder in the care ecosystem.
+              {t.roleSwitcherDesc}
             </p>
           </div>
           <button
@@ -153,13 +155,13 @@ export const RoleSwitcherModal: React.FC = () => {
         <div className="mt-6 pt-4 border-t border-ner-border flex items-center justify-between text-xs text-ner-black/50">
           <span className="flex items-center gap-1.5">
             <ShieldAlert className="w-3.5 h-3.5 text-ner-terracotta" />
-            Designed for SIH 2026 evaluation. Role states persist during session.
+            {t.simulationActive}
           </span>
           <button
             onClick={() => setIsRoleModalOpen(false)}
             className="font-semibold text-ner-black hover:underline"
           >
-            Dismiss
+            ✕
           </button>
         </div>
       </div>

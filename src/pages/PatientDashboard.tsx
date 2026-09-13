@@ -3,30 +3,36 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useRole } from '../context/RoleContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { TTSButton } from '../components/TTSButton';
+import { WellbeingCheckIn } from '../components/WellbeingCheckIn';
 import { dailyJourneyActivities } from '../data/activities';
 import { 
-  Sparkles, 
   Play, 
   CheckCircle2, 
   Flame, 
   Trophy, 
-  Clock, 
-  Heart, 
-  Volume2, 
-  Smile, 
   ArrowRight,
   Sun,
   Moon,
   CloudSun,
-  Circle
+  Bell,
+  Users,
+  Image,
+  AlertCircle,
+  Clock3
 } from 'lucide-react';
 
 export const PatientDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { activePatient, reminders, toggleReminder } = useRole();
+  const { 
+    activePatient, 
+    reminders, 
+    setReminderStatus 
+  } = useRole();
   const { t } = useAccessibility();
 
   const [relaxModalOpen, setRelaxModalOpen] = useState(false);
+  const [snoozeFeedback, setSnoozeFeedback] = useState<string | null>(null);
+  const [helpFeedback, setHelpFeedback] = useState<string | null>(null);
 
   // Dynamic time-of-day greeting
   const getGreeting = () => {
@@ -39,19 +45,37 @@ export const PatientDashboard: React.FC = () => {
   const greeting = getGreeting();
   const nextIncomplete = dailyJourneyActivities.find(a => !a.completed) || dailyJourneyActivities[0];
 
+  const handleReminderDone = (id: string) => {
+    setReminderStatus(id, 'completed');
+  };
+
+  const handleReminderSnooze = (id: string, title: string) => {
+    setReminderStatus(id, 'snoozed');
+    setSnoozeFeedback(`"${title}" ${t.remindMeLater}`);
+    setTimeout(() => setSnoozeFeedback(null), 3000);
+  };
+
+  const handleReminderHelp = (id: string, title: string) => {
+    setReminderStatus(id, 'help_requested');
+    setHelpFeedback(`${t.callCaregiverBtn}: "${title}"`);
+    setTimeout(() => setHelpFeedback(null), 3500);
+  };
+
   return (
     <div className="min-h-screen pt-24 sm:pt-28 pb-20 px-4 sm:px-8 max-w-5xl mx-auto animate-fade-in selection:bg-ner-terracotta selection:text-white">
+      {/* Login Prompt Modal for Daily Well-Being */}
+      <WellbeingCheckIn mode="modal" autoPromptOnLogin={true} />
       
       {/* ========================================================================= */}
       {/* 1. TOP GREETING MONOLITH (Tactile, Peaceful, High-Contrast)               */}
       {/* ========================================================================= */}
-      <div className="frost-white-intense rounded-3xl p-6 sm:p-12 mb-8 border border-ner-border/90 shadow-xl relative overflow-hidden">
+      <div className="frost-white-intense rounded-3xl p-6 sm:p-12 mb-6 border border-ner-border/90 shadow-xl relative overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div className="space-y-3">
             <div className="flex items-center gap-2.5">
               {greeting.icon}
               <span className="font-mono text-xs uppercase tracking-widest text-ner-black/50 font-bold">
-                [ daily companion • session active ]
+                [ {t.sessionActiveBadge} ]
               </span>
             </div>
 
@@ -67,12 +91,12 @@ export const PatientDashboard: React.FC = () => {
           {/* Large Audio Read-Out Pill */}
           <div className="shrink-0 flex flex-col sm:items-end gap-2">
             <TTSButton
-              text={`${greeting.text}, ${t.patientName}. ${t.encouragement} You have completed 3 out of 5 activities today.`}
-              label="Listen Aloud"
+              text={`${greeting.text}, ${t.patientName}. ${t.encouragement} ${t.activitiesCompleted}: ${activePatient.stats.completedToday} / ${activePatient.stats.totalToday}.`}
+              label={t.listenAloud}
               size="lg"
             />
             <span className="text-[11px] font-mono text-ner-black/40">
-              One-tap voice assistance
+              {t.voiceAssistanceSub}
             </span>
           </div>
         </div>
@@ -86,9 +110,9 @@ export const PatientDashboard: React.FC = () => {
                 <Flame className="w-6 h-6 fill-current" />
               </div>
               <div>
-                <span className="text-[11px] font-mono uppercase tracking-wider text-ner-black/50 block">Habit Streak</span>
+                <span className="text-[11px] font-mono uppercase tracking-wider text-ner-black/50 block">{t.habitStreak}</span>
                 <span className="font-bold text-xl sm:text-2xl text-ner-black font-mono">
-                  {activePatient.stats.streakDays} Days
+                  {activePatient.stats.streakDays} {t.days}
                 </span>
               </div>
             </div>
@@ -99,7 +123,7 @@ export const PatientDashboard: React.FC = () => {
                 <Trophy className="w-6 h-6" />
               </div>
               <div>
-                <span className="text-[11px] font-mono uppercase tracking-wider text-ner-black/50 block">Cognitive Vitality</span>
+                <span className="text-[11px] font-mono uppercase tracking-wider text-ner-black/50 block">{t.cognitiveVitality}</span>
                 <span className="font-bold text-xl sm:text-2xl text-ner-black font-mono">
                   {activePatient.stats.weeklyScore}%
                 </span>
@@ -108,16 +132,57 @@ export const PatientDashboard: React.FC = () => {
           </div>
 
           <span className="text-xs font-mono font-bold text-ner-sage px-3.5 py-1.5 rounded-full bg-emerald-50 border border-ner-sage/20">
-            Consistency improved this week
+            {t.consistencyImproved}
           </span>
         </div>
       </div>
 
       {/* ========================================================================= */}
-      {/* 2. TODAY'S COGNITIVE JOURNEY HERO (Nothing Dark Hardware Monolith)        */}
+      {/* 2. BIG PRIMARY NAVIGATION PILL BUTTONS                                   */}
+      {/* ========================================================================= */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-4 mb-8">
+        <button
+          onClick={() => navigate(nextIncomplete.route)}
+          className="p-5 rounded-2xl bg-ner-black text-white hover:bg-ner-black/90 font-mono text-xs uppercase tracking-wider flex flex-col items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-center"
+        >
+          <Play className="w-6 h-6 text-ner-terracotta fill-ner-terracotta" />
+          <span className="font-bold">{t.startTodayJourney}</span>
+        </button>
+
+        <Link
+          to="/memories"
+          className="p-5 rounded-2xl bg-white border-2 border-ner-border hover:border-ner-black text-ner-black font-mono text-xs uppercase tracking-wider flex flex-col items-center justify-center gap-2 shadow-sm active:scale-95 transition-all text-center"
+        >
+          <Image className="w-6 h-6 text-ner-terracotta" />
+          <span className="font-bold">{t.myMemories}</span>
+        </Link>
+
+        <Link
+          to="/reminders"
+          className="p-5 rounded-2xl bg-white border-2 border-ner-border hover:border-ner-black text-ner-black font-mono text-xs uppercase tracking-wider flex flex-col items-center justify-center gap-2 shadow-sm active:scale-95 transition-all text-center"
+        >
+          <Bell className="w-6 h-6 text-ner-sage" />
+          <span className="font-bold">{t.reminders}</span>
+        </Link>
+
+        <Link
+          to="/caregiver"
+          className="p-5 rounded-2xl bg-white border-2 border-ner-border hover:border-ner-black text-ner-black font-mono text-xs uppercase tracking-wider flex flex-col items-center justify-center gap-2 shadow-sm active:scale-95 transition-all text-center"
+        >
+          <Users className="w-6 h-6 text-rose-500" />
+          <span className="font-bold">{t.familyCircle}</span>
+        </Link>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* 3. "HOW ARE YOU FEELING TODAY?" WELL-BEING CHECK-IN                       */}
+      {/* ========================================================================= */}
+      <WellbeingCheckIn mode="embedded" />
+
+      {/* ========================================================================= */}
+      {/* 4. TODAY'S COGNITIVE JOURNEY HERO (Tactile Monolith)                      */}
       {/* ========================================================================= */}
       <div className="bg-ner-black text-white rounded-3xl p-6 sm:p-12 mb-10 shadow-2xl border border-white/10 relative overflow-hidden">
-        {/* Subtle radial dot matrix inside dark hero card */}
         <div className="absolute inset-0 dot-matrix-dark opacity-15 pointer-events-none" />
 
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-8 mb-8">
@@ -126,10 +191,10 @@ export const PatientDashboard: React.FC = () => {
               [ {t.todayJourney} ]
             </span>
             <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
-              {activePatient.stats.completedToday} of {activePatient.stats.totalToday} {t.activitiesCompleted}
+              {activePatient.stats.completedToday} / {activePatient.stats.totalToday} {t.activitiesCompleted}
             </h2>
             <p className="text-white/60 text-sm sm:text-base font-light max-w-lg">
-              Next recommended exercise: <span className="text-white font-semibold">{nextIncomplete.title}</span> ({nextIncomplete.estimatedMinutes} mins)
+              {t.encouragement}
             </p>
           </div>
 
@@ -153,14 +218,14 @@ export const PatientDashboard: React.FC = () => {
       </div>
 
       {/* ========================================================================= */}
-      {/* 3. TACTILE ACTIVITY CARDS (Memory, Words, Sequence, Recognition, Relax)    */}
+      {/* 5. TACTILE ACTIVITY CARDS                                                  */}
       {/* ========================================================================= */}
       <div className="mb-12">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xs font-mono uppercase tracking-widest text-ner-black/50 font-bold">
-            [ direct cognitive modules ]
+            [ {t.allGamesDirectory} ]
           </h3>
-          <span className="text-xs font-mono text-ner-black/40">5 Direct Options</span>
+          <span className="text-xs font-mono text-ner-black/40">{t.activitiesTag}</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -175,23 +240,77 @@ export const PatientDashboard: React.FC = () => {
                   🦏
                 </span>
                 <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-emerald-100 text-ner-sage font-bold">
-                  Completed (88%)
+                  {t.game1Tag}
                 </span>
               </div>
               <h4 className="font-bold text-xl text-ner-black group-hover:text-ner-terracotta transition-colors">
-                MEMORY MATCH
+                {t.game1Title}
               </h4>
               <p className="text-xs text-ner-black/70 mt-1 leading-relaxed">
-                Find matching pairs of familiar North Eastern heritage treasures.
+                {t.game1Desc}
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-ner-border/60 flex items-center justify-between text-xs font-mono text-ner-black/50">
-              <span>5 Mins • Visual Memory</span>
+              <span>{t.game1Meta}</span>
               <ArrowRight className="w-4 h-4 text-ner-black group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>
 
-          {/* Card 2: Words */}
+          {/* Card 2: Pattern Finder */}
+          <Link
+            to="/games/pattern"
+            className="frost-white-intense rounded-3xl p-6 sm:p-7 hover:border-ner-black/60 transition-all flex flex-col justify-between group active:scale-98 shadow-md"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-4xl p-3 rounded-2xl bg-ner-offwhite border border-ner-border">
+                  🔍
+                </span>
+                <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-ner-black text-white font-bold">
+                  {t.game2Tag}
+                </span>
+              </div>
+              <h4 className="font-bold text-xl text-ner-black group-hover:text-ner-terracotta transition-colors">
+                {t.game2Title}
+              </h4>
+              <p className="text-xs text-ner-black/70 mt-1 leading-relaxed">
+                {t.game2Desc}
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-ner-border/60 flex items-center justify-between text-xs font-mono text-ner-black/50">
+              <span>{t.game2Meta}</span>
+              <ArrowRight className="w-4 h-4 text-ner-black group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+
+          {/* Card 3: Routine Recall */}
+          <Link
+            to="/games/routine"
+            className="frost-white-intense rounded-3xl p-6 sm:p-7 hover:border-ner-black/60 transition-all flex flex-col justify-between group active:scale-98 shadow-md"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-4xl p-3 rounded-2xl bg-ner-offwhite border border-ner-border">
+                  ⏰
+                </span>
+                <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-ner-sage/10 text-ner-sage font-bold">
+                  {t.game3Tag}
+                </span>
+              </div>
+              <h4 className="font-bold text-xl text-ner-black group-hover:text-ner-sage transition-colors">
+                {t.game3Title}
+              </h4>
+              <p className="text-xs text-ner-black/70 mt-1 leading-relaxed">
+                {t.game3Desc}
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-ner-border/60 flex items-center justify-between text-xs font-mono text-ner-black/50">
+              <span>{t.game3Meta}</span>
+              <ArrowRight className="w-4 h-4 text-ner-black group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+
+          {/* Card 4: Words Connect */}
           <Link
             to="/games/words"
             className="frost-white-intense rounded-3xl p-6 sm:p-7 hover:border-ner-black/60 transition-all flex flex-col justify-between group active:scale-98 shadow-md"
@@ -202,99 +321,45 @@ export const PatientDashboard: React.FC = () => {
                   🍎
                 </span>
                 <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-emerald-100 text-ner-sage font-bold">
-                  Completed (92%)
+                  {t.game4Tag}
                 </span>
               </div>
               <h4 className="font-bold text-xl text-ner-black group-hover:text-ner-terracotta transition-colors">
-                WORDS CONNECT
+                {t.game4Title}
               </h4>
               <p className="text-xs text-ner-black/70 mt-1 leading-relaxed">
-                Pair natural concepts and fruits to stimulate language recall.
+                {t.game4Desc}
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-ner-border/60 flex items-center justify-between text-xs font-mono text-ner-black/50">
-              <span>4 Mins • Verbal Lexical</span>
+              <span>{t.game4Meta}</span>
               <ArrowRight className="w-4 h-4 text-ner-black group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>
 
-          {/* Card 3: Sequence */}
+          {/* Card 5: Remember the Market */}
           <Link
-            to="/games/sequence"
+            to="/games/market"
             className="frost-white-intense rounded-3xl p-6 sm:p-7 hover:border-ner-black/60 transition-all flex flex-col justify-between group active:scale-98 shadow-md"
           >
             <div>
               <div className="flex items-center justify-between mb-4">
                 <span className="text-4xl p-3 rounded-2xl bg-ner-offwhite border border-ner-border">
-                  ⭐
+                  🛍️
                 </span>
-                <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-ner-black text-white font-bold">
-                  Play Now
+                <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold">
+                  NER
                 </span>
               </div>
-              <h4 className="font-bold text-xl text-ner-black group-hover:text-ner-terracotta transition-colors">
-                SEQUENCE RECALL
+              <h4 className="font-bold text-xl text-ner-black group-hover:text-amber-800 transition-colors">
+                {t.game1Title}
               </h4>
               <p className="text-xs text-ner-black/70 mt-1 leading-relaxed">
-                Remember sequential rhythm patterns at your own comfortable pace.
+                {t.game1Desc}
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-ner-border/60 flex items-center justify-between text-xs font-mono text-ner-black/50">
-              <span>6 Mins • Reasoning</span>
-              <ArrowRight className="w-4 h-4 text-ner-black group-hover:translate-x-1 transition-transform" />
-            </div>
-          </Link>
-
-          {/* Card 4: Recognition */}
-          <Link
-            to="/games/recognition"
-            className="frost-white-intense rounded-3xl p-6 sm:p-7 hover:border-ner-black/60 transition-all flex flex-col justify-between group active:scale-98 shadow-md"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-4xl p-3 rounded-2xl bg-ner-offwhite border border-ner-border">
-                  🧣
-                </span>
-                <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-ner-black text-white font-bold">
-                  Ready to Play
-                </span>
-              </div>
-              <h4 className="font-bold text-xl text-ner-black group-hover:text-ner-terracotta transition-colors">
-                PICTURE QUIZ
-              </h4>
-              <p className="text-xs text-ner-black/70 mt-1 leading-relaxed">
-                Connect nostalgic cultural scenes, textiles, and sacred landmarks.
-              </p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-ner-border/60 flex items-center justify-between text-xs font-mono text-ner-black/50">
-              <span>5 Mins • Episodic Recall</span>
-              <ArrowRight className="w-4 h-4 text-ner-black group-hover:translate-x-1 transition-transform" />
-            </div>
-          </Link>
-
-          {/* Card 5: Daily Routine Companion */}
-          <Link
-            to="/memory"
-            className="frost-white-intense rounded-3xl p-6 sm:p-7 hover:border-ner-black/60 transition-all flex flex-col justify-between group active:scale-98 shadow-md"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-4xl p-3 rounded-2xl bg-ner-offwhite border border-ner-border">
-                  📅
-                </span>
-                <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-ner-black/5 text-ner-black font-bold">
-                  Timeline
-                </span>
-              </div>
-              <h4 className="font-bold text-xl text-ner-black group-hover:text-ner-terracotta transition-colors">
-                DAILY ROUTINE
-              </h4>
-              <p className="text-xs text-ner-black/70 mt-1 leading-relaxed">
-                Medicines, scheduled meals, and pinned family memories.
-              </p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-ner-border/60 flex items-center justify-between text-xs font-mono text-ner-black/50">
-              <span>24-Hour Routine</span>
+              <span>{t.game1Meta}</span>
               <ArrowRight className="w-4 h-4 text-ner-black group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>
@@ -314,14 +379,14 @@ export const PatientDashboard: React.FC = () => {
                 </span>
               </div>
               <h4 className="font-bold text-xl text-ner-black group-hover:text-ner-sage transition-colors">
-                RELAX & BREATHE
+                Sensory Calm
               </h4>
               <p className="text-xs text-ner-black/70 mt-1 leading-relaxed">
-                Calming sensory breathing animation for natural nervous tranquility.
+                {t.encouragement}
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-ner-border/60 flex items-center justify-between text-xs font-mono text-ner-black/50">
-              <span>3 Mins Guided</span>
+              <span>3 Mins</span>
               <ArrowRight className="w-4 h-4 text-ner-black group-hover:translate-x-1 transition-transform" />
             </div>
           </button>
@@ -329,67 +394,106 @@ export const PatientDashboard: React.FC = () => {
       </div>
 
       {/* ========================================================================= */}
-      {/* 4. TODAY'S SCHEDULE TIMELINE (Crystal-Clear Elder Routine)                 */}
+      {/* 6. TODAY'S SCHEDULE TIMELINE WITH [DONE], [REMIND ME LATER], [I NEED HELP] */}
       {/* ========================================================================= */}
       <div className="frost-white-intense rounded-3xl p-6 sm:p-10 shadow-xl border border-ner-border/90">
         <div className="flex items-center justify-between mb-6 pb-4 border-b border-ner-border">
           <div>
             <h3 className="text-2xl font-bold text-ner-black">{t.remindersTitle}</h3>
-            <p className="text-xs text-ner-black/60 mt-0.5">Tap any reminder to confirm it was completed</p>
+            <p className="text-xs text-ner-black/60 mt-0.5">
+              {t.thingsToRemember}
+            </p>
           </div>
           <Link
-            to="/memory"
+            to="/reminders"
             className="text-xs font-mono font-bold text-ner-terracotta uppercase tracking-wider hover:underline"
           >
-            Full Companion →
+            {t.reminders} →
           </Link>
         </div>
 
-        <div className="space-y-3">
+        {snoozeFeedback && (
+          <div className="mb-4 p-4 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs font-mono font-bold flex items-center gap-2 animate-fade-in">
+            <Clock3 className="w-4 h-4" />
+            <span>{snoozeFeedback}</span>
+          </div>
+        )}
+
+        {helpFeedback && (
+          <div className="mb-4 p-4 rounded-xl bg-rose-50 border border-rose-300 text-rose-800 text-xs font-mono font-bold flex items-center gap-2 animate-fade-in">
+            <AlertCircle className="w-4 h-4" />
+            <span>{helpFeedback}</span>
+          </div>
+        )}
+
+        <div className="space-y-4">
           {reminders.slice(0, 4).map((item) => (
             <div
               key={item.id}
-              onClick={() => toggleReminder(item.id)}
-              className={`p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-4 ${
+              className={`p-5 rounded-2xl border transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 ${
                 item.completed
-                  ? 'bg-white/40 border-ner-border/60 opacity-60'
-                  : 'bg-white border-ner-border hover:border-ner-black/50 shadow-sm'
+                  ? 'bg-white/40 border-ner-border/60 opacity-70'
+                  : 'bg-white border-ner-border shadow-sm'
               }`}
             >
-              <div className="flex items-center gap-4">
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleReminder(item.id);
-                  }}
-                >
-                  {item.completed ? (
-                    <CheckCircle2 className="w-7 h-7 text-ner-sage fill-emerald-100" />
-                  ) : (
-                    <Circle className="w-7 h-7 text-ner-black/30 hover:text-ner-black" />
-                  )}
-                </button>
+              <div className="flex items-start gap-4">
+                <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-ner-offwhite border border-ner-border text-ner-black shrink-0">
+                  {item.time}
+                </span>
 
                 <div>
-                  <div className="flex items-center gap-2.5">
-                    <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-lg bg-ner-offwhite border border-ner-border text-ner-black">
-                      {item.time}
-                    </span>
-                    <h4 className={`text-base font-bold ${item.completed ? 'line-through text-ner-black/50' : 'text-ner-black'}`}>
-                      {item.title}
-                    </h4>
-                  </div>
+                  <h4 className={`text-base font-bold ${item.completed ? 'line-through text-ner-black/50' : 'text-ner-black'}`}>
+                    {item.title}
+                  </h4>
                   {item.doseOrNote && (
-                    <p className="text-xs text-ner-black/60 mt-1 pl-0.5">{item.doseOrNote}</p>
+                    <p className="text-xs text-ner-black/60 mt-1">{item.doseOrNote}</p>
+                  )}
+                  {item.status === 'snoozed' && (
+                    <span className="text-[11px] font-mono text-amber-700 font-bold block mt-1">
+                      ⏰ {t.remindMeLater}
+                    </span>
+                  )}
+                  {item.status === 'help_requested' && (
+                    <span className="text-[11px] font-mono text-rose-600 font-bold block mt-1">
+                      🚨 {t.callCaregiverBtn}
+                    </span>
                   )}
                 </div>
               </div>
 
-              {item.completed && (
-                <span className="text-xs font-mono font-bold text-ner-sage uppercase">
-                  Done
-                </span>
-              )}
+              {/* Action Buttons: [DONE], [REMIND ME LATER], [I NEED HELP] */}
+              <div className="flex items-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-ner-border/50">
+                {!item.completed ? (
+                  <>
+                    <button
+                      onClick={() => handleReminderDone(item.id)}
+                      className="px-3.5 py-2 rounded-xl bg-ner-sage hover:bg-ner-sageDark text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm active:scale-95"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>{t.activitiesCompleted}</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleReminderSnooze(item.id, item.title)}
+                      className="px-3 py-2 rounded-xl bg-ner-offwhite hover:bg-white border border-ner-border text-ner-black font-mono text-xs font-bold uppercase tracking-wider active:scale-95"
+                    >
+                      <span>{t.remindMeLater}</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleReminderHelp(item.id, item.title)}
+                      className="px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-mono text-xs font-bold uppercase tracking-wider active:scale-95"
+                    >
+                      <span>{t.helpBtnText}</span>
+                    </button>
+                  </>
+                ) : (
+                  <span className="text-xs font-mono font-bold text-ner-sage uppercase flex items-center gap-1">
+                    <CheckCircle2 className="w-4 h-4 text-ner-sage" />
+                    {t.activitiesCompleted}
+                  </span>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -403,10 +507,10 @@ export const PatientDashboard: React.FC = () => {
               [ sensory calm ]
             </span>
             <h2 className="text-3xl font-bold text-ner-black">
-              Breathe gently, Ananya.
+              {t.patientName}
             </h2>
             <p className="text-sm text-ner-black/60 mt-2">
-              Inhale peace for 4 seconds, then exhale gently.
+              {t.encouragement}
             </p>
 
             <div className="my-12 flex items-center justify-center">
@@ -419,7 +523,7 @@ export const PatientDashboard: React.FC = () => {
               onClick={() => setRelaxModalOpen(false)}
               className="w-full h-14 rounded-2xl bg-ner-black text-white font-mono font-bold text-xs uppercase tracking-wider hover:bg-ner-black/85 transition-colors"
             >
-              Finish Sensory Rest
+              ✓ {t.activitiesCompleted}
             </button>
           </div>
         </div>

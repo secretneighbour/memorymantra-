@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useRole } from '../context/RoleContext';
 import { useAccessibility } from '../context/AccessibilityContext';
+import { useAuth } from '../context/AuthContext';
 import { 
   Menu, 
   X, 
@@ -9,33 +10,36 @@ import {
   Settings, 
   User, 
   Users, 
-  Stethoscope, 
-  Sparkles 
+  Stethoscope,
+  LogIn,
+  LogOut
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
-  const { role, setIsRoleModalOpen, setIsAICompanionOpen, activePatient } = useRole();
+  const { role, setIsRoleModalOpen, setIsAICompanionOpen } = useRole();
+  const { t } = useAccessibility();
+  const { user, isAuthenticated, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { label: 'Home', path: '/' },
-    { label: 'Care', path: '/patient' },
-    { label: 'Games', path: '/games' },
-    { label: 'Memory', path: '/memory' },
-    { label: 'Progress', path: '/progress' },
-    { label: 'Circle', path: '/caregiver' },
-    { label: 'Doctor', path: '/doctor' },
+    { label: t.navHome, path: '/' },
+    { label: t.navCare, path: '/patient' },
+    { label: t.navGames, path: '/games' },
+    { label: t.navMemory, path: '/memory' },
+    { label: t.navProgress, path: '/progress' },
+    { label: t.navCircle, path: '/caregiver' },
+    { label: t.navDoctor, path: '/doctor' },
   ];
 
   const getRoleLabel = () => {
-    if (role === 'patient') return 'Patient';
-    if (role === 'caregiver') return 'Caregiver';
-    return 'Doctor';
+    if (role === 'patient') return t.rolePatient;
+    if (role === 'caregiver') return t.roleCaregiver;
+    return t.roleDoctor;
   };
 
   return (
-    <header className="fixed top-3 sm:top-5 left-1/2 -translate-x-1/2 z-50 w-[96%] max-w-5xl transition-all duration-300 pointer-events-none">
+    <header className="fixed top-3 sm:top-5 left-1/2 -translate-x-1/2 z-50 w-[96%] max-w-6xl transition-all duration-300 pointer-events-none">
       <div className="frost-white-intense rounded-full px-3 sm:px-5 py-2 shadow-xl border border-ner-border/90 flex items-center justify-between gap-3 pointer-events-auto">
         
         {/* Left: Nothing-style Dot-Matrix Glyph + Logo */}
@@ -60,7 +64,7 @@ export const Navbar: React.FC = () => {
 
           <div className="flex flex-col">
             <span className="font-mono text-xs sm:text-sm font-bold tracking-widest text-ner-black uppercase group-hover:text-ner-terracotta transition-colors">
-              SMRITICARE
+              {t.appName.toUpperCase()}
             </span>
           </div>
           <span className="hidden md:inline-block text-[10px] text-ner-black/40 font-mono pl-1 uppercase tracking-wider">
@@ -69,7 +73,7 @@ export const Navbar: React.FC = () => {
         </Link>
 
         {/* Center: Desktop Navigation Bar */}
-        <nav className="hidden md:flex items-center gap-1 bg-ner-offwhite/70 p-1 rounded-full border border-ner-border/60">
+        <nav className="hidden lg:flex items-center gap-1 bg-ner-offwhite/70 p-1 rounded-full border border-ner-border/60">
           {navLinks.map((link) => {
             const isActive = location.pathname === link.path || 
               (link.path !== '/' && location.pathname.startsWith(link.path));
@@ -77,7 +81,7 @@ export const Navbar: React.FC = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-medium tracking-wide transition-all duration-200 ${
+                className={`px-3 py-1.5 rounded-full text-xs font-medium tracking-wide transition-all duration-200 ${
                   isActive
                     ? 'bg-ner-black text-white shadow-sm font-semibold'
                     : 'text-ner-black/70 hover:text-ner-black hover:bg-black/5'
@@ -89,37 +93,70 @@ export const Navbar: React.FC = () => {
           })}
         </nav>
 
-        {/* Right: Actions & Role Pill */}
+        {/* Right: Actions, Role Pill & Auth */}
         <div className="flex items-center gap-1.5 sm:gap-2">
           {/* Role Pill Switcher */}
           <button
             onClick={() => setIsRoleModalOpen(true)}
-            className="px-3 py-1.5 rounded-full bg-ner-offwhite hover:bg-white border border-ner-border flex items-center gap-1.5 text-xs font-semibold text-ner-black transition-all shadow-sm active:scale-95"
-            title="Switch demo persona"
+            className="px-2.5 sm:px-3 py-1.5 rounded-full bg-ner-offwhite hover:bg-white border border-ner-border flex items-center gap-1.5 text-xs font-semibold text-ner-black transition-all shadow-sm active:scale-95"
+            title={t.navRoleSwitcher}
           >
             {role === 'patient' && <User className="w-3.5 h-3.5 text-ner-terracotta" />}
             {role === 'caregiver' && <Users className="w-3.5 h-3.5 text-ner-sage" />}
             {role === 'doctor' && <Stethoscope className="w-3.5 h-3.5 text-ner-calmBlue" />}
             <span className="text-[11px] font-mono font-bold uppercase">{getRoleLabel()}</span>
-            <span className="text-[10px] text-ner-terracotta font-mono underline ml-0.5">Switch</span>
+            <span className="text-[10px] text-ner-terracotta font-mono underline ml-0.5">{t.navSwitch}</span>
           </button>
 
           {/* AI Memory Companion Quick Launcher */}
           <button
             onClick={() => setIsAICompanionOpen(true)}
-            className="px-3 py-1.5 rounded-full bg-ner-black text-white hover:bg-ner-black/85 flex items-center gap-1.5 text-xs font-medium transition-all shadow-sm active:scale-95"
-            title="Ask AI Memory Companion"
+            className="hidden sm:flex px-3 py-1.5 rounded-full bg-ner-black text-white hover:bg-ner-black/85 items-center gap-1.5 text-xs font-medium transition-all shadow-sm active:scale-95"
+            title={t.aiCompanionTitle}
           >
             <Bot className="w-3.5 h-3.5 text-ner-terracotta" />
-            <span className="hidden sm:inline text-[11px] font-semibold">AI Demo</span>
+            <span className="text-[11px] font-semibold">{t.navAIDemo}</span>
             <span className="w-1.5 h-1.5 rounded-full bg-ner-sage animate-ping"></span>
           </button>
+
+          {/* Authentication Pill (Sign In / User Profile) */}
+          {isAuthenticated && user ? (
+            <div className="flex items-center gap-1 pl-1">
+              <span 
+                className="hidden sm:inline-block px-2.5 py-1 rounded-full bg-ner-black/5 border border-ner-border text-[11px] font-mono font-bold text-ner-black max-w-[110px] truncate"
+                title={`Signed in as ${user.name} (${user.email})`}
+              >
+                {user.name.split(' ')[0]}
+              </span>
+              <button
+                onClick={signOut}
+                className="p-2 rounded-full hover:bg-rose-50 text-ner-black/70 hover:text-rose-600 transition-colors"
+                title="Sign Out"
+                aria-label="Sign Out"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className={`px-3 py-1.5 rounded-full text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm active:scale-95 ${
+                location.pathname === '/login'
+                  ? 'bg-ner-black text-white'
+                  : 'bg-ner-offwhite hover:bg-ner-black hover:text-white border border-ner-border text-ner-black'
+              }`}
+              title="Sign in to your care account"
+            >
+              <LogIn className="w-3.5 h-3.5 text-ner-terracotta" />
+              <span>Sign In</span>
+            </Link>
+          )}
 
           {/* Accessibility Settings */}
           <Link
             to="/settings"
             className="p-2 rounded-full hover:bg-ner-black/5 text-ner-black transition-colors"
-            title="Accessibility Settings"
+            title={t.navSettings}
             aria-label="Settings"
           >
             <Settings className="w-4 h-4" />
@@ -128,7 +165,7 @@ export const Navbar: React.FC = () => {
           {/* Mobile hamburger button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-1.5 rounded-full text-ner-black hover:bg-black/5"
+            className="lg:hidden p-1.5 rounded-full text-ner-black hover:bg-black/5"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -138,7 +175,7 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Drawer Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden mt-2 max-w-sm mx-auto pointer-events-auto frost-white-intense rounded-3xl p-5 shadow-2xl border border-ner-border animate-fade-in">
+        <div className="lg:hidden mt-2 max-w-sm mx-auto pointer-events-auto frost-white-intense rounded-3xl p-5 shadow-2xl border border-ner-border animate-fade-in">
           <div className="flex flex-col gap-1.5">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
@@ -158,8 +195,38 @@ export const Navbar: React.FC = () => {
               );
             })}
             
+            {/* Mobile Auth Button */}
+            <div className="pt-2">
+              {isAuthenticated && user ? (
+                <div className="flex items-center justify-between p-3 rounded-2xl bg-ner-offwhite border border-ner-border text-xs">
+                  <div>
+                    <span className="font-bold text-ner-black block">{user.name}</span>
+                    <span className="text-[10px] text-ner-black/50 font-mono">{user.email}</span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      signOut();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-white border border-ner-border text-rose-600 font-mono text-[11px] font-bold"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full py-2.5 px-4 rounded-2xl bg-ner-black text-white text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2"
+                >
+                  <LogIn className="w-4 h-4 text-ner-terracotta" />
+                  <span>Sign In to Account</span>
+                </Link>
+              )}
+            </div>
+
             <div className="pt-3 mt-2 border-t border-ner-border flex items-center justify-between text-xs text-ner-black/60 px-2">
-              <span>Current Role: {getRoleLabel()}</span>
+              <span>{t.currentRole}: {getRoleLabel()}</span>
               <button 
                 onClick={() => {
                   setMobileMenuOpen(false);
@@ -167,7 +234,7 @@ export const Navbar: React.FC = () => {
                 }}
                 className="text-ner-terracotta font-semibold hover:underline"
               >
-                Change Role
+                {t.changeRole}
               </button>
             </div>
           </div>

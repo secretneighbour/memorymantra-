@@ -12,24 +12,24 @@ interface ChatMessage {
 
 export const AICompanionDrawer: React.FC = () => {
   const { isAICompanionOpen, setIsAICompanionOpen, activePatient, reminders } = useRole();
-  const { speakText } = useAccessibility();
+  const { speakText, t } = useAccessibility();
 
   const [inputQuery, setInputQuery] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 'init-1',
       sender: 'assistant',
-      text: `Hello ${activePatient.name}! I am your Neuro Memory Companion. How can I help you feel peaceful and organized today?`,
+      text: t.aiCompanionGreeting,
       timestamp: 'Just now'
     }
   ]);
 
   const quickQuestions = [
-    "What am I doing today?",
-    "When is my next appointment?",
-    "Remind me about my daughter's birthday",
-    "What activities did I complete today?",
-    "How did I do today?"
+    t.aiCompanionQuick1,
+    t.aiCompanionQuick2,
+    t.aiCompanionQuick3,
+    t.aiCompanionQuick4,
+    t.aiCompanionQuick5
   ];
 
   const handleSend = (textToSend?: string) => {
@@ -51,23 +51,23 @@ export const AICompanionDrawer: React.FC = () => {
       let responseText = "";
       const lower = query.toLowerCase();
 
-      if (lower.includes('what am i doing') || lower.includes('schedule') || lower.includes('today')) {
+      if (lower.includes('what am i doing') || lower.includes('schedule') || lower.includes('today') || lower.includes('aaj') || lower.includes('aji')) {
         const pendingReminders = reminders.filter(r => !r.completed);
         if (pendingReminders.length > 0) {
           responseText = `Today you have ${reminders.length} items scheduled. Your next activity is "${pendingReminders[0].title}" at ${pendingReminders[0].time}. You have already completed ${reminders.filter(r => r.completed).length} items!`;
         } else {
           responseText = `You have completed all scheduled reminders for today! You can relax and enjoy some herbal tea or music.`;
         }
-      } else if (lower.includes('next appointment') || lower.includes('doctor')) {
+      } else if (lower.includes('appointment') || lower.includes('doctor')) {
         responseText = `Your next appointment is with Dr. Debabrata Roy on Monday at 11:00 AM at Dispur Polyclinic. Your son Rohan will accompany you.`;
-      } else if (lower.includes('daughter') || lower.includes('birthday')) {
+      } else if (lower.includes('daughter') || lower.includes('birthday') || lower.includes('churi') || lower.includes('meera')) {
         responseText = `Your daughter's birthday is on 18 September. We have pinned a note so you won't forget to call her with warm blessings!`;
-      } else if (lower.includes('completed') || lower.includes('how did i do') || lower.includes('activities')) {
+      } else if (lower.includes('completed') || lower.includes('activities') || lower.includes('score') || lower.includes('khel')) {
         responseText = `You completed ${activePatient.stats.completedToday} out of ${activePatient.stats.totalToday} cognitive activities today with an impressive average accuracy of ${activePatient.stats.weeklyScore}%. You have an active ${activePatient.stats.streakDays}-day streak!`;
-      } else if (lower.includes('medicine') || lower.includes('blood pressure')) {
+      } else if (lower.includes('medicine') || lower.includes('dawa')) {
         responseText = `Your morning blood pressure medicine (1 tablet with warm water) is marked as taken at 8:00 AM. Your next reminder is at 1:00 PM for lunch.`;
       } else {
-        responseText = `I hear you, ${activePatient.name}. I have recorded that in your Memory notes. Remember, your loved ones are right beside you and you are doing wonderful today.`;
+        responseText = `${activePatient.name}, I have recorded that in your memory notes. Remember, your loved ones are right beside you and you are doing wonderful today.`;
       }
 
       const botMsg: ChatMessage = {
@@ -93,13 +93,13 @@ export const AICompanionDrawer: React.FC = () => {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-ner-black text-lg">Memory Companion</h3>
+              <h3 className="font-bold text-ner-black text-lg">{t.aiCompanionTitle}</h3>
               <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-ner-black text-white">
-                AI DEMO
+                {t.aiCompanionBadge}
               </span>
             </div>
             <p className="text-xs text-ner-black/60">
-              Gentle conversational memory assistance
+              {t.encouragement}
             </p>
           </div>
         </div>
@@ -116,7 +116,7 @@ export const AICompanionDrawer: React.FC = () => {
       {/* Notice Banner */}
       <div className="bg-ner-terracotta/5 border-b border-ner-terracotta/10 px-4 py-2 flex items-center gap-2 text-xs text-ner-terracotta font-medium">
         <Sparkles className="w-3.5 h-3.5 shrink-0" />
-        <span>Simulated AI Wellness Assistant for SIH 2026</span>
+        <span>{t.simulationActive}</span>
       </div>
 
       {/* Messages Thread */}
@@ -141,10 +141,10 @@ export const AICompanionDrawer: React.FC = () => {
                   <button
                     onClick={() => speakText(msg.text)}
                     className="inline-flex items-center gap-1 text-xs text-ner-terracotta hover:underline font-medium"
-                    title="Read aloud"
+                    title={t.listenAloud}
                   >
                     <Volume2 className="w-3.5 h-3.5" />
-                    <span>Listen</span>
+                    <span>{t.listenAloud}</span>
                   </button>
                 </div>
               )}
@@ -156,7 +156,7 @@ export const AICompanionDrawer: React.FC = () => {
       {/* Suggested Quick Prompts */}
       <div className="p-3 border-t border-ner-border bg-white/70">
         <p className="text-xs font-semibold text-ner-black/50 mb-2 flex items-center gap-1">
-          <HelpCircle className="w-3 h-3" /> Tap to ask directly:
+          <HelpCircle className="w-3 h-3" /> {t.roleModalTag}
         </p>
         <div className="flex flex-wrap gap-1.5">
           {quickQuestions.map((q, idx) => (
@@ -184,7 +184,7 @@ export const AICompanionDrawer: React.FC = () => {
             type="text"
             value={inputQuery}
             onChange={(e) => setInputQuery(e.target.value)}
-            placeholder="Ask about your day, memories, or tasks..."
+            placeholder={t.aiCompanionPlaceholder}
             className="flex-1 bg-ner-offwhite border border-ner-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ner-black transition-colors"
           />
           <button

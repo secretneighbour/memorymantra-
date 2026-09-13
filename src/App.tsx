@@ -2,17 +2,26 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AccessibilityProvider } from './context/AccessibilityContext';
 import { RoleProvider } from './context/RoleContext';
+import { AuthProvider } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { DotMatrixBackground } from './components/DotMatrixBackground';
-import { Watermark } from './components/Watermark';
 import { RoleSwitcherModal } from './components/RoleSwitcherModal';
 import { AICompanionDrawer } from './components/AICompanionDrawer';
+import { OfflineBanner } from './components/OfflineBanner';
 
 // Pages
 import { LandingPage } from './pages/LandingPage';
+import { RoleSelectionPage } from './pages/RoleSelectionPage';
+import { LoginPage } from './pages/LoginPage';
+import { SignupPage } from './pages/SignupPage';
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
+import { EmailVerificationPage } from './pages/EmailVerificationPage';
+import { AuthCallbackPage } from './pages/AuthCallbackPage';
+import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { PatientDashboard } from './pages/PatientDashboard';
 import { GamesHub } from './pages/GamesHub';
+import { MemoriesPage } from './pages/MemoriesPage';
 import { MemoryCompanionPage } from './pages/MemoryCompanionPage';
 import { RemindersPage } from './pages/RemindersPage';
 import { ProgressPage } from './pages/ProgressPage';
@@ -24,8 +33,13 @@ import { SettingsPage } from './pages/SettingsPage';
 // Games
 import { MemoryMatchGame } from './games/MemoryMatchGame';
 import { SequenceRecallGame } from './games/SequenceRecallGame';
-import { WordConnectGame } from './games/WordConnectGame';
+import { PatternFinderGame } from './games/PatternFinderGame';
 import { PictureRecognitionGame } from './games/PictureRecognitionGame';
+import { RoutineRecallGame } from './games/RoutineRecallGame';
+import { EmotionRecognitionGame } from './games/EmotionRecognitionGame';
+import { WordConnectGame } from './games/WordConnectGame';
+import { MarketMemoryGame } from './games/MarketMemoryGame';
+import { NameFaceRecallGame } from './games/NameFaceRecallGame';
 
 // Scroll to top helper on route navigation
 const ScrollToTop: React.FC = () => {
@@ -42,51 +56,72 @@ export const App: React.FC = () => {
   return (
     <AccessibilityProvider>
       <RoleProvider>
-        <Router>
-          <ScrollToTop />
-          <div className="relative min-h-screen flex flex-col justify-between selection:bg-ner-terracotta selection:text-white">
-            <DotMatrixBackground />
-            <Watermark />
-            <Navbar />
+        <AuthProvider>
+          <Router>
+            <ScrollToTop />
+            <div className="relative min-h-screen flex flex-col justify-between selection:bg-ner-terracotta selection:text-white">
+              <DotMatrixBackground />
+              <Navbar />
 
-            {/* Global Modals & Drawers */}
-            <RoleSwitcherModal />
-            <AICompanionDrawer />
+              {/* Global Modals & Drawers */}
+              <RoleSwitcherModal />
+              <AICompanionDrawer />
+              <OfflineBanner />
 
-            <main className="flex-grow z-10">
-              <Routes>
-                {/* Landing & Presentation */}
-                <Route path="/" element={<LandingPage />} />
+              <main className="flex-grow z-10">
+                <Routes>
+                  {/* Landing & Role Selection */}
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/role-selection" element={<RoleSelectionPage />} />
 
-                {/* Patient Flow */}
-                <Route path="/patient" element={<PatientDashboard />} />
-                <Route path="/games" element={<GamesHub />} />
-                <Route path="/games/memory" element={<MemoryMatchGame />} />
-                <Route path="/games/sequence" element={<SequenceRecallGame />} />
-                <Route path="/games/words" element={<WordConnectGame />} />
-                <Route path="/games/recognition" element={<PictureRecognitionGame />} />
-                
-                {/* Memory & Reminders */}
-                <Route path="/memory" element={<MemoryCompanionPage />} />
-                <Route path="/reminders" element={<RemindersPage />} />
-                <Route path="/progress" element={<ProgressPage />} />
+                  {/* Authentication Routes */}
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/signin" element={<LoginPage />} />
+                  <Route path="/signup" element={<SignupPage />} />
+                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                  <Route path="/verify-email" element={<EmailVerificationPage />} />
+                  <Route path="/auth/callback" element={<AuthCallbackPage />} />
+                  <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-                {/* Caregiver & Doctor Dashboards */}
-                <Route path="/caregiver" element={<CaregiverDashboard />} />
-                <Route path="/patient-profile" element={<PatientProfilePage />} />
-                <Route path="/doctor" element={<DoctorDashboard />} />
+                  {/* Patient Flow */}
+                  <Route path="/patient" element={<PatientDashboard />} />
+                  <Route path="/games" element={<GamesHub />} />
+                  <Route path="/games/memory" element={<MemoryMatchGame />} />
+                  <Route path="/games/sequence" element={<SequenceRecallGame />} />
+                  <Route path="/games/pattern" element={<PatternFinderGame />} />
+                  <Route path="/games/object" element={<PictureRecognitionGame />} />
+                  <Route path="/games/recognition" element={<PictureRecognitionGame />} />
+                  <Route path="/games/routine" element={<RoutineRecallGame />} />
+                  <Route path="/games/emotion" element={<EmotionRecognitionGame />} />
+                  <Route path="/games/words" element={<WordConnectGame />} />
+                  <Route path="/games/market" element={<MarketMemoryGame />} />
+                  <Route path="/games/faces" element={<NameFaceRecallGame />} />
+                  
+                  {/* Memory Vault & Companion */}
+                  <Route path="/memory" element={<MemoriesPage />} />
+                  <Route path="/memories" element={<MemoriesPage />} />
+                  <Route path="/memory-companion" element={<MemoryCompanionPage />} />
+                  <Route path="/reminders" element={<RemindersPage />} />
+                  <Route path="/progress" element={<ProgressPage />} />
 
-                {/* Settings */}
-                <Route path="/settings" element={<SettingsPage />} />
+                  {/* Caregiver & Doctor Dashboards */}
+                  <Route path="/caregiver" element={<CaregiverDashboard />} />
+                  <Route path="/patient-profile" element={<PatientProfilePage />} />
+                  <Route path="/doctor" element={<DoctorDashboard />} />
 
-                {/* Fallback */}
-                <Route path="*" element={<LandingPage />} />
-              </Routes>
-            </main>
+                  {/* Settings & Accessibility */}
+                  <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/accessibility" element={<SettingsPage />} />
 
-            <Footer />
-          </div>
-        </Router>
+                  {/* Fallback */}
+                  <Route path="*" element={<LandingPage />} />
+                </Routes>
+              </main>
+
+              <Footer />
+            </div>
+          </Router>
+        </AuthProvider>
       </RoleProvider>
     </AccessibilityProvider>
   );
