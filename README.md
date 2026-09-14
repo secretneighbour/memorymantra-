@@ -8,9 +8,15 @@ Built with a high-contrast industrial aesthetic inspired by Nothing OS and Diete
 
 ## 📋 Table of Contents
 
-1. [Quick Start & Setup](#-quick-start--setup)
-2. [Environment Variables & API Keys](#-environment-variables--api-keys)
-3. [Project Architecture & Modules](#-project-architecture--modules)
+1. [🪟 Complete Guide: How to Run on a Windows Laptop](#-complete-guide-how-to-run-on-a-windows-laptop)
+   - [Method 1: Run the Pre-Built Windows App (Fastest / No Coding Required)](#method-1-run-the-pre-built-windows-app-fastest--no-coding-required)
+   - [Method 2: Run via Web Browser on Windows](#method-2-run-via-web-browser-on-windows)
+   - [Method 3: Run as Native Windows Desktop App from Source (Electron Dev Mode)](#method-3-run-as-native-windows-desktop-app-from-source-electron-dev-mode)
+   - [Method 4: Build Your Own Windows `.exe` Installer](#method-4-build-your-own-windows-exe-installer)
+   - [Windows Troubleshooting & Tips](#-windows-troubleshooting--tips)
+2. [Quick Start & Setup](#-quick-start--setup)
+3. [Environment Variables & API Keys](#-environment-variables--api-keys)
+4. [Project Architecture & Modules](#-project-architecture--modules)
    - [1. Authentication & Security Engine](#1-authentication--security-engine)
    - [2. Interactive Animated Cat System](#2-interactive-animated-cat-system)
    - [3. Patient Dashboard & Care Circle](#3-patient-dashboard--care-circle)
@@ -19,9 +25,142 @@ Built with a high-contrast industrial aesthetic inspired by Nothing OS and Diete
    - [6. Caregiver Management Portal](#6-caregiver-management-portal)
    - [7. Doctor & Clinical Analytics Portal](#7-doctor--clinical-analytics-portal)
    - [8. Accessibility & TTS Engine](#8-accessibility--tts-engine)
-4. [Folder Structure](#-folder-structure)
-5. [Available Scripts](#-available-scripts)
-6. [Tech Stack](#-tech-stack)
+5. [Folder Structure](#-folder-structure)
+6. [Desktop Application Details](#-windows-desktop-application-smriti-care)
+7. [Available Scripts](#-available-scripts)
+8. [Tech Stack](#-tech-stack)
+
+---
+
+## 🪟 Complete Guide: How to Run on a Windows Laptop
+
+Whether you want to install and run the pre-built desktop application or run the source code using PowerShell, Command Prompt, or VS Code, follow the step-by-step instructions below.
+
+---
+
+### Method 1: Run the Pre-Built Windows App (Fastest / No Coding Required)
+
+If you already have the `release/` folder or downloaded the build artifacts:
+
+#### Option A: Run the Standalone Unpacked App
+1. Open the project folder on your Windows laptop.
+2. Navigate into the `release\win-unpacked\` directory:
+   ```text
+   release\win-unpacked\
+   ```
+3. Locate **`Smriti Care.exe`**.
+4. **Double-click `Smriti Care.exe`** to launch the native desktop application immediately.
+   *(Optional: Right-click `Smriti Care.exe` $\rightarrow$ **Show more options** $\rightarrow$ **Send to** $\rightarrow$ **Desktop (create shortcut)** for quick future access).*
+
+#### Option B: Install with the Setup Installer
+1. Navigate into the `release\` directory.
+2. Double-click **`Smriti-Care-Setup.exe`**.
+3. Follow the on-screen installer prompts.
+4. Once installed, search for **"Smriti Care"** in the Windows Start Menu or double-click the shortcut on your desktop.
+
+> 💡 **Note on Windows SmartScreen**: If Windows Defender shows *"Windows protected your PC"*, click **"More info"** $\rightarrow$ **"Run anyway"** (this occurs because the local build is self-packaged and not signed with a commercial Microsoft code signing certificate).
+
+---
+
+### Method 2: Run via Web Browser on Windows
+
+To run the application inside Google Chrome, Microsoft Edge, or Firefox:
+
+#### Step 1: Install Node.js on your Windows Laptop
+1. Download Node.js (Version **18.x** or **20+ LTS**) from [nodejs.org](https://nodejs.org/).
+2. Run the `.msi` installer and click **Next** through all prompts (make sure the "Add to PATH" option is checked).
+3. To verify installation, open **PowerShell** or **Command Prompt** (Press `Win + R`, type `powershell`, and hit Enter) and run:
+   ```powershell
+   node -v
+   npm -v
+   ```
+
+#### Step 2: Open the Project in PowerShell or Command Prompt
+1. Open PowerShell, Windows Terminal, or Command Prompt.
+2. Navigate to your project folder:
+   ```powershell
+   cd C:\path\to\neuro-ner
+   ```
+
+#### Step 3: Install Dependencies
+Run the following command in PowerShell:
+```powershell
+npm install
+```
+
+#### Step 4: Start the Local Development Server
+```powershell
+npm run dev
+```
+
+#### Step 5: Open in Your Browser
+Once the terminal displays `Ready in ... ms`, open your web browser and navigate to:
+```text
+http://localhost:3000
+```
+- Click any **1-Click Demo Account** on the login page (Patient, Caregiver, or Doctor) to explore without needing any backend configuration!
+
+---
+
+### Method 3: Run as Native Windows Desktop App from Source (Electron Dev Mode)
+
+To run the application inside a dedicated, borderless Windows native window with live hot-reloading:
+
+1. Open **PowerShell** or **Command Prompt** in the project directory:
+   ```powershell
+   cd C:\path\to\neuro-ner
+   ```
+2. Run:
+   ```powershell
+   npm run electron:dev
+   ```
+3. What happens automatically:
+   - Compiles Electron's `main.ts` and `preload.ts` into `dist-electron/`.
+   - Starts Vite development server in the background on port `3000`.
+   - Launches a dedicated `1440x900` native Windows desktop window titled **Smriti Care**.
+   - Changes you make to code in `src/` will hot-reload instantly inside the desktop window!
+
+---
+
+### Method 4: Build Your Own Windows `.exe` Installer
+
+To compile and package the entire app into a redistributable Windows setup installer (`.exe`) and standalone zip:
+
+1. Open PowerShell or Command Prompt in the project directory.
+2. Run:
+   ```powershell
+   npm run electron:build
+   ```
+3. When the build finishes, your freshly built Windows binaries will be located in the `release/` folder:
+   - **`release\Smriti-Care-Setup.exe`**: Ready-to-install Windows installer.
+   - **`release\Smriti-Care-Setup.zip`**: Portable zip archive you can extract on any Windows PC.
+   - **`release\win-unpacked\Smriti Care.exe`**: Direct portable executable folder.
+
+---
+
+### 🔧 Windows Troubleshooting & Tips
+
+- **PowerShell Execution Policy Error (`ps1 cannot be loaded`)**:
+  If PowerShell blocks running `npm` scripts with a security message:
+  1. Open PowerShell as Administrator.
+  2. Run:
+     ```powershell
+     Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+     ```
+  3. Re-run your `npm` command.
+- **Port 3000 Already in Use**:
+  If port 3000 is occupied by another application, kill the process on Windows via PowerShell:
+  ```powershell
+  Stop-Process -Id (Get-NetTCPConnection -LocalPort 3000).OwningProcess -Force
+  ```
+- **Where are local memories and user data saved on Windows?**:
+  In desktop mode, photos and user data are stored locally in the standard Windows user data directory:
+  ```text
+  %APPDATA%\Smriti Care\smriti-memories\
+  ```
+  (Usually located at `C:\Users\<YourUsername>\AppData\Roaming\Smriti Care`).
+
+---
 
 ---
 
