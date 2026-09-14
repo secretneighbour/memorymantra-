@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AccessibilityProvider } from './context/AccessibilityContext';
 import { RoleProvider } from './context/RoleContext';
 import { AuthProvider } from './context/AuthContext';
@@ -51,6 +51,15 @@ const ScrollToTop: React.FC = () => {
 
   return null;
 };
+
+// Check if running in Electron environment or file protocol
+const isElectron = typeof window !== 'undefined' && (
+  window.location.protocol === 'file:' ||
+  Boolean((window as any).electronAPI) ||
+  (typeof navigator !== 'undefined' && navigator.userAgent.toLowerCase().includes('electron'))
+);
+
+const Router = isElectron ? HashRouter : BrowserRouter;
 
 export const App: React.FC = () => {
   return (

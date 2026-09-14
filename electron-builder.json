@@ -1,0 +1,44 @@
+{
+  "appId": "com.smriticare.app",
+  "productName": "Smriti Care",
+  "copyright": "Copyright © 2026 Smriti Care / NEURO NER",
+  "directories": {
+    "output": "release",
+    "buildResources": "build"
+  },
+  "toolsets": {
+    "nsis": "1.2.1"
+  },
+  "files": [
+    "dist/**/*",
+    "dist-electron/**/*",
+    "public/**/*",
+    "package.json"
+  ],
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      },
+      {
+        "target": "zip",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "build/icon.ico",
+    "signAndEditExecutable": false,
+    "signExecutable": false,
+    "artifactName": "Smriti-Care-Setup.${ext}"
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "packElevateHelper": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "Smriti Care",
+    "uninstallDisplayName": "Smriti Care"
+  }
+}

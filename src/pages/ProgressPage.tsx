@@ -190,11 +190,18 @@ export const ProgressPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 4-Week Trend Area Chart */}
+      {/* 4-Week Trend Area Chart: Cognitive Activity Trend */}
       <div className="frost-card rounded-3xl p-6 sm:p-8">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-bold text-lg text-ner-black">Longitudinal Engagement Trend</h3>
-          <span className="text-xs font-mono text-ner-black/50">4 Weeks</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+          <div>
+            <h3 className="font-bold text-lg text-ner-black">Cognitive Activity Trend</h3>
+            <p className="text-xs text-ner-black/60 mt-0.5">
+              Observed trends in cognitive activity and daily engagement performance.
+            </p>
+          </div>
+          <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-ner-sage/10 text-ner-sage font-bold self-start sm:self-auto">
+            Engagement &amp; Activity Performance
+          </span>
         </div>
 
         <div className="h-48 w-full">

@@ -1,12 +1,20 @@
 {
   "name": "neuro-ner",
+  "productName": "Smriti Care",
+  "description": "Smriti Care - Offline-First Cognitive & Dementia Care Companion",
+  "author": "Smriti Care Team",
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "main": "dist-electron/main.cjs",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "lint": "tsc --noEmit",
+    "preview": "vite preview",
+    "build:electron": "esbuild electron/main.ts --bundle --platform=node --target=node18 --packages=external --outfile=dist-electron/main.cjs && esbuild electron/preload.ts --bundle --platform=node --target=node18 --packages=external --outfile=dist-electron/preload.cjs",
+    "electron:dev": "npm run build:electron && concurrently -k -s first \"cross-env NODE_ENV=development vite\" \"wait-on http://localhost:3000 && cross-env NODE_ENV=development electron . --dev\"",
+    "electron:build": "npm run build && npm run build:electron && electron-builder --win --x64 --config electron-builder.json"
   },
   "dependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.63.2",
@@ -27,9 +35,15 @@
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
+    "concurrently": "^10.0.5",
+    "cross-env": "^10.1.0",
+    "electron": "^44.3.0",
+    "electron-builder": "^26.15.3",
+    "esbuild": "^0.28.2",
     "postcss": "^8.5.2",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.3",
-    "vite": "^6.1.0"
+    "vite": "^6.1.0",
+    "wait-on": "^9.1.0"
   }
 }

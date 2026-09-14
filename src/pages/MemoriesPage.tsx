@@ -16,7 +16,8 @@ import {
   Pin,
   Calendar,
   MessageCircle,
-  X
+  X,
+  Upload
 } from 'lucide-react';
 
 export const MemoriesPage: React.FC = () => {
@@ -38,6 +39,8 @@ export const MemoriesPage: React.FC = () => {
   const [newTitle, setNewTitle] = useState('');
   const [newPersonPlace, setNewPersonPlace] = useState('');
   const [newStory, setNewStory] = useState('');
+  const [newImageUrl, setNewImageUrl] = useState('');
+  const [isSelectingImage, setIsSelectingImage] = useState(false);
   const [newCategory, setNewCategory] = useState<MemoryItem['category']>('family');
 
   const filteredMemories = memories.filter(m => {
@@ -57,6 +60,49 @@ export const MemoriesPage: React.FC = () => {
     setActiveTab('therapy');
   };
 
+  const handleSelectImage = async () => {
+    // If running in Electron desktop app, use native file picker dialog
+    if (window.electronAPI?.selectImageFile) {
+      try {
+        setIsSelectingImage(true);
+        const res = await window.electronAPI.selectImageFile();
+        if (!res.canceled && res.dataBase64) {
+          // Save to native safe media directory
+          const saveRes = await window.electronAPI.saveMemoryMedia({
+            fileName: res.fileName || 'memory.jpg',
+            dataBase64: res.dataBase64,
+          });
+          if (saveRes.success && saveRes.filePath) {
+            setNewImageUrl(res.dataBase64);
+          } else {
+            setNewImageUrl(res.dataBase64);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to open native dialog', err);
+      } finally {
+        setIsSelectingImage(false);
+      }
+    } else {
+      // Fallback for standard web browser
+      const input = document.getElementById('web-memory-file-input') as HTMLInputElement;
+      if (input) input.click();
+    }
+  };
+
+  const handleWebFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          setNewImageUrl(reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleCreateMemory = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
@@ -66,6 +112,7 @@ export const MemoriesPage: React.FC = () => {
       personOrPlace: newPersonPlace || 'Guwahati Home',
       category: newCategory,
       storyText: newStory || 'A special moment with family.',
+      imageUrl: newImageUrl || undefined,
       pinned: false,
       dateOrYear: 'Recently added'
     });
@@ -73,6 +120,7 @@ export const MemoriesPage: React.FC = () => {
     setNewTitle('');
     setNewPersonPlace('');
     setNewStory('');
+    setNewImageUrl('');
     setIsNewMemoryModalOpen(false);
   };
 
@@ -482,6 +530,48 @@ export const MemoriesPage: React.FC = () => {
                   <option value="story">Life Story</option>
                   <option value="song">Cherished Song</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
+                  Memory Photo (Optional)
+                </label>
+                <input
+                  type="file"
+                  id="web-memory-file-input"
+                  accept="image/*"
+                  onChange={handleWebFileChange}
+                  className="hidden"
+                />
+                {newImageUrl ? (
+                  <div className="relative rounded-2xl overflow-hidden border-2 border-ner-border bg-ner-offwhite group">
+                    <img
+                      src={newImageUrl}
+                      alt="Memory preview"
+                      className="w-full h-40 object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setNewImageUrl('')}
+                      className="absolute top-2 right-2 p-1.5 rounded-full bg-ner-black/70 text-white hover:bg-ner-black transition-colors"
+                      title="Remove image"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleSelectImage}
+                    disabled={isSelectingImage}
+                    className="w-full h-20 rounded-xl border-2 border-dashed border-ner-border hover:border-ner-black/50 bg-ner-offwhite/50 flex flex-col items-center justify-center gap-1.5 text-ner-black/70 hover:text-ner-black transition-all"
+                  >
+                    <Upload className="w-5 h-5 text-ner-terracotta" />
+                    <span className="text-xs font-medium">
+                      {isSelectingImage ? 'Opening file chooser...' : 'Click to select photo from device'}
+                    </span>
+                  </button>
+                )}
               </div>
 
               <div>

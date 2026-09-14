@@ -1,0 +1,19 @@
+# Build and distribution outputs
+dist/
+dist-electron/
+release/
+
+# Dependencies
+node_modules/
+
+# Local cache & logs
+.cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+builder-debug.yml
+
+# Environment variables
+.env
+.env.local

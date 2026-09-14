@@ -240,12 +240,66 @@ neuro-ner/
 
 ---
 
+## 🖥️ Windows Desktop Application (Smriti Care)
+
+Smriti Care is fully configured and packaged as a native Windows desktop application (supporting **Windows 10** and **Windows 11 x64**) using Electron and Electron Builder.
+
+### 1. Prerequisites
+- **Operating System:** Windows 10/11, macOS, or Linux (cross-compiles Windows NSIS installers)
+- **Node.js:** `v18.0.0` or higher (Node 20+ recommended)
+- **npm:** `v9.0.0` or higher
+
+### 2. Run Desktop App in Development Mode
+Starts Vite and launches the Electron desktop window with hot reload enabled:
+```bash
+npm run electron:dev
+```
+- Automatically waits for Vite on `http://localhost:3000`.
+- Launches a native `1440x900` window titled **Smriti Care** with the app icon.
+- Developer tools detach automatically for real-time debugging.
+
+### 3. Build Windows Desktop App & Installer (NSIS)
+Compiles React/Vite, bundles the Electron main & preload scripts, and produces the Windows executable and installer:
+```bash
+npm run electron:build
+```
+
+#### Output Artifacts:
+```text
+release/
+├── Smriti-Care-Setup.exe          <-- Standard Windows x64 NSIS Installer
+├── neuro-ner-1.0.0-x64.nsis.7z   <-- Compressed application archive
+└── win-unpacked/                 <-- Standalone unpacked Windows executable (Smriti Care.exe)
+```
+- Users can double-click `release/Smriti-Care-Setup.exe` on Windows 10/11 to install Smriti Care with Start Menu and Desktop shortcuts.
+- Or distribute/run the standalone folder `release/win-unpacked/Smriti Care.exe` directly without installation.
+
+### 4. Desktop Architecture & Security
+- **Context Isolation:** `contextIsolation: true` is strictly enforced.
+- **Node Integration Disabled:** `nodeIntegration: false` in renderer process prevents web scripts from accessing operating system internals.
+- **Secure Preload Bridge (`electron/preload.ts`):** Exposes only safe, specific APIs to `window.electronAPI`:
+  - Native window controls (`minimize`, `maximize`, `close`, `isMaximized`).
+  - Persistent Memory Vault storage: Saves and loads photos to the secure OS user data folder (`app.getPath('userData')/smriti-memories`).
+  - Native Windows file selection dialog (`dialog.showOpenDialog`) for memory photos.
+  - Safe external link handler: External links open in the user's default web browser via `shell.openExternal`, preventing in-app navigation escapes.
+
+### 5. Offline Mode & Hackathon Demos
+- **Zero-Config Demos:** The application does **not** require Supabase credentials or Gemini API keys to run.
+- **Local Persistence:** Personal Memory Vault, reminders, check-in logs, and game scores persist locally via `localStorage` and Electron's `userData` store.
+- **AI Memory Companion:** Includes offline-first conversational responses with simulated warm reminiscing and emotional support.
+- **Cognitive Activity Graph:** Responsive Recharts visualization displays longitudinal engagement and activity performance without external servers.
+
+---
+
 ## 📜 Available Scripts
 
 | Command | Description |
 | :--- | :--- |
 | `npm run dev` | Starts the Vite local development server on `http://localhost:3000` |
+| `npm run electron:dev` | Compiles electron scripts, boots Vite, and launches the desktop app |
 | `npm run build` | Compiles TypeScript types and bundles the production app into `/dist` |
+| `npm run build:electron` | Bundles `electron/main.ts` and `electron/preload.ts` via esbuild |
+| `npm run electron:build` | Compiles frontend and generates Windows desktop app & NSIS installer |
 | `npm run preview` | Spins up a local web server to preview the production `/dist` build |
 
 ---
