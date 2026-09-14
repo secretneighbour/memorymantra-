@@ -8,27 +8,51 @@ Built with a high-contrast industrial aesthetic inspired by Nothing OS and Diete
 
 ## 📋 Table of Contents
 
-1. [🪟 Complete Guide: How to Run on a Windows Laptop](#-complete-guide-how-to-run-on-a-windows-laptop)
+1. [💻 Programming Languages & Technologies Used](#-programming-languages--technologies-used)
+2. [🪟 Complete Guide: How to Run on a Windows Laptop](#-complete-guide-how-to-run-on-a-windows-laptop)
    - [Method 1: Run the Pre-Built Windows App (Fastest / No Coding Required)](#method-1-run-the-pre-built-windows-app-fastest--no-coding-required)
    - [Method 2: Run via Web Browser on Windows](#method-2-run-via-web-browser-on-windows)
    - [Method 3: Run as Native Windows Desktop App from Source (Electron Dev Mode)](#method-3-run-as-native-windows-desktop-app-from-source-electron-dev-mode)
    - [Method 4: Build Your Own Windows `.exe` Installer](#method-4-build-your-own-windows-exe-installer)
    - [Windows Troubleshooting & Tips](#-windows-troubleshooting--tips)
-2. [Quick Start & Setup](#-quick-start--setup)
-3. [Environment Variables & API Keys](#-environment-variables--api-keys)
-4. [Project Architecture & Modules](#-project-architecture--modules)
-   - [1. Authentication & Security Engine](#1-authentication--security-engine)
-   - [2. Interactive Animated Cat System](#2-interactive-animated-cat-system)
-   - [3. Patient Dashboard & Care Circle](#3-patient-dashboard--care-circle)
-   - [4. Cognitive Training Games Hub (9 Clinical Games)](#4-cognitive-training-games-hub)
-   - [5. Memory Vault & Reminiscence Therapy](#5-memory-vault--reminiscence-therapy)
-   - [6. Caregiver Management Portal](#6-caregiver-management-portal)
-   - [7. Doctor & Clinical Analytics Portal](#7-doctor--clinical-analytics-portal)
-   - [8. Accessibility & TTS Engine](#8-accessibility--tts-engine)
-5. [Folder Structure](#-folder-structure)
-6. [Desktop Application Details](#-windows-desktop-application-smriti-care)
-7. [Available Scripts](#-available-scripts)
-8. [Tech Stack](#-tech-stack)
+3. [Quick Start & Setup](#-quick-start--setup)
+4. [Environment Variables & API Keys](#-environment-variables--api-keys)
+5. [🧩 Comprehensive Modules Catalog](#-comprehensive-modules-catalog)
+   - [1. Core Pages & Dashboards](#1-core-pages--dashboards)
+   - [2. Daily Mood & Health Check-In Module](#2-daily-mood--health-check-in-module)
+   - [3. Interactive Articulated Living Cat Engine](#3-interactive-articulated-living-cat-engine)
+   - [4. Cognitive Training Games Hub (9 Clinical Games)](#4-cognitive-training-games-hub-9-clinical-games)
+   - [5. Memory Vault & Reminiscence Therapy Module](#5-memory-vault--reminiscence-therapy-module)
+   - [6. Authentication & User Security System](#6-authentication--user-security-system)
+   - [7. Caregiver Management & Telemetry Portal](#7-caregiver-management--telemetry-portal)
+   - [8. Doctor & Clinical Analytics Portal](#8-doctor--clinical-analytics-portal)
+   - [9. Accessibility & Speech Synthesis Engine](#9-accessibility--speech-synthesis-engine)
+   - [10. State Management & Context Providers](#10-state-management--context-providers)
+   - [11. Desktop Native Integration (Electron Core)](#11-desktop-native-integration-electron-core)
+   - [12. Backend, Database & Service Layer](#12-backend-database--service-layer)
+6. [Folder Structure](#-folder-structure)
+7. [Desktop Application Details](#-windows-desktop-application-smriti-care)
+8. [Available Scripts](#-available-scripts)
+9. [Tech Stack](#-tech-stack)
+
+---
+
+## 💻 Programming Languages & Technologies Used
+
+SmritiCare is built using a modern full-stack architecture optimized for speed, accessibility, cross-platform compatibility, and strict type safety:
+
+| Language / Technology | Files / Extensions | Role in Project |
+| :--- | :--- | :--- |
+| **TypeScript** | `.ts`, `.tsx` | **Primary Language (~85%)**: All frontend UI components, React pages, 9 cognitive game engines, React Context state managers, Electron main & preload scripts, types, and utility algorithms. |
+| **JavaScript (ESM / Node.js)** | `.js`, `.cjs` | **Tooling & Build Scripts**: PostCSS config, Tailwind config, esbuild bundling scripts, and compiled Electron runtime scripts. |
+| **HTML5** | `.html` | **Application Entry Point & Semantics**: Document structure, viewport configuration for accessibility, high-DPI scaling, and canvas rendering targets. |
+| **CSS3 & Tailwind CSS** | `.css`, Tailwind utilities | **Design System & Visual Styling**: Industrial high-contrast design tokens (Nothing OS style), fluid typography, custom keyframe animations, dyslexia font support, and WCAG AAA compliance. |
+| **SQL (PostgreSQL)** | `.sql` | **Database & Security**: Relational tables for daily check-ins, game telemetry, user profiles, medication reminders, memory vault metadata, and Row-Level Security (RLS) policies in Supabase. |
+| **JSON** | `.json` | **Configuration & Packaging**: `package.json` dependencies, `tsconfig.json` compiler options, `electron-builder.json` Windows packaging definitions, and `metadata.json`. |
+| **NSIS Scripting** | Embedded NSIS | **Windows Installer Automation**: Embedded NSIS routines for building the Windows setup installer (`Smriti-Care-Setup.exe`), Start Menu shortcuts, and uninstaller logic. |
+| **Web Speech API** | Browser Native API | **Text-to-Speech Engine**: Multi-language, rate-adjusted speech synthesis for elderly users with impaired vision or reading difficulties. |
+
+---
 
 ---
 
@@ -240,95 +264,170 @@ GEMINI_API_KEY=your_gemini_api_key_here
 
 ---
 
-## 🧩 Project Architecture & Modules
+## 🧩 Comprehensive Modules Catalog
 
-### 1. Authentication & Security Engine
-* **Location:** `/src/pages/LoginPage.tsx`, `/src/pages/SignupPage.tsx`, `/src/pages/ForgotPasswordPage.tsx`, `/src/pages/EmailVerificationPage.tsx`, `/src/context/AuthContext.tsx`, `/src/services/supabaseAuthService.ts`
-* **Features:**
-  - Real email/password registration with email verification workflow.
-  - Quick 1-Click Demo Accounts for Patient, Caregiver, and Doctor testing.
-  - Password recovery with tokenized reset links.
-  - Role-based redirect routing and session state synchronization.
+SmritiCare is architected into 12 core functional module systems across presentation, game mechanics, clinical telemetry, accessibility, and native desktop integration:
 
 ---
 
-### 2. Interactive Animated Cat System
+### 1. Core Pages & Dashboards
+*All top-level routed views in `/src/pages/`:*
+
+| Module / Page Name | File Path | Functional Purpose & Key Features |
+| :--- | :--- | :--- |
+| **Patient Dashboard** | `/src/pages/PatientDashboard.tsx` | Main command center for patients with dementia or MCI. High-contrast tactile cards, daily routine schedule, 1-tap game launcher, emergency SOS alert, and daily mood/health status card. |
+| **Caregiver Dashboard** | `/src/pages/CaregiverDashboard.tsx` | Telemetry portal for family and formal caregivers. Tracks patient routine adherence, sleep quality, game performance, medication logs, and monitors caregiver burden risk scores. |
+| **Doctor / Clinician Portal** | `/src/pages/DoctorDashboard.tsx` | Specialized clinical dashboard displaying longitudinal cognitive trajectories, estimated MMSE/MoCA scores via Recharts, reaction time curves, and exportable medical summary evaluations. |
+| **Cognitive Games Hub** | `/src/pages/GamesHub.tsx` | Game catalog organized across 5 clinical cognitive domains (Memory, Attention, Executive Function, Language, Visual-Spatial). Displays difficulty filters and personal best scores. |
+| **Memory Vault** | `/src/pages/MemoriesPage.tsx` | Interactive photo album and reminiscence vault with voice note attachments, categorized timeline tags, loved ones association, and audio playback. |
+| **AI Memory Companion** | `/src/pages/MemoryCompanionPage.tsx` | Conversational reminiscence companion that generates warm, comforting conversational prompts based on stored family photos and patient memories. |
+| **Reminders & Routine Page** | `/src/pages/RemindersPage.tsx` | Daily schedule management interface for morning, afternoon, and evening medication, hydration goals, and doctor appointments with audio alarms. |
+| **Cognitive Progress Page** | `/src/pages/ProgressPage.tsx` | Patient and family progress overview with weekly activity heatmaps, cognitive domain radar charts, and milestone achievement badges. |
+| **Patient Profile Page** | `/src/pages/PatientProfilePage.tsx` | Medical history, emergency contacts, primary clinician contact, diagnosis stage, allergies, and caregiver circle management. |
+| **Landing & Orientation Page** | `/src/pages/LandingPage.tsx` | Public introduction page highlighting the 4-tier care ecosystem, clinical game methodology, accessibility features, and quick demo login access. |
+| **Authentication & Auth Pages** | `/src/pages/LoginPage.tsx`<br>`/src/pages/SignupPage.tsx`<br>`/src/pages/ForgotPasswordPage.tsx`<br>`/src/pages/ResetPasswordPage.tsx`<br>`/src/pages/EmailVerificationPage.tsx`<br>`/src/pages/AuthCallbackPage.tsx` | Complete authentication suite supporting email/password registration, password recovery, magic link verification, role redirection, and 1-Click Demo Accounts. |
+| **Role Selection Portal** | `/src/pages/RoleSelectionPage.tsx` | Interactive switcher allowing instant role swapping between Patient, Caregiver, and Doctor for demonstration and multi-user environments. |
+| **Accessibility & Settings** | `/src/pages/SettingsPage.tsx` | Global accessibility preferences: Dyslexia-friendly font toggle, High Contrast theme, text scaling (Normal/Large/XL), and TTS speech rate/voice controls. |
+
+---
+
+### 2. Daily Mood & Health Check-In Module
+* **Location:** `/src/components/DailyMoodHealthCheckin.tsx` & `/src/utils/wellbeingUtils.ts`
+* **Purpose:** A structured, elderly-friendly daily check-in that captures psychological state, physical comfort, and routine telemetry in under 30 seconds.
+* **Key Features:**
+  - **Tactile Mood Selector:** 6 expressive visual states (*Great/Energized, Good/Peaceful, Okay/Steady, Tired/Sleepy, Worried/Tense, Unwell/Discomfort*).
+  - **Energy Level Gauge:** 5-step battery level selector (1 to 5).
+  - **Physical Pain & Comfort Rating:** One-tap selection for *No Pain (Comfortable)*, *Mild Ache*, or *Moderate Pain*.
+  - **Sleep Quality Evaluation:** Fast evaluation of last night's rest (*Restful, Okay, Restless*).
+  - **Daily Habits Check-Off:** Quick toggles for hydration (water), meals taken, morning medication, and gentle stretches/walks.
+  - **Symptom Tags & Notes:** One-tap symptom tags (*Headache, Joint Pain, Dizziness, Fatigue, Peaceful Mind, Refreshed*) and free-form note field.
+  - **Persistence & Telemetry Sync:** Saves locally to `localStorage` and optionally synchronizes to Supabase `daily_health_checkins` table and `RoleContext`.
+  - **Historical Review Modal:** Allows patients and caregivers to browse historical check-in trends and notes over time.
+
+---
+
+### 3. Interactive Articulated Living Cat Engine
 * **Location:** `/src/components/InteractiveCat.tsx`
-* **Description:** A physical, living quadruped creature living on the login and authentication screen. It is not an AI chatbot or UI assistant—it acts like a real cat with autonomous behaviors and tactile reactions.
-* **Key Sub-systems:**
-  - **Autonomous Behavior Engine:** Cycles unpredictably through states (`sleeping`, `waking`, `stretching`, `sitting`, `looking_around`, `scratching`, `yawning`, `idle`, `walking`) with randomized dwell intervals.
-  - **Dynamic Gait Physics:** Quadruped stride generator with individual limb phase offsets (`frontLeft`, `frontRight`, `hindLeft`, `hindRight`), body pitch tilt, and vertical breathing/walking bob.
-  - **Tactile User Gestures:**
-    - *Dragging:* Interactive pointer dragging across the ledge with a physical settle-bounce on release.
-    - *Petting:* Continuous stroke tracking triggering purr vibration and squinting eyes.
-    - *Clicks & Startle:* Fast cursor velocity or repeated clicks trigger a startle flinch, turn, escape trot, and look-back sequence.
-  - **Password Privacy Integration:**
-    - Automatically lifts paws directly over its eyes (`hiding_eyes`) when the password field is focused or typed.
-    - Peeks out with wide eyes (`peeking`) when password visibility is toggled on.
-    - Celebrates with confetti on successful authentication.
-  - **5-Tier State Priority Hierarchy:** `AUTH_FEEDBACK` (5) > `DIRECT_USER` (4) > `REACTIVE` (3) > `ATTENTION` (2) > `AUTONOMOUS` (1).
-
----
-
-### 3. Patient Dashboard & Care Circle
-* **Location:** `/src/pages/PatientDashboard.tsx`
-* **Features:**
-  - Large-button, low-cognitive-load interface designed specifically for elderly users.
-  - Today's routine timeline with audio-assisted medication and hydration reminders.
-  - Emergency SOS contact trigger.
-  - Daily mood tracker and quick cognitive game launchpad.
+* **Purpose:** A living quadruped creature living on the login ledge to reduce user anxiety and provide joyful, non-intrusive tactile interaction.
+* **Sub-systems & Capabilities:**
+  - **Autonomous Behavior Engine:** Spontaneously cycles through states (`sleeping`, `waking`, `stretching`, `sitting`, `looking_around`, `scratching`, `yawning`, `idle`, `walking`) with randomized dwell intervals.
+  - **Dynamic Quadruped Gait Physics:** 4-limb kinematic stride generator with individual limb phase offsets (`frontLeft`, `frontRight`, `hindLeft`, `hindRight`), body pitch tilt, and vertical breathing/walking bob.
+  - **Interactive User Gestures:**
+    - *Pointer Dragging:* Pick up and drag the cat across the ledge with a natural gravity-based drop and settle bounce.
+    - *Stroke & Petting:* Continuous cursor strokes trigger purring vibration and squinting eyes.
+    - *Startle & Escape:* High-speed cursor movement triggers a flinch, 180° turn, escape trot, and look-back sequence.
+  - **Authentication Security Integration:**
+    - Paw Coverage (`hiding_eyes`): Covers eyes with paws whenever the user focuses on or types into the password input field.
+    - Sneak Peek (`peeking`): Peeks between paws when the "Show Password" eye toggle is activated.
+    - Confetti Celebration: Leaps up with celebratory particle bursts when login is successful.
+  - **5-Tier State Priority Hierarchy:** `AUTH_FEEDBACK` (Level 5) > `DIRECT_USER` (Level 4) > `REACTIVE` (Level 3) > `ATTENTION` (Level 2) > `AUTONOMOUS` (Level 1).
 
 ---
 
 ### 4. Cognitive Training Games Hub (9 Clinical Games)
-* **Location:** `/src/pages/GamesHub.tsx`, `/src/games/*`
+* **Location:** `/src/games/*` & `/src/pages/GamesHub.tsx`
 * **Clinically Designed Neuro-Stimulation Modules:**
-  1. **Memory Match (`MemoryMatchGame.tsx`)**: Card-pair recall exercising visual and spatial working memory.
-  2. **Sequence Recall (`SequenceRecallGame.tsx`)**: Simon-style audio-visual order recall.
-  3. **Pattern Finder (`PatternFinderGame.tsx`)**: Abstract pattern completion testing inductive reasoning.
-  4. **Picture Recognition (`PictureRecognitionGame.tsx`)**: Everyday object identification and naming.
-  5. **Routine Recall (`RoutineRecallGame.tsx`)**: Daily task sequence arrangement (brushing teeth, taking pills, breakfast).
-  6. **Emotion Recognition (`EmotionRecognitionGame.tsx`)**: Facial emotion identification to maintain social-emotional acuity.
-  7. **Word Connect (`WordConnectGame.tsx`)**: Semantic category grouping and vocabulary recall.
-  8. **Market Memory (`MarketMemoryGame.tsx`)**: Functional shopping list recall simulator.
-  9. **Name & Face Recall (`NameFaceRecallGame.tsx`)**: Family and caregiver facial association to delay prosopagnosia.
+
+| # | Game Module Name | File Location | Targeted Cognitive Domain & Therapeutic Mechanism |
+| :- | :--- | :--- | :--- |
+| 1 | **Memory Match** | `/src/games/MemoryMatchGame.tsx` | **Visual & Spatial Working Memory**: Card-pair matching with everyday items, fruits, and shapes with progressive grid sizes (2x2 up to 4x4). |
+| 2 | **Sequence Recall** | `/src/games/SequenceRecallGame.tsx` | **Short-Term Audio-Visual Memory**: Simon-style sequenced tone and light pattern repetition with tactile feedback. |
+| 3 | **Pattern Finder** | `/src/games/PatternFinderGame.tsx` | **Inductive Reasoning & Fluid Intelligence**: Identifies geometric patterns and predicts the missing element in a sequence. |
+| 4 | **Picture Recognition** | `/src/games/PictureRecognitionGame.tsx` | **Object Naming & Visual Agnosia Mitigation**: Identifies and names common household objects and tools to prevent language decline. |
+| 5 | **Routine Recall** | `/src/games/RoutineRecallGame.tsx` | **Executive Function & Instrumental Activities of Daily Living (IADL)**: Reorders daily sequential tasks (e.g., waking up, brushing teeth, taking medication, eating breakfast). |
+| 6 | **Emotion Recognition** | `/src/games/EmotionRecognitionGame.tsx` | **Socio-Emotional Acuity & Empathy**: Identifies facial emotional expressions (happy, calm, sad, surprised, concerned) to maintain social connection. |
+| 7 | **Word Connect** | `/src/games/WordConnectGame.tsx` | **Semantic Memory & Verbal Fluency**: Groups related vocabulary words by semantic category (e.g., fruits, kitchen utensils, weather, garden tools). |
+| 8 | **Market Memory** | `/src/games/MarketMemoryGame.tsx` | **Functional Everyday Memory Simulator**: Memorizes a shopping grocery list and collects the items in a virtual pantry under cognitive load. |
+| 9 | **Name & Face Recall** | `/src/games/NameFaceRecallGame.tsx` | **Prosopagnosia Mitigation & Facial Recognition**: Associates family members, caregivers, and friends with their correct names and relationship roles. |
 
 ---
 
-### 5. Memory Vault & Reminiscence Therapy
-* **Location:** `/src/pages/MemoriesPage.tsx`, `/src/pages/MemoryCompanionPage.tsx`
+### 5. Memory Vault & Reminiscence Therapy Module
+* **Location:** `/src/pages/MemoriesPage.tsx`, `/src/pages/MemoryCompanionPage.tsx`, `/src/components/MemoryUploadModal.tsx`
 * **Features:**
-  - Digital interactive memory photo albums with tagged loved ones, dates, and locations.
-  - Audio voice notes and reminiscence story playback.
-  - Interactive reminiscence companion encouraging gentle storytelling based on saved family photos.
+  - **Digital Memory Albums:** Structured storage for family photographs, vintage milestones, vacation memories, and life achievements.
+  - **Audio Reminiscence Storytelling:** Voice note recording and playback for each memory item.
+  - **Person & Location Tagging:** Associative metadata linking photos to specific family members (children, grandchildren, spouses) and locations.
+  - **AI Reminiscence Companion:** Conversational partner encouraging gentle reflection on memories with empathetic questions and guided prompts.
+  - **Native Desktop Storage:** When running in Electron, photos are stored directly in the local file system (`%APPDATA%/Smriti Care/smriti-memories`).
 
 ---
 
-### 6. Caregiver Management Portal
+### 6. Authentication & User Security System
+* **Location:** `/src/pages/LoginPage.tsx`, `/src/context/AuthContext.tsx`, `/src/services/supabaseAuthService.ts`
+* **Features:**
+  - **Supabase Auth Client:** Secure JWT session handling, token refresh, and user metadata management.
+  - **Email Verification Workflow:** Automatic confirmation flow with resend verification link triggers.
+  - **1-Click Instant Demo Accounts:** Instant one-click authentication presets for Patient (`patient@smriticare.org`), Caregiver (`caregiver@smriticare.org`), and Doctor (`doctor@smriticare.org`).
+  - **Password Privacy Integration:** Synchronized state events dispatching to the Interactive Cat.
+
+---
+
+### 7. Caregiver Management & Telemetry Portal
 * **Location:** `/src/pages/CaregiverDashboard.tsx`, `/src/pages/PatientProfilePage.tsx`
 * **Features:**
-  - Daily adherence telemetry (medication intake, game completion rates, sleep logs).
-  - Caregiver burden score monitoring and respite support alerts.
-  - Remote medication scheduler and Memory Vault editor.
+  - **Patient Adherence Telemetry:** Live tracking of daily medication intake, hydration status, and cognitive game completion rates.
+  - **Zarit Caregiver Burden Monitoring:** Periodic assessment and proactive rest/respite alerts to prevent caregiver burnout.
+  - **Remote Routine Scheduler:** Add, edit, or adjust patient daily routines, medication dosages, and hydration reminders remotely.
+  - **Direct Clinician Messaging:** Share observational notes and health updates directly with the patient's neurologist or geriatrician.
 
 ---
 
-### 7. Doctor & Clinical Analytics Portal
+### 8. Doctor & Clinical Analytics Portal
 * **Location:** `/src/pages/DoctorDashboard.tsx`
 * **Features:**
-  - Longitudinal cognitive trend charts (MMSE/MoCA estimated trajectories via Recharts).
-  - Reaction time tracking, memory retention curves, and game telemetry analytics.
-  - Exportable clinical summary reports for patient evaluations.
+  - **Longitudinal Trend Curves:** Visualizes MMSE/MoCA trajectory estimates using Recharts over 30-day, 90-day, and 1-year time windows.
+  - **Cognitive Domain Radar Breakdown:** Quantifies performance across Memory, Executive Function, Attention, Language, and Visual-Spatial domains.
+  - **Telemetry Export:** Generates clinical summary evaluations suitable for medical chart integration.
+  - **Medication & Treatment Notes:** Allows prescribing clinicians to log clinical observations and adjust cognitive therapy recommendations.
 
 ---
 
-### 8. Accessibility & TTS Engine
+### 9. Accessibility & Speech Synthesis Engine
 * **Location:** `/src/context/AccessibilityContext.tsx`, `/src/components/TTSButton.tsx`, `/src/pages/SettingsPage.tsx`
 * **Features:**
-  - Integrated Text-to-Speech (TTS) using the Web Speech API with multilingual and speed controls.
-  - Dyslexia-friendly font switcher (OpenDyslexic typography support).
-  - High Contrast Dark/Light mode and Reduced Motion toggle (WCAG 2.1 AAA compliance).
-  - Adjustable text scaling (Normal, Large, Extra Large).
+  - **Web Speech Text-to-Speech (TTS):** 1-tap read-aloud button (`TTSButton.tsx`) for dashboard cards, game instructions, memories, and daily routines.
+  - **Dyslexia Font Mode:** Toggles OpenDyslexic font across the entire interface for improved character distinction.
+  - **Visual Contrast Profiles:** High-contrast light and dark industrial themes meeting WCAG 2.1 AAA accessibility standards.
+  - **Text Scaling Engine:** Dynamically modifies root rem sizing between Normal (100%), Large (115%), and Extra Large (130%).
+  - **Reduced Motion:** Disables decorative animations and transitions for users prone to vestibular discomfort.
+
+---
+
+### 10. State Management & Context Providers
+*All centralized React contexts located in `/src/context/`:*
+
+| Context Name | File Path | Responsibilities & Stored State |
+| :--- | :--- | :--- |
+| **`AuthContext`** | `/src/context/AuthContext.tsx` | Supabase auth user, session state, login/signup/logout actions, password reset dispatcher, and demo user fallback. |
+| **`RoleContext`** | `/src/context/RoleContext.tsx` | Active role (`patient` \| `caregiver` \| `doctor`), active patient profile, medication reminders list, memory vault records, daily check-in history, game scores, and routine check-offs. |
+| **`AccessibilityContext`** | `/src/context/AccessibilityContext.tsx` | High contrast mode, dyslexia font toggle, reduced motion preference, text scale multiplier, speech synthesis rate, voice selection, and translation keys. |
+
+---
+
+### 11. Desktop Native Integration (Electron Core)
+*All native integration files located in `/electron/`:*
+
+| Module Name | File Path | Desktop Capabilities & Security |
+| :--- | :--- | :--- |
+| **Electron Main Process** | `/electron/main.ts` | Initializes native Windows window (1440x900), configures CSP headers, manages window controls (minimize/maximize/close), handles local file URLs, and configures native application menus. |
+| **Electron Preload Bridge** | `/electron/preload.ts` | Context-isolated bridge exposing `window.electronAPI` safely to the renderer (file dialogs, persistent photo storage in `%APPDATA%`, native shell links). |
+| **Desktop Type Declarations** | `/src/types/electron.d.ts` | Full TypeScript definitions for `window.electronAPI` and Electron IPC events. |
+
+---
+
+### 12. Backend, Database & Service Layer
+*Located in `/src/services/`, `/src/lib/`, `/src/utils/`, and `/supabase/`:*
+
+| Module / Layer | File Path | Responsibilities |
+| :--- | :--- | :--- |
+| **Supabase Client Initializer** | `/src/lib/supabaseClient.ts` | Configures Supabase client with graceful offline detection and local demo fallback. |
+| **Auth Service** | `/src/services/supabaseAuthService.ts` | Abstracted authentication service for user sign-in, sign-up, password recovery, and email verification. |
+| **Wellbeing & Telemetry Utils** | `/src/utils/wellbeingUtils.ts` | Scoring algorithms for well-being assessments, mood calculations, and adherence statistics. |
+| **Activity Definitions** | `/src/data/activities.ts` | Structured cognitive activities, therapy task metadata, and daily journey steps. |
+| **Database Migrations** | `/supabase/migrations/*.sql` | PostgreSQL schema definitions for tables (`daily_health_checkins`, `game_scores`, `patient_profiles`, `reminders`, `memories`) and Row-Level Security (RLS) policies. |
+
+---
 
 ---
 
