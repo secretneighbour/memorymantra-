@@ -4,6 +4,7 @@ import { useRole } from '../context/RoleContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { TTSButton } from '../components/TTSButton';
 import { WellbeingCheckIn } from '../components/WellbeingCheckIn';
+import { DailyMoodHealthCheckin } from '../components/DailyMoodHealthCheckin';
 import { dailyJourneyActivities } from '../data/activities';
 import { 
   Play, 
@@ -175,9 +176,9 @@ export const PatientDashboard: React.FC = () => {
       </div>
 
       {/* ========================================================================= */}
-      {/* 3. "HOW ARE YOU FEELING TODAY?" WELL-BEING CHECK-IN                       */}
+      {/* 3. DAILY MOOD AND HEALTH CHECK-IN                                         */}
       {/* ========================================================================= */}
-      <WellbeingCheckIn mode="embedded" />
+      <DailyMoodHealthCheckin />
 
       {/* ========================================================================= */}
       {/* 4. TODAY'S COGNITIVE JOURNEY HERO (Tactile Monolith)                      */}
