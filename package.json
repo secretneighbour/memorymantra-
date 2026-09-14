@@ -17,7 +17,6 @@
     "electron:build": "npm run build && npm run build:electron && electron-builder --win --x64 --config electron-builder.json"
   },
   "dependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.63.2",
     "@supabase/supabase-js": "^2.116.0",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
