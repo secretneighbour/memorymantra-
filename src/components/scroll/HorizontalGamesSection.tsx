@@ -173,11 +173,16 @@ export const HorizontalGamesSection: React.FC = () => {
         </div>
       </div>
 
-      {/* Horizontal Scroll Track Container */}
-      <div className="relative w-full overflow-x-auto pb-6 scrollbar-none">
+      {/* Horizontal Scroll Track Container with mobile touch snap support */}
+      <div 
+        className="relative w-full overflow-x-auto pb-6 scrollbar-none snap-x snap-mandatory sm:snap-none"
+        tabIndex={0}
+        role="region"
+        aria-label="Cognitive Games Carousel"
+      >
         <motion.div
           ref={trackRef}
-          className="flex gap-6 w-max px-2"
+          className="flex gap-4 sm:gap-6 w-max px-2"
           style={
             isReduced
               ? {}
@@ -193,24 +198,25 @@ export const HorizontalGamesSection: React.FC = () => {
             return (
               <motion.div
                 key={game.id}
+                onClick={() => setActiveCardIndex(index)}
                 onMouseEnter={() => setActiveCardIndex(index)}
-                className={`w-[310px] sm:w-[360px] rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-500 relative select-none ${
+                className={`w-[275px] xs:w-[310px] sm:w-[360px] snap-center rounded-3xl p-5 sm:p-8 flex flex-col justify-between transition-all duration-300 relative select-none shrink-0 ${
                   isActive
-                    ? 'frost-white-intense border-2 border-ner-black shadow-2xl scale-102 opacity-100'
-                    : 'frost-white-low bg-white/70 border border-ner-border/90 shadow-md opacity-85 hover:opacity-100'
+                    ? 'frost-white-intense border-2 border-ner-black shadow-2xl scale-101 opacity-100'
+                    : 'frost-white-low bg-white/80 border border-ner-border/90 shadow-md opacity-90 hover:opacity-100'
                 }`}
                 whileHover={{ y: -4 }}
               >
                 {/* Top Badge and Icon */}
                 <div>
-                  <div className="flex items-center justify-between mb-5">
-                    <div className="w-14 h-14 rounded-2xl bg-white border border-ner-border shadow-sm flex items-center justify-center text-3xl">
+                  <div className="flex items-center justify-between mb-4 sm:mb-5">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white border border-ner-border shadow-sm flex items-center justify-center text-2xl sm:text-3xl">
                       {game.icon}
                     </div>
 
                     <div className="text-right">
                       <span
-                        className="text-[10px] font-mono px-2.5 py-1 rounded-full font-bold uppercase tracking-wider block border"
+                        className="text-[10px] font-mono px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full font-bold uppercase tracking-wider inline-block border"
                         style={{
                           color: game.domainColor,
                           borderColor: `${game.domainColor}33`,
@@ -229,27 +235,30 @@ export const HorizontalGamesSection: React.FC = () => {
                   <span className="text-[10px] font-mono uppercase tracking-widest text-ner-black/50 font-bold block mb-1">
                     {game.culturalAnchor}
                   </span>
-                  <h3 className="text-xl sm:text-2xl font-bold text-ner-black tracking-tight">
+                  <h3 className="text-lg sm:text-2xl font-bold text-ner-black tracking-tight">
                     {game.name}
                   </h3>
 
-                  <p className="text-xs sm:text-sm text-ner-black/75 mt-2.5 leading-relaxed font-light">
+                  <p className="text-xs sm:text-sm text-ner-black/75 mt-2 sm:mt-2.5 leading-relaxed font-light line-clamp-3 sm:line-clamp-none">
                     {game.shortDesc}
                   </p>
                 </div>
 
                 {/* Bottom Launcher */}
-                <div className="mt-8 pt-5 border-t border-ner-border/80 flex items-center justify-between">
+                <div className="mt-6 sm:mt-8 pt-4 sm:pt-5 border-t border-ner-border/80 flex items-center justify-between">
                   <span className="text-xs font-mono font-bold text-ner-black/60">
                     0{index + 1} / 0{games.length}
                   </span>
 
                   <button
-                    onClick={() => navigate(game.route)}
-                    className="h-10 px-5 rounded-full bg-ner-black text-white hover:bg-ner-terracotta transition-colors text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm active:scale-95"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(game.route);
+                    }}
+                    className="min-h-[44px] px-4 sm:px-5 rounded-full bg-ner-black text-white hover:bg-ner-terracotta transition-colors text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm active:scale-95"
                   >
-                    <Play className="w-3.5 h-3.5 fill-current" />
-                    <span>Play Exercise</span>
+                    <Play className="w-3.5 h-3.5 fill-current text-ner-terracotta" />
+                    <span>Play</span>
                   </button>
                 </div>
               </motion.div>

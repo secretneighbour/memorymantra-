@@ -10,6 +10,7 @@ import { RoleSwitcherModal } from './components/RoleSwitcherModal';
 import { AICompanionDrawer } from './components/AICompanionDrawer';
 import { OfflineBanner } from './components/OfflineBanner';
 import { PageNarrator } from './components/PageNarrator';
+import { MobileBottomNav } from './components/MobileBottomNav';
 
 // Pages
 import { LandingPage } from './pages/LandingPage';
@@ -79,7 +80,7 @@ export const App: React.FC = () => {
               <OfflineBanner />
               <PageNarrator />
 
-              <main className="flex-grow z-10">
+              <main className="flex-grow z-10 pb-20 md:pb-0">
                 <Routes>
                   {/* Landing & Role Selection */}
                   <Route path="/" element={<LandingPage />} />
@@ -128,6 +129,9 @@ export const App: React.FC = () => {
                   <Route path="*" element={<LandingPage />} />
                 </Routes>
               </main>
+
+              {/* Native-feel Mobile Bottom Navigation */}
+              <MobileBottomNav />
 
               <Footer />
             </div>

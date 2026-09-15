@@ -124,7 +124,7 @@ export const CaregiverScrollDashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Top 4 KPI Metrics Monoliths */}
-        <div className="lg:col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="lg:col-span-12 grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
           {stats.map((s, idx) => (
             <motion.div
               key={idx}
@@ -132,22 +132,22 @@ export const CaregiverScrollDashboard: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.4, delay: idx * 0.1 }}
-              className="frost-white-intense rounded-3xl p-6 border border-ner-border/90 shadow-md flex flex-col justify-between"
+              className="frost-white-intense rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 border border-ner-border/90 shadow-md flex flex-col justify-between"
             >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-ner-black/50 font-bold">
+              <div className="flex items-center justify-between mb-2 sm:mb-3">
+                <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-ner-black/50 font-bold truncate">
                   {s.label}
                 </span>
-                <div className="w-8 h-8 rounded-xl bg-white border border-ner-border flex items-center justify-center shadow-xs">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-white border border-ner-border flex items-center justify-center shadow-xs shrink-0">
                   {s.icon}
                 </div>
               </div>
 
-              <span className={`text-3xl sm:text-4xl font-extrabold font-mono tracking-tight ${s.color}`}>
+              <span className={`text-xl xs:text-2xl sm:text-4xl font-extrabold font-mono tracking-tight ${s.color}`}>
                 {s.val}
               </span>
 
-              <span className="text-xs text-ner-black/60 font-mono mt-2 block">
+              <span className="text-[10px] sm:text-xs text-ner-black/60 font-mono mt-1 sm:mt-2 block truncate">
                 {s.sub}
               </span>
             </motion.div>

@@ -176,10 +176,10 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
             </motion.p>
 
             {/* Interactive Tactile CTA Buttons */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3 pt-2">
               <button
                 onClick={handleStartCare}
-                className="h-13 px-8 rounded-full bg-ner-black text-white hover:bg-ner-black/85 transition-all text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2.5 shadow-xl active:scale-95 group"
+                className="h-12 sm:h-13 px-6 sm:px-8 rounded-full bg-ner-black text-white hover:bg-ner-black/85 transition-all text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2.5 shadow-xl active:scale-95 group min-h-[44px]"
               >
                 <span>{t.btnStartPatientCare}</span>
                 <ArrowRight className="w-4 h-4 text-ner-terracotta group-hover:translate-x-1 transition-transform" />
@@ -187,17 +187,19 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
 
               <button
                 onClick={() => setIsRoleModalOpen(true)}
-                className="h-13 px-6 rounded-full frost-white-intense text-ner-black hover:border-ner-black/60 transition-all text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm active:scale-95"
+                className="h-12 sm:h-13 px-5 sm:px-6 rounded-full frost-white-intense text-ner-black hover:border-ner-black/60 transition-all text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm active:scale-95 min-h-[44px]"
               >
                 <span>Switch Portal</span>
                 <span className="w-2 h-2 rounded-full bg-ner-sage animate-pulse" />
               </button>
 
-              <TTSButton
-                text="SMRITI CARE. Cognitive Care, Made Human. Personalized memory-assisted cognitive care for older adults, families and caregivers."
-                label="Listen"
-                size="md"
-              />
+              <div className="flex justify-center sm:justify-start">
+                <TTSButton
+                  text="SMRITI CARE. Cognitive Care, Made Human. Personalized memory-assisted cognitive care for older adults, families and caregivers."
+                  label="Listen"
+                  size="md"
+                />
+              </div>
             </div>
           </div>
 

@@ -25,6 +25,26 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  // Trust proxy for ngrok / cloud run / mobile tunnels
+  app.set("trust proxy", true);
+
+  // Global CORS and ngrok header middleware
+  app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, ngrok-skip-browser-warning, bypass-tunnel-reminder"
+    );
+    // Auto-skip ngrok browser warning headers on all outgoing responses
+    res.header("ngrok-skip-browser-warning", "true");
+    
+    if (req.method === "OPTIONS") {
+      return res.sendStatus(200);
+    }
+    next();
+  });
+
   app.use(express.json({ limit: "10mb" }));
 
   // 1. Health check
@@ -176,7 +196,11 @@ Crucial Guidelines:
   // Vite middleware for development vs static build in production
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        allowedHosts: true,
+        cors: true,
+      },
       appType: "spa",
     });
     app.use(vite.middlewares);
