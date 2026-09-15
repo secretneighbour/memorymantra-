@@ -100,7 +100,7 @@ export const GamesHub: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen pt-24 sm:pt-28 pb-20 px-4 sm:px-8 max-w-6xl mx-auto animate-fade-in selection:bg-ner-terracotta selection:text-white">
+    <div className="min-h-screen pt-24 sm:pt-28 pb-32 sm:pb-24 px-4 sm:px-8 max-w-6xl mx-auto animate-fade-in selection:bg-ner-terracotta selection:text-white">
       {/* Header */}
       <div className="frost-card rounded-3xl p-6 sm:p-10 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 border border-ner-border shadow-md">
         <div>

@@ -572,7 +572,7 @@ class SpeechEngine {
       }
 
       try {
-        // Resume in case Chrome was stuck in paused state
+        // Force unstick any paused or hanging synthesis state in Chromium / Safari
         if (window.speechSynthesis.paused) {
           window.speechSynthesis.resume();
         }
@@ -580,13 +580,16 @@ class SpeechEngine {
         const utterance = new SpeechSynthesisUtterance(chunk);
         utterance.rate = params.rate;
         utterance.pitch = params.pitch;
-        utterance.lang = params.bcp47;
-
+        
+        // Use exact voice language if voice object exists to prevent browser language mismatch errors
         if (params.voice) {
           utterance.voice = params.voice;
+          utterance.lang = params.voice.lang || params.bcp47;
+        } else {
+          utterance.lang = params.bcp47 || 'en-IN';
         }
 
-        // Prevent V8 garbage collection
+        // Prevent V8 garbage collection mid-playback
         activeUtterances.add(utterance);
 
         let finished = false;
@@ -609,14 +612,33 @@ class SpeechEngine {
           // Canceled or interrupted is expected on user stop/skip
           if (e.error === 'canceled' || e.error === 'interrupted') {
             resolve(true);
-          } else {
-            console.warn('SpeechSynthesisUtterance error event:', e.error, 'lang:', params.bcp47);
-            resolve(false);
+            return;
           }
+
+          // If language or voice was rejected by the platform, retry with universal en-IN fallback
+          if (e.error === 'language-unavailable' || e.error === 'voice-unavailable' || e.error === 'invalid-argument') {
+            console.warn(`[TTS] Retrying chunk with universal fallback for error: ${e.error}`);
+            try {
+              const fallbackUtterance = new SpeechSynthesisUtterance(chunk);
+              fallbackUtterance.rate = params.rate;
+              fallbackUtterance.lang = 'en-US';
+              fallbackUtterance.onend = () => resolve(true);
+              fallbackUtterance.onerror = () => resolve(true);
+              activeUtterances.add(fallbackUtterance);
+              window.speechSynthesis.speak(fallbackUtterance);
+              return;
+            } catch {
+              resolve(true);
+              return;
+            }
+          }
+
+          console.warn('SpeechSynthesisUtterance error event:', e.error, 'lang:', params.bcp47);
+          resolve(true);
         };
 
         // Safety timeout for chunk: if browser hangs without firing onend
-        const maxDuration = Math.max(6000, chunk.length * 150);
+        const maxDuration = Math.max(7000, chunk.length * 160);
         timeout = setTimeout(() => {
           if (!finished) {
             cleanup();
@@ -624,6 +646,8 @@ class SpeechEngine {
           }
         }, maxDuration);
 
+        // Resume right before speaking in case Chrome auto-paused
+        window.speechSynthesis.resume();
         window.speechSynthesis.speak(utterance);
       } catch (err) {
         console.warn('speechSynthesis.speak threw error:', err);

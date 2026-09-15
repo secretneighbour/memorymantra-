@@ -19,9 +19,12 @@ import {
   Bot,
   User,
   Loader2,
+  Play,
+  Pause,
   MessageSquare
 } from 'lucide-react';
 import { NERLanguage } from '../../types';
+import { TTSButton } from '../TTSButton';
 
 interface DemoMessage {
   id: string;
@@ -88,7 +91,17 @@ export const AICompanionScrollSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const { setIsAICompanionOpen, activePatient, reminders } = useRole();
-  const { speakText, isSpeaking, stopSpeaking, playCalmingChime, motion: contextMotion, language: globalLang } = useAccessibility();
+  const { 
+    speakText, 
+    isSpeaking, 
+    stopSpeaking, 
+    pauseSpeaking,
+    resumeSpeaking,
+    playCalmingChime, 
+    motion: contextMotion, 
+    language: globalLang,
+    t 
+  } = useAccessibility();
   const systemReducedMotion = useReducedMotion();
   const isReduced = contextMotion === 'reduced' || systemReducedMotion;
 
@@ -99,6 +112,9 @@ export const AICompanionScrollSection: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'live' | 'script'>('live');
   const [scriptStep, setScriptStep] = useState(3);
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
+  const [isPlayingFullDialogue, setIsPlayingFullDialogue] = useState(false);
+
+  const fullDialogueTimerRef = useRef<any>(null);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -117,7 +133,6 @@ export const AICompanionScrollSection: React.FC = () => {
     onResult: (text, isFinal) => {
       setInputQuery(text);
       if (isFinal && text.trim().length > 3) {
-        // user finished speaking
         handleSendMessage(text);
       }
     },
@@ -151,9 +166,15 @@ export const AICompanionScrollSection: React.FC = () => {
       bn: `নমস্কার! আমি স্মৃতি, আপনার যত্নশীল স্মৃতি সঙ্গী। আপনার সুন্দর স্মৃতি ও প্রতিদিনের কাজে আমি সর্বদা আপনার সাথে আছি।`,
       hi: `नमस्ते! मैं स्मृति हूँ, आपकी अपनी देखभाल संगिनी। आपके साथ सुखद यादें साझा करने और दिनचर्या में सहायता के लिए मैं उपस्थित हूँ।`,
       mni: `খুরুমজরি! ঐহাক স্মৃতিনি, নহাক্কী নুংশিরবা মেমোরী কম্প্যানিয়ননি।`,
+      kha: `Khublei! Nga dei ka Smriti, ka paralok ban kynmaw ia ki jingkynmaw ba thiang jong phi.`,
+      bodo: `खुलुमबाय! आं स्मृती, नोंथांनि मोजां मोन्नाय गोसोखांथि लोगो।`,
     };
     const speech = greetings[selectedLang] || greetings.en;
-    speakText(speech, selectedLang);
+    stopSpeaking();
+    setSpeakingMsgId('audition');
+    speakText(speech, selectedLang, {
+      onEnd: () => setSpeakingMsgId(null),
+    });
   };
 
   const handleSendMessage = async (textToSend?: string) => {
@@ -220,9 +241,11 @@ export const AICompanionScrollSection: React.FC = () => {
       };
 
       setMessages((prev) => [...prev, aiMsg]);
-      // Gentle auto-speech for seamless accessibility demo
-      speakText(aiReply, selectedLang);
+      // Seamless audio readout for the new AI reply
       setSpeakingMsgId(aiMsgId);
+      speakText(aiReply, selectedLang, {
+        onEnd: () => setSpeakingMsgId(null),
+      });
     } catch (err) {
       console.warn('AI endpoint fallback:', err);
       // Fallback message
@@ -236,7 +259,10 @@ export const AICompanionScrollSection: React.FC = () => {
         provider: 'offline-reassurance',
       };
       setMessages((prev) => [...prev, fallbackMsg]);
-      speakText(fallbackReply, selectedLang);
+      setSpeakingMsgId(fallbackMsg.id);
+      speakText(fallbackReply, selectedLang, {
+        onEnd: () => setSpeakingMsgId(null),
+      });
     } finally {
       setIsLoading(false);
     }
@@ -249,13 +275,57 @@ export const AICompanionScrollSection: React.FC = () => {
     } else {
       stopSpeaking();
       setSpeakingMsgId(msg.id);
-      speakText(msg.text, selectedLang);
+      speakText(msg.text, selectedLang, {
+        onEnd: () => setSpeakingMsgId(null),
+      });
     }
+  };
+
+  // Play entire active dialogue sequentially aloud
+  const handlePlayEntireDialogue = () => {
+    if (isPlayingFullDialogue) {
+      stopSpeaking();
+      if (fullDialogueTimerRef.current) clearTimeout(fullDialogueTimerRef.current);
+      setIsPlayingFullDialogue(false);
+      setSpeakingMsgId(null);
+      return;
+    }
+
+    const currentList = activeTab === 'live' ? messages : messages.slice(0, scriptStep + 1);
+    if (currentList.length === 0) return;
+
+    setIsPlayingFullDialogue(true);
+    playCalmingChime();
+
+    const readStep = (idx: number) => {
+      if (idx >= currentList.length) {
+        setIsPlayingFullDialogue(false);
+        setSpeakingMsgId(null);
+        return;
+      }
+
+      const msg = currentList[idx];
+      setSpeakingMsgId(msg.id);
+      
+      const intro = msg.sender === 'user' ? 'Question: ' : 'Companion Reply: ';
+      speakText(`${intro}${msg.text}`, selectedLang, {
+        onEnd: () => {
+          fullDialogueTimerRef.current = setTimeout(() => {
+            readStep(idx + 1);
+          }, 700);
+        }
+      });
+    };
+
+    readStep(0);
   };
 
   const handleResetChat = () => {
     stopSpeaking();
     stopListening();
+    if (fullDialogueTimerRef.current) clearTimeout(fullDialogueTimerRef.current);
+    setIsPlayingFullDialogue(false);
+    setSpeakingMsgId(null);
     setMessages(INITIAL_CONVERSATION);
     setInputQuery('');
     resetTranscript();
@@ -266,27 +336,36 @@ export const AICompanionScrollSection: React.FC = () => {
     <section
       ref={containerRef}
       id="ai-companion"
-      className="py-24 sm:py-32 px-4 sm:px-8 max-w-7xl mx-auto border-b border-ner-border/40"
+      data-narrate="true"
+      className="py-20 sm:py-32 px-4 sm:px-8 max-w-7xl mx-auto border-b border-ner-border/40"
     >
       {/* Section Header */}
-      <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+      <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16">
         <span className="text-xs font-mono uppercase tracking-widest text-ner-terracotta font-bold block mb-2">
           [ 05 // COMPASSIONATE AI INTERACTION ]
         </span>
-        <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-ner-black uppercase">
-          AI Memory Companion
-        </h2>
+        <div className="flex items-center justify-center gap-3 flex-wrap">
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-ner-black uppercase">
+            AI Memory Companion
+          </h2>
+          <TTSButton 
+            text="AI Memory Companion. Experience gentle reassurance, heritage reminiscence, and schedule clarity without clinical friction." 
+            label="Listen Section"
+            size="sm"
+            lang={selectedLang}
+          />
+        </div>
         <p className="text-sm sm:text-base text-ner-black/70 font-light mt-3 max-w-2xl mx-auto leading-relaxed">
           Test the live, voice-first dementia memory companion powered by Gemini 3.8 Intelligence. Experience gentle reassurance, heritage reminiscence, and schedule clarity without clinical friction.
         </p>
       </div>
 
       {/* Main Interactive AI Interface Simulator */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start max-w-6xl mx-auto">
         
         {/* Left Side: Speech Controls, Language Picker & Live Waveform */}
         <div className="lg:col-span-4 space-y-5">
-          <div className="frost-white-intense rounded-3xl p-6 sm:p-7 border border-ner-border/90 shadow-xl space-y-5">
+          <div className="frost-white-intense rounded-3xl p-5 sm:p-7 border border-ner-border/90 shadow-xl space-y-5">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-mono uppercase tracking-widest text-ner-black/60 font-bold flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-ner-terracotta" />
@@ -337,7 +416,7 @@ export const AICompanionScrollSection: React.FC = () => {
                     ? 'Speaking aloud...'
                     : isLoading
                     ? 'Thinking warmly...'
-                    : 'Acoustic Synthesis'}
+                    : 'Acoustic Voice Synthesis'}
                 </span>
                 <span className="text-ner-terracotta font-bold">
                   {NER_LANG_OPTIONS.find((l) => l.code === selectedLang)?.native || 'English'}
@@ -350,15 +429,18 @@ export const AICompanionScrollSection: React.FC = () => {
               <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-ner-black/60 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
                   <Globe2 className="w-3.5 h-3.5 text-ner-sage" />
-                  Regional Language
+                  Regional Voice Language
                 </span>
-                <span className="text-[9px] text-ner-black/40">NER Native</span>
+                <span className="text-[9px] text-ner-black/40">7 NER Dialects</span>
               </label>
               <div className="grid grid-cols-2 gap-1.5">
                 {NER_LANG_OPTIONS.map((lang) => (
                   <button
                     key={lang.code}
-                    onClick={() => setSelectedLang(lang.code)}
+                    onClick={() => {
+                      setSelectedLang(lang.code);
+                      if (isSpeaking) stopSpeaking();
+                    }}
                     className={`py-2 px-2.5 rounded-xl text-xs font-mono transition-all text-left flex items-center justify-between ${
                       selectedLang === lang.code
                         ? 'bg-ner-black text-white font-bold shadow-sm'
@@ -390,7 +472,7 @@ export const AICompanionScrollSection: React.FC = () => {
                 onClick={handleAuditionVoice}
                 className="w-full h-11 px-4 rounded-2xl frost-white-intense border border-ner-border hover:border-ner-black text-ner-black text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition active:scale-95 shadow-xs"
               >
-                <Volume2 className="w-4 h-4 text-ner-terracotta" />
+                <Volume2 className={`w-4 h-4 text-ner-terracotta ${speakingMsgId === 'audition' ? 'animate-pulse' : ''}`} />
                 <span>Audition Voice ({NER_LANG_OPTIONS.find((l) => l.code === selectedLang)?.native})</span>
               </button>
 
@@ -398,7 +480,7 @@ export const AICompanionScrollSection: React.FC = () => {
                 onClick={() => setIsAICompanionOpen(true)}
                 className="w-full h-11 px-4 rounded-2xl bg-ner-black text-white hover:bg-ner-black/85 text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition active:scale-95 shadow-md"
               >
-                <span>Open Fullscreen Drawer</span>
+                <span>Open Fullscreen Companion</span>
                 <ArrowRight className="w-3.5 h-3.5 text-ner-terracotta" />
               </button>
             </div>
@@ -407,9 +489,9 @@ export const AICompanionScrollSection: React.FC = () => {
 
         {/* Right Side: Interactive AI Dialogue Console */}
         <div className="lg:col-span-8">
-          <div className="frost-white-intense rounded-3xl p-5 sm:p-7 border border-ner-border/90 shadow-2xl space-y-4">
+          <div className="frost-white-intense rounded-3xl p-4 sm:p-7 border border-ner-border/90 shadow-2xl space-y-4">
             
-            {/* Dialogue Header with Live / Script Toggle */}
+            {/* Dialogue Header with Live / Script Toggle & Full Listen Aloud Button */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-ner-border/80">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-full bg-ner-black text-white flex items-center justify-center font-mono text-xs font-bold shadow-sm">
@@ -428,12 +510,35 @@ export const AICompanionScrollSection: React.FC = () => {
                 </div>
               </div>
 
-              {/* Mode Toggle & Clear Button */}
-              <div className="flex items-center gap-2">
+              {/* Controls: Mode Toggle, Listen Entire Dialogue, Clear */}
+              <div className="flex items-center gap-2 flex-wrap">
+                {/* Listen Whole Dialogue Aloud */}
+                <button
+                  onClick={handlePlayEntireDialogue}
+                  className={`px-3 py-1.5 rounded-xl border text-xs font-mono font-bold flex items-center gap-1.5 transition active:scale-95 ${
+                    isPlayingFullDialogue 
+                      ? 'bg-ner-terracotta text-white border-ner-terracotta shadow-md animate-pulse'
+                      : 'bg-white hover:bg-ner-black hover:text-white border-ner-border text-ner-black shadow-xs'
+                  }`}
+                  title="Listen to full conversation aloud"
+                >
+                  {isPlayingFullDialogue ? (
+                    <>
+                      <VolumeX className="w-3.5 h-3.5" />
+                      <span>Stop Narration</span>
+                    </>
+                  ) : (
+                    <>
+                      <Volume2 className="w-3.5 h-3.5 text-ner-terracotta" />
+                      <span>Listen Dialogue</span>
+                    </>
+                  )}
+                </button>
+
                 <div className="bg-ner-offwhite p-0.5 rounded-xl border border-ner-border flex items-center text-xs font-mono">
                   <button
                     onClick={() => setActiveTab('live')}
-                    className={`px-3 py-1 rounded-lg font-bold transition-all ${
+                    className={`px-2.5 sm:px-3 py-1 rounded-lg font-bold transition-all ${
                       activeTab === 'live'
                         ? 'bg-ner-black text-white shadow-xs'
                         : 'text-ner-black/60 hover:text-ner-black'
@@ -443,7 +548,7 @@ export const AICompanionScrollSection: React.FC = () => {
                   </button>
                   <button
                     onClick={() => setActiveTab('script')}
-                    className={`px-3 py-1 rounded-lg font-bold transition-all ${
+                    className={`px-2.5 sm:px-3 py-1 rounded-lg font-bold transition-all ${
                       activeTab === 'script'
                         ? 'bg-ner-black text-white shadow-xs'
                         : 'text-ner-black/60 hover:text-ner-black'
@@ -464,7 +569,7 @@ export const AICompanionScrollSection: React.FC = () => {
             </div>
 
             {/* Conversation Feed */}
-            <div className="space-y-3.5 min-h-[340px] max-h-[420px] overflow-y-auto pr-1 flex flex-col justify-start">
+            <div className="space-y-3.5 min-h-[320px] max-h-[420px] overflow-y-auto pr-1 flex flex-col justify-start">
               {(activeTab === 'live' ? messages : messages.slice(0, scriptStep + 1)).map((msg) => {
                 const isUser = msg.sender === 'user';
                 const isThisSpeaking = isSpeaking && speakingMsgId === msg.id;
@@ -492,35 +597,41 @@ export const AICompanionScrollSection: React.FC = () => {
                         isUser
                           ? 'bg-ner-black text-white rounded-tr-xs'
                           : 'bg-white border border-ner-border text-ner-black rounded-tl-xs shadow-md'
-                      }`}
+                      } ${isThisSpeaking ? 'ring-2 ring-ner-terracotta shadow-lg' : ''}`}
                     >
                       <p>{msg.text}</p>
 
-                      {!isUser && (
-                        <div className="mt-2.5 pt-2 border-t border-ner-border/40 flex items-center justify-between text-[11px]">
-                          <span className="text-ner-black/40 font-mono">Audio assistance</span>
-                          <button
-                            onClick={() => handleSpeakMessage(msg)}
-                            className={`inline-flex items-center gap-1 font-semibold px-2 py-0.5 rounded-md transition ${
-                              isThisSpeaking
-                                ? 'bg-ner-terracotta text-white'
-                                : 'text-ner-terracotta hover:bg-ner-terracotta/10'
-                            }`}
-                          >
-                            {isThisSpeaking ? (
-                              <>
-                                <VolumeX className="w-3.5 h-3.5" />
-                                <span>Stop</span>
-                              </>
-                            ) : (
-                              <>
-                                <Volume2 className="w-3.5 h-3.5" />
-                                <span>Listen Aloud</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      )}
+                      {/* Listen Aloud Button on Every Message */}
+                      <div className={`mt-2.5 pt-2 border-t flex items-center justify-between text-[11px] ${
+                        isUser ? 'border-white/10' : 'border-ner-border/40'
+                      }`}>
+                        <span className={`font-mono text-[10px] ${isUser ? 'text-white/50' : 'text-ner-black/40'}`}>
+                          Voice playback ({NER_LANG_OPTIONS.find((l) => l.code === selectedLang)?.native || 'Assamese'})
+                        </span>
+                        
+                        <button
+                          onClick={() => handleSpeakMessage(msg)}
+                          className={`inline-flex items-center gap-1 font-semibold px-2.5 py-1 rounded-lg transition active:scale-95 ${
+                            isThisSpeaking
+                              ? 'bg-ner-terracotta text-white font-bold shadow-sm'
+                              : isUser
+                              ? 'bg-white/10 text-white hover:bg-white/20'
+                              : 'text-ner-terracotta hover:bg-ner-terracotta/10 bg-ner-offwhite border border-ner-border'
+                          }`}
+                        >
+                          {isThisSpeaking ? (
+                            <>
+                              <VolumeX className="w-3.5 h-3.5 animate-pulse" />
+                              <span>Stop</span>
+                            </>
+                          ) : (
+                            <>
+                              <Volume2 className="w-3.5 h-3.5" />
+                              <span>Listen Aloud</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 );
@@ -630,22 +741,29 @@ export const AICompanionScrollSection: React.FC = () => {
 
             {/* Script Step Buttons when in Staged Mode */}
             {activeTab === 'script' && (
-              <div className="pt-2 border-t border-ner-border/70 flex items-center justify-between text-xs font-mono">
+              <div className="pt-2 border-t border-ner-border/70 flex items-center justify-between text-xs font-mono flex-wrap gap-2">
                 <span className="text-ner-black/50 text-[11px]">
-                  Step through demo conversation:
+                  Step through demo conversation (auto reads aloud):
                 </span>
                 <div className="flex items-center gap-1.5">
                   {[0, 1, 2, 3].map((step) => (
                     <button
                       key={step}
-                      onClick={() => setScriptStep(step)}
-                      className={`w-7 h-7 rounded-lg text-[10px] font-bold transition-all ${
+                      onClick={() => {
+                        setScriptStep(step);
+                        const msg = messages[step];
+                        if (msg) {
+                          handleSpeakMessage(msg);
+                        }
+                      }}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1 ${
                         scriptStep === step
-                          ? 'bg-ner-black text-white'
+                          ? 'bg-ner-black text-white shadow-sm'
                           : 'bg-ner-offwhite border border-ner-border text-ner-black/60 hover:text-ner-black'
                       }`}
                     >
-                      0{step + 1}
+                      <Volume2 className="w-3 h-3 text-ner-terracotta" />
+                      <span>0{step + 1}</span>
                     </button>
                   ))}
                 </div>

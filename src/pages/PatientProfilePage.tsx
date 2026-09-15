@@ -19,7 +19,7 @@ export const PatientProfilePage: React.FC = () => {
   const { language, textSize, contrast, motion } = useAccessibility();
 
   return (
-    <div className="min-h-screen pt-24 pb-20 px-4 sm:px-8 max-w-4xl mx-auto animate-fade-in">
+    <div className="min-h-screen pt-24 pb-32 sm:pb-24 px-4 sm:px-8 max-w-4xl mx-auto animate-fade-in">
       {/* Header */}
       <div className="frost-card rounded-3xl p-6 sm:p-10 mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">

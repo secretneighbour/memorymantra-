@@ -33,6 +33,12 @@ export const AICompanionDrawer: React.FC = () => {
   ]);
 
   useEffect(() => {
+    if (!isSpeaking) {
+      setSpeakingMsgId(null);
+    }
+  }, [isSpeaking]);
+
+  useEffect(() => {
     if (isAICompanionOpen) {
       chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
@@ -87,8 +93,11 @@ export const AICompanionDrawer: React.FC = () => {
       };
 
       setMessages((prev) => [...prev, botMsg]);
-      speakText(res.text, language);
       setSpeakingMsgId(botMsgId);
+      speakText(res.text, language, {
+        onStart: () => setSpeakingMsgId(botMsgId),
+        onEnd: () => setSpeakingMsgId(null),
+      });
     } catch (e) {
       console.warn('AI Drawer query error:', e);
       const fallbackMsg: ChatMessage = {
@@ -99,6 +108,11 @@ export const AICompanionDrawer: React.FC = () => {
         provider: 'offline-reassurance',
       };
       setMessages((prev) => [...prev, fallbackMsg]);
+      setSpeakingMsgId(fallbackMsg.id);
+      speakText(fallbackMsg.text, language, {
+        onStart: () => setSpeakingMsgId(fallbackMsg.id),
+        onEnd: () => setSpeakingMsgId(null),
+      });
     } finally {
       setIsLoading(false);
     }
@@ -111,7 +125,10 @@ export const AICompanionDrawer: React.FC = () => {
     } else {
       stopSpeaking();
       setSpeakingMsgId(msg.id);
-      speakText(msg.text, language);
+      speakText(msg.text, language, {
+        onStart: () => setSpeakingMsgId(msg.id),
+        onEnd: () => setSpeakingMsgId(null),
+      });
     }
   };
 

@@ -130,7 +130,7 @@ export const MemoriesPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-20 px-4 sm:px-8 max-w-6xl mx-auto animate-fade-in">
+    <div className="min-h-screen pt-24 pb-32 sm:pb-24 px-4 sm:px-8 max-w-6xl mx-auto animate-fade-in">
       {/* Top Title & Navigation */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>

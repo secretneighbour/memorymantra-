@@ -135,7 +135,7 @@ NOTE: This report is generated from supportive cognitive exercise telemetry and 
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-20 px-4 sm:px-8 max-w-7xl mx-auto animate-fade-in">
+    <div className="min-h-screen pt-24 pb-32 sm:pb-24 px-4 sm:px-8 max-w-7xl mx-auto animate-fade-in">
       {/* Header */}
       <div className="frost-card rounded-3xl p-6 sm:p-10 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>

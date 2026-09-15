@@ -13,12 +13,13 @@ import {
   Sparkles, 
   X,
   Volume2,
-  Trash2
+  Trash2,
+  Bot
 } from 'lucide-react';
 import { MemoryNote } from '../types';
 
 export const MemoryCompanionPage: React.FC = () => {
-  const { reminders, toggleReminder, addReminder, deleteReminder } = useRole();
+  const { reminders, toggleReminder, addReminder, deleteReminder, setIsAICompanionOpen } = useRole();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newTitle, setNewTitle] = useState('');
@@ -66,6 +67,23 @@ export const MemoryCompanionPage: React.FC = () => {
     setNewNoteContent('');
   };
 
+  const fullScheduleSpeechText = `Here is your schedule for today. You have ${reminders.length} items. ${reminders
+    .map(
+      (r, i) =>
+        `Item ${i + 1}: ${r.time}, ${r.title}. ${r.doseOrNote ? 'Note: ' + r.doseOrNote + '.' : ''} ${
+          r.completed ? 'This activity is completed.' : 'This activity is pending.'
+        }`
+    )
+    .join(' ')}`;
+
+  const pinnedMemoriesSpeechText = `Here are your pinned things to remember. ${pinnedList
+    .map((p) => `${p.tag}: ${p.text}.`)
+    .join(' ')}`;
+
+  const memoryNotesSpeechText = `Here are your personal memory notes. ${memoryNotes
+    .map((n) => `${n.title}: ${n.content}.`)
+    .join(' ')}`;
+
   return (
     <div className="min-h-screen pt-24 pb-20 px-4 sm:px-8 max-w-5xl mx-auto animate-fade-in">
       {/* Header */}
@@ -85,15 +103,22 @@ export const MemoryCompanionPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <TTSButton
-            text="Your Memory Companion. Review today's schedule, add a reminder, or read your memory notes."
+            text="Welcome to your Memory Companion. Review today's schedule, add a reminder, or listen to your memory notes."
             label="Listen"
             size="lg"
           />
           <button
+            onClick={() => setIsAICompanionOpen(true)}
+            className="px-5 py-3 rounded-full bg-ner-terracotta/15 text-ner-terracotta hover:bg-ner-terracotta/25 border border-ner-terracotta/30 font-semibold text-sm flex items-center gap-2 shadow-xs active:scale-95 shrink-0 transition"
+          >
+            <Bot className="w-4 h-4" />
+            <span>AI Voice Chat</span>
+          </button>
+          <button
             onClick={() => setIsAddModalOpen(true)}
-            className="px-6 py-3.5 rounded-full bg-ner-black text-white hover:bg-ner-black/85 font-semibold text-sm flex items-center gap-2 shadow-md active:scale-95 shrink-0"
+            className="px-5 py-3 rounded-full bg-ner-black text-white hover:bg-ner-black/85 font-semibold text-sm flex items-center gap-2 shadow-md active:scale-95 shrink-0"
           >
             <Plus className="w-4 h-4 text-ner-terracotta" />
             <span>Add Reminder</span>
@@ -105,14 +130,19 @@ export const MemoryCompanionPage: React.FC = () => {
         {/* Left 7 Columns: Today's Timeline */}
         <div className="lg:col-span-7 space-y-6">
           <div className="frost-card rounded-3xl p-6 sm:p-8">
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-ner-border">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-ner-border">
               <div className="flex items-center gap-2.5">
                 <Clock className="w-5 h-5 text-ner-terracotta" />
                 <h2 className="text-xl font-bold text-ner-black">Today's Schedule</h2>
+                <span className="text-xs font-mono text-ner-black/50 ml-2">
+                  {reminders.filter(r => r.completed).length} of {reminders.length} Done
+                </span>
               </div>
-              <span className="text-xs font-mono text-ner-black/50">
-                {reminders.filter(r => r.completed).length} of {reminders.length} Done
-              </span>
+              <TTSButton
+                text={fullScheduleSpeechText}
+                label="Read Schedule"
+                size="sm"
+              />
             </div>
 
             {/* List */}
@@ -127,7 +157,7 @@ export const MemoryCompanionPage: React.FC = () => {
                       : 'bg-white border-ner-border hover:border-ner-black/50 shadow-sm'
                   }`}
                 >
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-4 flex-1">
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
@@ -142,7 +172,7 @@ export const MemoryCompanionPage: React.FC = () => {
                       )}
                     </button>
 
-                    <div>
+                    <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-ner-offwhite border border-ner-border text-ner-black">
                           {item.time}
@@ -159,16 +189,22 @@ export const MemoryCompanionPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteReminder(item.id);
-                    }}
-                    className="text-ner-black/30 hover:text-red-600 p-2 transition-colors"
-                    title="Remove reminder"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <TTSButton
+                      text={`Reminder at ${item.time}: ${item.title}. ${item.doseOrNote || ''} Status: ${item.completed ? 'completed' : 'not yet completed'}.`}
+                      size="sm"
+                    />
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteReminder(item.id);
+                      }}
+                      className="text-ner-black/30 hover:text-red-600 p-2 transition-colors rounded-lg hover:bg-black/5"
+                      title="Remove reminder"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -176,9 +212,16 @@ export const MemoryCompanionPage: React.FC = () => {
 
           {/* Things to Remember Pinboard */}
           <div className="frost-card rounded-3xl p-6 sm:p-8">
-            <div className="flex items-center gap-2.5 mb-4">
-              <Pin className="w-5 h-5 text-ner-terracotta" />
-              <h2 className="text-xl font-bold text-ner-black">Things to Remember</h2>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+              <div className="flex items-center gap-2.5">
+                <Pin className="w-5 h-5 text-ner-terracotta" />
+                <h2 className="text-xl font-bold text-ner-black">Things to Remember</h2>
+              </div>
+              <TTSButton
+                text={pinnedMemoriesSpeechText}
+                label="Read All Facts"
+                size="sm"
+              />
             </div>
             <p className="text-xs text-ner-black/60 mb-6">
               Essential personal facts pinned for effortless daily recall.
@@ -190,12 +233,20 @@ export const MemoryCompanionPage: React.FC = () => {
                   key={pin.id}
                   className="p-4 rounded-2xl bg-white border border-ner-border shadow-sm flex flex-col justify-between"
                 >
-                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-ner-terracotta mb-2">
-                    {pin.tag}
-                  </span>
-                  <p className="font-bold text-sm text-ner-black leading-snug">
-                    {pin.text}
-                  </p>
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-ner-terracotta">
+                        {pin.tag}
+                      </span>
+                      <TTSButton
+                        text={`${pin.tag}: ${pin.text}`}
+                        size="sm"
+                      />
+                    </div>
+                    <p className="font-bold text-sm text-ner-black leading-snug">
+                      {pin.text}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -205,9 +256,16 @@ export const MemoryCompanionPage: React.FC = () => {
         {/* Right 5 Columns: Memory Notes & Voice Journal */}
         <div className="lg:col-span-5 space-y-6">
           <div className="frost-card rounded-3xl p-6 sm:p-8">
-            <div className="flex items-center gap-2.5 mb-4">
-              <FileText className="w-5 h-5 text-ner-sage" />
-              <h2 className="text-xl font-bold text-ner-black">Memory Notes</h2>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+              <div className="flex items-center gap-2.5">
+                <FileText className="w-5 h-5 text-ner-sage" />
+                <h2 className="text-xl font-bold text-ner-black">Memory Notes</h2>
+              </div>
+              <TTSButton
+                text={memoryNotesSpeechText}
+                label="Read Notes"
+                size="sm"
+              />
             </div>
             <p className="text-xs text-ner-black/60 mb-6">
               Comforting thoughts, family recipes, and cherished details.
@@ -246,9 +304,15 @@ export const MemoryCompanionPage: React.FC = () => {
                     <h4 className="font-bold text-sm text-ner-black">{note.title}</h4>
                     <span className="text-[10px] font-mono text-ner-black/40">{note.date}</span>
                   </div>
-                  <p className="text-xs text-ner-black/70 leading-relaxed mt-1">
+                  <p className="text-xs text-ner-black/70 leading-relaxed mt-1 mb-2">
                     {note.content}
                   </p>
+                  <div className="flex justify-end pt-1 border-t border-ner-border/40">
+                    <TTSButton
+                      text={`Memory note: ${note.title}. ${note.content}`}
+                      size="sm"
+                    />
+                  </div>
                 </div>
               ))}
             </div>
