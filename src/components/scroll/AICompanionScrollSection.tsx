@@ -98,6 +98,7 @@ export const AICompanionScrollSection: React.FC = () => {
     pauseSpeaking,
     resumeSpeaking,
     playCalmingChime, 
+    primeSpeechEngine,
     motion: contextMotion, 
     language: globalLang,
     t 
@@ -159,6 +160,7 @@ export const AICompanionScrollSection: React.FC = () => {
   }, [scrollYProgress, activeTab]);
 
   const handleAuditionVoice = () => {
+    primeSpeechEngine();
     playCalmingChime();
     const greetings: Record<string, string> = {
       en: `Hello! I am Smriti, your personal cognitive companion. I am here with you to celebrate cherished memories, guide peaceful routines, and keep your mind active.`,
@@ -170,9 +172,9 @@ export const AICompanionScrollSection: React.FC = () => {
       bodo: `खुलुमबाय! आं स्मृती, नोंथांनि मोजां मोन्नाय गोसोखांथि लोगो।`,
     };
     const speech = greetings[selectedLang] || greetings.en;
-    stopSpeaking();
     setSpeakingMsgId('audition');
     speakText(speech, selectedLang, {
+      onStart: () => setSpeakingMsgId('audition'),
       onEnd: () => setSpeakingMsgId(null),
     });
   };
@@ -180,6 +182,8 @@ export const AICompanionScrollSection: React.FC = () => {
   const handleSendMessage = async (textToSend?: string) => {
     const query = (textToSend || inputQuery).trim();
     if (!query || isLoading) return;
+
+    primeSpeechEngine();
 
     if (isListening) {
       stopListening();
@@ -244,6 +248,7 @@ export const AICompanionScrollSection: React.FC = () => {
       // Seamless audio readout for the new AI reply
       setSpeakingMsgId(aiMsgId);
       speakText(aiReply, selectedLang, {
+        onStart: () => setSpeakingMsgId(aiMsgId),
         onEnd: () => setSpeakingMsgId(null),
       });
     } catch (err) {
@@ -261,6 +266,7 @@ export const AICompanionScrollSection: React.FC = () => {
       setMessages((prev) => [...prev, fallbackMsg]);
       setSpeakingMsgId(fallbackMsg.id);
       speakText(fallbackReply, selectedLang, {
+        onStart: () => setSpeakingMsgId(fallbackMsg.id),
         onEnd: () => setSpeakingMsgId(null),
       });
     } finally {
@@ -273,9 +279,10 @@ export const AICompanionScrollSection: React.FC = () => {
       stopSpeaking();
       setSpeakingMsgId(null);
     } else {
-      stopSpeaking();
+      primeSpeechEngine();
       setSpeakingMsgId(msg.id);
       speakText(msg.text, selectedLang, {
+        onStart: () => setSpeakingMsgId(msg.id),
         onEnd: () => setSpeakingMsgId(null),
       });
     }

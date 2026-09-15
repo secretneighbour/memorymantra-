@@ -484,6 +484,37 @@ class SpeechEngine {
     }
   }
 
+  public primeAudio(): void {
+    if (typeof window === 'undefined') return;
+    try {
+      if ('speechSynthesis' in window) {
+        if (window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+        }
+        // Force browser to populate voices list early
+        window.speechSynthesis.getVoices();
+      }
+
+      // Unlock Web Audio context on user gesture
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioCtx) {
+        const ctx = new AudioCtx();
+        if (ctx.state === 'suspended') {
+          ctx.resume().catch(() => {});
+        }
+        setTimeout(() => {
+          try {
+            ctx.close();
+          } catch {
+            // Ignore
+          }
+        }, 150);
+      }
+    } catch {
+      // Ignore
+    }
+  }
+
   /**
    * Main speech execution. Automatically handles voice selection, sentence chunking,
    * Chrome keep-alive, and async cancel resolution.
@@ -493,10 +524,11 @@ class SpeechEngine {
     this.stopRequested = true;
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       try {
-        if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+        if (window.speechSynthesis.speaking || window.speechSynthesis.pending || window.speechSynthesis.paused) {
           window.speechSynthesis.cancel();
-          // Crucial: Wait 60ms for Chromium IPC to flush the cancel command
+          // Flush Chromium IPC
           await new Promise((r) => setTimeout(r, 60));
+          window.speechSynthesis.resume();
         }
       } catch (e) {
         console.warn('Error during pre-speak cancel:', e);
@@ -518,13 +550,10 @@ class SpeechEngine {
     const chunks = this.chunkText(trimmed);
     this.notifyStatus(true, trimmed);
 
-    if (options.onStart) {
-      options.onStart();
-    }
-
     this.startKeepAlive();
 
     try {
+      let startedNotified = false;
       for (let i = 0; i < chunks.length; i++) {
         if (this.stopRequested) break;
 
@@ -540,7 +569,16 @@ class SpeechEngine {
           bcp47,
           rate,
           pitch,
+          onStart: () => {
+            if (!startedNotified && options.onStart) {
+              startedNotified = true;
+              options.onStart();
+            }
+          },
         });
+      }
+      if (!startedNotified && options.onStart && !this.stopRequested) {
+        options.onStart();
       }
     } catch (err) {
       console.warn('Speech execution notice:', err);
@@ -563,6 +601,7 @@ class SpeechEngine {
       bcp47: string;
       rate: number;
       pitch: number;
+      onStart?: () => void;
     }
   ): Promise<boolean> {
     return new Promise((resolve) => {
@@ -572,7 +611,7 @@ class SpeechEngine {
       }
 
       try {
-        // Force unstick any paused or hanging synthesis state in Chromium / Safari
+        // Force unstick any paused synthesis in Chromium / Safari
         if (window.speechSynthesis.paused) {
           window.speechSynthesis.resume();
         }
@@ -581,7 +620,7 @@ class SpeechEngine {
         utterance.rate = params.rate;
         utterance.pitch = params.pitch;
         
-        // Use exact voice language if voice object exists to prevent browser language mismatch errors
+        // Match exact language tag of the voice to prevent Chromium language rejection
         if (params.voice) {
           utterance.voice = params.voice;
           utterance.lang = params.voice.lang || params.bcp47;
@@ -589,7 +628,7 @@ class SpeechEngine {
           utterance.lang = params.bcp47 || 'en-IN';
         }
 
-        // Prevent V8 garbage collection mid-playback
+        // Prevent Chromium V8 garbage collection
         activeUtterances.add(utterance);
 
         let finished = false;
@@ -602,6 +641,12 @@ class SpeechEngine {
           activeUtterances.delete(utterance);
         };
 
+        utterance.onstart = () => {
+          if (params.onStart) {
+            params.onStart();
+          }
+        };
+
         utterance.onend = () => {
           cleanup();
           resolve(true);
@@ -610,31 +655,25 @@ class SpeechEngine {
         utterance.onerror = (e) => {
           cleanup();
           // Canceled or interrupted is expected on user stop/skip
-          if (e.error === 'canceled' || e.error === 'interrupted') {
+          if (this.stopRequested || e.error === 'canceled' || e.error === 'interrupted') {
             resolve(true);
             return;
           }
 
-          // If language or voice was rejected by the platform, retry with universal en-IN fallback
-          if (e.error === 'language-unavailable' || e.error === 'voice-unavailable' || e.error === 'invalid-argument') {
-            console.warn(`[TTS] Retrying chunk with universal fallback for error: ${e.error}`);
-            try {
-              const fallbackUtterance = new SpeechSynthesisUtterance(chunk);
-              fallbackUtterance.rate = params.rate;
-              fallbackUtterance.lang = 'en-US';
-              fallbackUtterance.onend = () => resolve(true);
-              fallbackUtterance.onerror = () => resolve(true);
-              activeUtterances.add(fallbackUtterance);
-              window.speechSynthesis.speak(fallbackUtterance);
-              return;
-            } catch {
-              resolve(true);
-              return;
-            }
+          // If language/voice or platform synthesis failed, retry with universal fallback
+          console.warn(`[TTS] Synthesis error (${e.error}), attempting fallback for:`, chunk.slice(0, 30));
+          try {
+            const fallbackUtterance = new SpeechSynthesisUtterance(chunk);
+            fallbackUtterance.rate = params.rate;
+            fallbackUtterance.lang = 'en-US';
+            fallbackUtterance.onend = () => resolve(true);
+            fallbackUtterance.onerror = () => resolve(true);
+            activeUtterances.add(fallbackUtterance);
+            window.speechSynthesis.resume();
+            window.speechSynthesis.speak(fallbackUtterance);
+          } catch {
+            resolve(true);
           }
-
-          console.warn('SpeechSynthesisUtterance error event:', e.error, 'lang:', params.bcp47);
-          resolve(true);
         };
 
         // Safety timeout for chunk: if browser hangs without firing onend
@@ -646,7 +685,7 @@ class SpeechEngine {
           }
         }, maxDuration);
 
-        // Resume right before speaking in case Chrome auto-paused
+        // Resume right before speaking in case browser auto-paused
         window.speechSynthesis.resume();
         window.speechSynthesis.speak(utterance);
       } catch (err) {

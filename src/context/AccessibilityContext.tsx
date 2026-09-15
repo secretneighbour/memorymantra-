@@ -21,6 +21,7 @@ interface AccessibilityContextType {
   resumeSpeaking: () => void;
   speechRate: number;
   setSpeechRate: (rate: number) => void;
+  primeSpeechEngine: () => void;
   playCalmingChime: () => void;
   playAudioAsset: (url: string, options?: { onStart?: () => void; onEnd?: () => void }) => Promise<boolean>;
   playNarratorWelcome: (lang?: NERLanguage) => Promise<boolean>;
@@ -141,6 +142,10 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     speechEngine.resume();
   };
 
+  const primeSpeechEngine = () => {
+    speechEngine.primeAudio();
+  };
+
   const playCalmingChime = () => {
     speechEngine.playCalmingChime();
   };
@@ -179,6 +184,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
         resumeSpeaking,
         speechRate,
         setSpeechRate,
+        primeSpeechEngine,
         playCalmingChime,
         playAudioAsset,
         playNarratorWelcome,

@@ -15,11 +15,12 @@ interface ChatMessage {
 
 export const AICompanionDrawer: React.FC = () => {
   const { isAICompanionOpen, setIsAICompanionOpen, activePatient, reminders } = useRole();
-  const { speakText, stopSpeaking, isSpeaking, language, playCalmingChime, t } = useAccessibility();
+  const { speakText, stopSpeaking, isSpeaking, language, playCalmingChime, primeSpeechEngine, t } = useAccessibility();
 
   const [inputQuery, setInputQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
+  const [autoSpeakEnabled, setAutoSpeakEnabled] = useState(true);
   const chatBottomRef = useRef<HTMLDivElement>(null);
 
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -40,9 +41,10 @@ export const AICompanionDrawer: React.FC = () => {
 
   useEffect(() => {
     if (isAICompanionOpen) {
+      primeSpeechEngine();
       chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages, isAICompanionOpen, isLoading]);
+  }, [messages, isAICompanionOpen, isLoading, primeSpeechEngine]);
 
   const quickQuestions = [
     t.aiCompanionQuick1,
@@ -55,6 +57,9 @@ export const AICompanionDrawer: React.FC = () => {
   const handleSend = async (textToSend?: string) => {
     const query = (textToSend || inputQuery).trim();
     if (!query || isLoading) return;
+
+    // Warm up TTS engine immediately on user gesture
+    primeSpeechEngine();
 
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const userMsg: ChatMessage = {
@@ -93,11 +98,14 @@ export const AICompanionDrawer: React.FC = () => {
       };
 
       setMessages((prev) => [...prev, botMsg]);
-      setSpeakingMsgId(botMsgId);
-      speakText(res.text, language, {
-        onStart: () => setSpeakingMsgId(botMsgId),
-        onEnd: () => setSpeakingMsgId(null),
-      });
+
+      if (autoSpeakEnabled) {
+        setSpeakingMsgId(botMsgId);
+        speakText(res.text, language, {
+          onStart: () => setSpeakingMsgId(botMsgId),
+          onEnd: () => setSpeakingMsgId(null),
+        });
+      }
     } catch (e) {
       console.warn('AI Drawer query error:', e);
       const fallbackMsg: ChatMessage = {
@@ -108,11 +116,13 @@ export const AICompanionDrawer: React.FC = () => {
         provider: 'offline-reassurance',
       };
       setMessages((prev) => [...prev, fallbackMsg]);
-      setSpeakingMsgId(fallbackMsg.id);
-      speakText(fallbackMsg.text, language, {
-        onStart: () => setSpeakingMsgId(fallbackMsg.id),
-        onEnd: () => setSpeakingMsgId(null),
-      });
+      if (autoSpeakEnabled) {
+        setSpeakingMsgId(fallbackMsg.id);
+        speakText(fallbackMsg.text, language, {
+          onStart: () => setSpeakingMsgId(fallbackMsg.id),
+          onEnd: () => setSpeakingMsgId(null),
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -123,7 +133,7 @@ export const AICompanionDrawer: React.FC = () => {
       stopSpeaking();
       setSpeakingMsgId(null);
     } else {
-      stopSpeaking();
+      primeSpeechEngine();
       setSpeakingMsgId(msg.id);
       speakText(msg.text, language, {
         onStart: () => setSpeakingMsgId(msg.id),
@@ -166,16 +176,36 @@ export const AICompanionDrawer: React.FC = () => {
             </div>
           </div>
 
-          <button
-            onClick={() => {
-              stopSpeaking();
-              setIsAICompanionOpen(false);
-            }}
-            className="p-2 rounded-full hover:bg-ner-black/5 text-ner-black/60 hover:text-ner-black transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
-            aria-label="Close Companion"
-          >
-            <X className="w-6 h-6" />
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => {
+                primeSpeechEngine();
+                setAutoSpeakEnabled(!autoSpeakEnabled);
+                if (isSpeaking) stopSpeaking();
+              }}
+              className={`p-2 rounded-full border transition-colors flex items-center gap-1.5 text-xs font-semibold ${
+                autoSpeakEnabled
+                  ? 'border-ner-terracotta/40 bg-ner-terracotta/10 text-ner-terracotta'
+                  : 'border-ner-border bg-ner-offwhite text-ner-black/50'
+              }`}
+              title={autoSpeakEnabled ? 'Voice response enabled (Click to mute)' : 'Voice response muted (Click to enable)'}
+              aria-label="Toggle voice responses"
+            >
+              {autoSpeakEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+              <span className="hidden sm:inline">{autoSpeakEnabled ? 'Voice On' : 'Voice Off'}</span>
+            </button>
+
+            <button
+              onClick={() => {
+                stopSpeaking();
+                setIsAICompanionOpen(false);
+              }}
+              className="p-2 rounded-full hover:bg-ner-black/5 text-ner-black/60 hover:text-ner-black transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center"
+              aria-label="Close Companion"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
         </div>
 
         {/* Notice Banner */}
