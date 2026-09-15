@@ -9,6 +9,7 @@ import { DotMatrixBackground } from './components/DotMatrixBackground';
 import { RoleSwitcherModal } from './components/RoleSwitcherModal';
 import { AICompanionDrawer } from './components/AICompanionDrawer';
 import { OfflineBanner } from './components/OfflineBanner';
+import { PageNarrator } from './components/PageNarrator';
 
 // Pages
 import { LandingPage } from './pages/LandingPage';
@@ -72,10 +73,11 @@ export const App: React.FC = () => {
               <DotMatrixBackground />
               <Navbar />
 
-              {/* Global Modals & Drawers */}
+              {/* Global Modals, Drawers & Voice Narrator */}
               <RoleSwitcherModal />
               <AICompanionDrawer />
               <OfflineBanner />
+              <PageNarrator />
 
               <main className="flex-grow z-10">
                 <Routes>

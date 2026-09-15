@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useRole } from '../context/RoleContext';
+import { useAccessibility } from '../context/AccessibilityContext';
 import { TTSButton } from '../components/TTSButton';
 import { 
   Bell, 
@@ -18,6 +19,7 @@ import {
 
 export const RemindersPage: React.FC = () => {
   const { reminders, toggleReminder, addReminder, deleteReminder } = useRole();
+  const { t } = useAccessibility();
   const [filter, setFilter] = useState<'all' | 'medication' | 'exercise' | 'meal' | 'family'>('all');
   const [chimePlayed, setChimePlayed] = useState<string | null>(null);
 
@@ -77,8 +79,8 @@ export const RemindersPage: React.FC = () => {
         </div>
 
         <TTSButton
-          text="Reminders Center. Track scheduled medicines, meals, and family calls."
-          label="Listen"
+          text={`${t.remindersTitle}. ${t.thingsToRemember}.`}
+          label={t.listenAloud}
           size="lg"
         />
       </div>

@@ -50,7 +50,8 @@ SmritiCare is built using a modern full-stack architecture optimized for speed, 
 | **SQL (PostgreSQL)** | `.sql` | **Database & Security**: Relational tables for daily check-ins, game telemetry, user profiles, medication reminders, memory vault metadata, and Row-Level Security (RLS) policies in Supabase. |
 | **JSON** | `.json` | **Configuration & Packaging**: `package.json` dependencies, `tsconfig.json` compiler options, `electron-builder.json` Windows packaging definitions, and `metadata.json`. |
 | **NSIS Scripting** | Embedded NSIS | **Windows Installer Automation**: Embedded NSIS routines for building the Windows setup installer (`Smriti-Care-Setup.exe`), Start Menu shortcuts, and uninstaller logic. |
-| **Web Speech API** | Browser Native API | **Text-to-Speech Engine**: Multi-language, rate-adjusted speech synthesis for elderly users with impaired vision or reading difficulties. |
+| **Web Speech API** | Browser Native API | **Speech Synthesis (TTS) & Recognition (STT)**: Multi-language narration across all 8 supported North-East & Indian languages, plus voice recognition for interactive voice-guided check-ins. |
+| **Web Audio API** | Browser Native API | **Calming Harmonic Audio Engine**: Generates real-time 528Hz and 396Hz harmonic chimes for peaceful audio feedback during voice interactions. |
 
 ---
 
@@ -234,33 +235,143 @@ To compile and package the entire app into a redistributable Windows setup insta
 
 ## 🔑 Environment Variables & API Keys
 
-Create a `.env` file in the root of your project with the following variables:
+SmritiCare uses environment variables to connect to external services such as **Google Gemini AI** and **Supabase**. All credentials are stored in a local `.env` file in the project root.
+
+> 🛡️ **Security Note**: Never commit your `.env` file or actual secrets to public version control or GitHub. The `.env` file is already listed in `.gitignore` to protect your privacy.
+
+---
+
+### ⚙️ Quick Step-by-Step Guide: How to Put API Keys into the Project
+
+#### Step 1: Create your local `.env` file
+A template file called `.env.example` is provided in the root directory. You can create your `.env` file using your terminal or text editor:
+
+* **Using Windows PowerShell:**
+  ```powershell
+  Copy-Item .env.example .env
+  ```
+* **Using Windows Command Prompt (CMD):**
+  ```cmd
+  copy .env.example .env
+  ```
+* **Using macOS / Linux / Git Bash:**
+  ```bash
+  cp .env.example .env
+  ```
+* **Using VS Code / File Explorer:**
+  1. Open the project folder in VS Code or your code editor.
+  2. Right-click the root folder (empty area in the file explorer sidebar) and select **New File**.
+  3. Name the file exactly **`.env`** (make sure there is a leading dot and no `.txt` extension).
+  4. Copy the contents from `.env.example` into your new `.env` file.
+
+---
+
+#### Step 2: Open `.env` and Insert Your Keys
+Open the `.env` file in VS Code or any text editor (Notepad, nano, etc.). It should look like this:
 
 ```env
-# Supabase Authentication & Database
+# ==========================================
+# SMRITICARE ENVIRONMENT CONFIGURATION
+# ==========================================
+
+# 1. Supabase Authentication & PostgreSQL Database (Optional for Cloud Sync)
 VITE_SUPABASE_URL=https://your-project-id.supabase.co
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-public-key
 
-# Optional: Google Gemini AI (for advanced generative reminiscence)
-GEMINI_API_KEY=your_gemini_api_key_here
+# 2. Google Gemini AI (Optional for Advanced Reminiscence & Clinical AI)
+GEMINI_API_KEY=AIzaSyYourGeminiApiKeyHere
 ```
 
-### How to Obtain and Configure Keys:
+Replace the placeholder values on the right-hand side of the `=` with your actual credentials.
 
-#### 1. Supabase Authentication (`VITE_SUPABASE_URL` & `VITE_SUPABASE_ANON_KEY`)
-1. Go to [https://supabase.com](https://supabase.com) and create a free project.
-2. Under **Project Settings** $\rightarrow$ **API**:
-   - Copy the **Project URL** into `VITE_SUPABASE_URL`.
-   - Copy the **anon / public key** into `VITE_SUPABASE_ANON_KEY`.
-3. Under **Authentication** $\rightarrow$ **URL Configuration**:
-   - Set Site URL to `http://localhost:3000` (or your deployed URL).
-   - Add `http://localhost:3000/auth/callback` to the **Redirect URLs**.
-4. *Demo Mode*: If no keys are provided, the app automatically runs in a local mock/demo mode with 1-click accounts for testing.
+---
 
-#### 2. Gemini API Key (`GEMINI_API_KEY`)
-1. Visit [Google AI Studio](https://aistudio.google.com/).
-2. Click **Get API key** and generate a new key.
-3. Paste the key into `GEMINI_API_KEY` in `.env`.
+#### Step 3: Restart Your Development Server
+Because Vite and Node.js load environment variables when starting up, **you must restart the dev server after editing `.env`**:
+
+1. In the terminal where `npm run dev` is running, press **`Ctrl + C`** to stop the server.
+2. Start it again:
+   ```bash
+   npm run dev
+   ```
+3. Your application will now load with the active API keys!
+
+---
+
+### 🌐 How to Put API Keys in Google AI Studio / Cloud Deployments
+
+If you are running or sharing the application within **Google AI Studio** or deploying to **Cloud Run / Vercel / Netlify**:
+
+1. **In Google AI Studio**:
+   - Do **not** create a UI form to type in API keys.
+   - Click the **Settings** gear icon in the top header or side panel.
+   - Navigate to **Secrets / Environment Variables**.
+   - Add your secret keys (e.g. `GEMINI_API_KEY`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) with their corresponding values.
+   - The platform will securely inject them into the application environment.
+
+2. **In Vercel / Netlify / Cloud Run**:
+   - Go to your project's **Settings** $\rightarrow$ **Environment Variables**.
+   - Add key-value pairs matching `.env.example`.
+   - Re-deploy the application to apply the new variables.
+
+---
+
+### 📖 Detailed Instructions: How to Obtain Each API Key
+
+#### 1. Google Gemini API Key (`GEMINI_API_KEY`)
+* **What it powers**: Used by the AI Reminiscence Companion, conversational memory reflection, and clinical narrative summarization.
+* **How to get a key**:
+  1. Visit the [Google AI Studio API Keys Page](https://aistudio.google.com/app/apikey).
+  2. Sign in with your Google account.
+  3. Click **"Create API key"** (or **"Get API key"**).
+  4. Select or create a Google Cloud project to associate with the key.
+  5. Copy your newly generated key (starts with `AIzaSy...`).
+  6. In your `.env` file, paste it directly:
+     ```env
+     GEMINI_API_KEY=AIzaSyD-ExampleKeyXYZ123456789
+     ```
+
+#### 2. Supabase Keys (`VITE_SUPABASE_URL` & `VITE_SUPABASE_ANON_KEY`)
+* **What it powers**: User registration, login, doctor telemetry, clinical notes sync, and persistent caregiver tracking.
+* **How to get your keys**:
+  1. Go to [supabase.com](https://supabase.com) and click **"Start your project"** or sign in.
+  2. Create a new organization and project (e.g., named `smriti-care`).
+  3. Once your project is ready, click the **Project Settings** (gear icon at the bottom of the left sidebar).
+  4. Click **"API"** under the Configuration section.
+  5. Look for the **Project URL**:
+     - Copy the URL (e.g. `https://xyzcompany.supabase.co`).
+     - Paste it into `VITE_SUPABASE_URL` in `.env`.
+  6. Look for **Project API keys** and locate the **`anon` / `public`** key:
+     - Copy the long JWT token string.
+     - Paste it into `VITE_SUPABASE_ANON_KEY` in `.env`.
+  7. *(Required for email links)*: Go to **Authentication** $\rightarrow$ **URL Configuration**:
+     - Set **Site URL** to `http://localhost:3000` (or your deployed domain).
+     - Add `http://localhost:3000/auth/callback` to the **Redirect URLs** list.
+
+---
+
+### 💡 Syntax Rules & Common Mistakes to Avoid
+
+| Rule | Correct Example | Incorrect Example | Why? |
+| :--- | :--- | :--- | :--- |
+| **No spaces around `=`** | `GEMINI_API_KEY=AIza...` | `GEMINI_API_KEY = AIza...` | Spaces around `=` cause parsing failures in Node.js & dotenv. |
+| **No quotation marks** | `VITE_SUPABASE_URL=https://abc.supabase.co` | `VITE_SUPABASE_URL="https://abc.supabase.co"` | Quotes are generally unnecessary and may get parsed as part of the string. |
+| **Vite prefix rule** | `VITE_SUPABASE_URL=...` | `SUPABASE_URL=...` | Frontend Vite code can only read client-side variables prefixed with `VITE_`. |
+| **Server-only secrets** | `GEMINI_API_KEY=...` | `VITE_GEMINI_API_KEY=...` | Never prefix private AI/server keys with `VITE_`, to prevent them from leaking into client-side JS bundles. |
+
+---
+
+### 📴 Zero-Config / Demo Mode (No Keys Needed for Testing!)
+
+Don't have API keys yet or just want to test the app? **No problem!**
+
+SmritiCare includes an automatic **Zero-Config Demo Mode**:
+- If `.env` is empty or missing, the application automatically falls back to client-side demo accounts.
+- On the login screen, simply click any **1-Click Demo Account**:
+  - 🟢 **Patient Demo** (`patient@smriticare.org`)
+  - 🔵 **Caregiver Demo** (`caregiver@smriticare.org`)
+  - 🟣 **Doctor Demo** (`doctor@smriticare.org`)
+- All 9 clinical cognitive training games, the interactive cat, memory vault, and local voice narrator will work smoothly without any cloud configuration.
 
 ---
 
@@ -383,10 +494,14 @@ SmritiCare is architected into 12 core functional module systems across presenta
 
 ---
 
-### 9. Accessibility & Speech Synthesis Engine
-* **Location:** `/src/context/AccessibilityContext.tsx`, `/src/components/TTSButton.tsx`, `/src/pages/SettingsPage.tsx`
+### 9. Accessibility & Voice Assistance Engine (Well Voice & Speech Engine)
+* **Location:** `/src/context/AccessibilityContext.tsx`, `/src/utils/speechEngine.ts`, `/src/components/WellVoiceAssistant.tsx`, `/src/components/VoiceDictationButton.tsx`, `/src/hooks/useSpeechRecognition.ts`, `/src/components/TTSButton.tsx`, `/src/pages/SettingsPage.tsx`
 * **Features:**
-  - **Web Speech Text-to-Speech (TTS):** 1-tap read-aloud button (`TTSButton.tsx`) for dashboard cards, game instructions, memories, and daily routines.
+  - **Well Voice Guided Assistant (`WellVoiceAssistant.tsx`):** A conversational voice assistant that walks elderly patients through their check-in flow (Mood → Energy Level → Physical Comfort → Spoken Note). It speaks prompts naturally in the patient's chosen language, listens to their spoken reply via Speech Recognition, and automatically parses sentiment and metrics.
+  - **Voice Dictation Button (`VoiceDictationButton.tsx`):** A reusable microphone dictation control with live ripple animations and feedback, integrated into notes, health check-in, and AI companion inputs.
+  - **Cross-Language Speech Recognition (`useSpeechRecognition.ts`):** Client-side speech-to-text supporting multi-language BCP-47 mapping across English (`en-US`), Hindi (`hi-IN`), Bengali (`bn-IN`), Assamese (`as-IN`), and regional dialects.
+  - **Harmonic Audio Chimes (`speechEngine.ts`):** Web Audio API dual-harmonic sine synthesis (528 Hz Love Frequency + 396 Hz Solfeggio tone) providing relaxing acoustic confirmation before and after voice interactions.
+  - **Web Speech Text-to-Speech (TTS):** 1-tap read-aloud button (`TTSButton.tsx`) for dashboard cards, game instructions, memories, and daily routines with neural/natural voice scoring.
   - **Dyslexia Font Mode:** Toggles OpenDyslexic font across the entire interface for improved character distinction.
   - **Visual Contrast Profiles:** High-contrast light and dark industrial themes meeting WCAG 2.1 AAA accessibility standards.
   - **Text Scaling Engine:** Dynamically modifies root rem sizing between Normal (100%), Large (115%), and Extra Large (130%).

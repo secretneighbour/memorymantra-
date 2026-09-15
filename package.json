@@ -8,18 +8,21 @@
   "type": "module",
   "main": "dist-electron/main.cjs",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "dev": "tsx server.ts",
+    "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
+    "start": "node dist/server.cjs",
     "lint": "tsc --noEmit",
     "preview": "vite preview",
     "build:electron": "esbuild electron/main.ts --bundle --platform=node --target=node18 --packages=external --outfile=dist-electron/main.cjs && esbuild electron/preload.ts --bundle --platform=node --target=node18 --packages=external --outfile=dist-electron/preload.cjs",
-    "electron:dev": "npm run build:electron && concurrently -k -s first \"cross-env NODE_ENV=development vite\" \"wait-on http://localhost:3000 && cross-env NODE_ENV=development electron . --dev\"",
+    "electron:dev": "npm run build:electron && concurrently -k -s first \"cross-env NODE_ENV=development tsx server.ts\" \"wait-on http://localhost:3000 && cross-env NODE_ENV=development electron . --dev\"",
     "electron:build": "npm run build && npm run build:electron && electron-builder --win --x64 --config electron-builder.json"
   },
   "dependencies": {
+    "@google/genai": "^2.22.0",
     "@supabase/supabase-js": "^2.116.0",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
+    "express": "^5.2.1",
     "framer-motion": "^13.2.0",
     "lucide-react": "^0.475.0",
     "react": "^18.3.1",
@@ -30,6 +33,7 @@
   },
   "devDependencies": {
     "@types/canvas-confetti": "^1.9.0",
+    "@types/express": "^5.0.6",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
@@ -41,6 +45,7 @@
     "esbuild": "^0.28.2",
     "postcss": "^8.5.2",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.23.13",
     "typescript": "^5.7.3",
     "vite": "^6.1.0",
     "wait-on": "^9.1.0"

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useRole } from '../context/RoleContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { TTSButton } from './TTSButton';
+import { VoiceDictationButton } from './VoiceDictationButton';
+import { WellVoiceAssistant } from './WellVoiceAssistant';
 import {
   WellbeingMood,
   WellbeingResponse,
@@ -16,7 +18,10 @@ import {
   CheckCircle2, 
   AlertTriangle, 
   History, 
-  Clock
+  Clock,
+  Volume2,
+  Sparkles,
+  Mic
 } from 'lucide-react';
 
 interface WellbeingCheckInProps {
@@ -43,6 +48,7 @@ export const WellbeingCheckIn: React.FC<WellbeingCheckInProps> = ({
   const { speakText, t } = useAccessibility();
 
   const [modalOpen, setModalOpen] = useState(false);
+  const [isWellVoiceOpen, setIsWellVoiceOpen] = useState(false);
   const [selectedMood, setSelectedMood] = useState<WellbeingMood | null>(null);
   const [optionalNote, setOptionalNote] = useState('');
   const [submittedResponse, setSubmittedResponse] = useState<WellbeingResponse | null>(null);
@@ -209,8 +215,17 @@ export const WellbeingCheckIn: React.FC<WellbeingCheckInProps> = ({
                 {t.encouragement}
               </p>
 
-              {/* Text-to-speech */}
-              <div className="mb-5">
+              {/* Voice Assistance & Narration */}
+              <div className="mb-5 flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsWellVoiceOpen(true)}
+                  className="px-3.5 py-1.5 rounded-full bg-ner-terracotta text-white hover:bg-ner-terracotta/90 text-xs font-mono font-bold flex items-center gap-1.5 shadow-sm active:scale-95 transition"
+                  title="Start interactive guided voice check-in"
+                >
+                  <Volume2 className="w-3.5 h-3.5 animate-pulse" />
+                  <span>Well Voice Guided Check-In</span>
+                </button>
                 <TTSButton
                   text={`${t.wellbeingQuestion} ${t.moodGood}, ${t.moodOkay}, ${t.moodWorried}, ${t.moodSad}, ${t.moodTired}.`}
                   label={t.listenAloud}
@@ -274,13 +289,21 @@ export const WellbeingCheckIn: React.FC<WellbeingCheckInProps> = ({
                     ))}
                   </div>
 
-                  <input
-                    type="text"
-                    value={optionalNote}
-                    onChange={(e) => setOptionalNote(e.target.value)}
-                    placeholder="Add a short note..."
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-ner-border text-xs focus:outline-none focus:border-ner-black"
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={optionalNote}
+                      onChange={(e) => setOptionalNote(e.target.value)}
+                      placeholder="Add a short note or speak..."
+                      className="flex-1 px-3.5 py-2.5 rounded-xl bg-white border border-ner-border text-xs focus:outline-none focus:border-ner-black"
+                    />
+                    <VoiceDictationButton
+                      currentValue={optionalNote}
+                      onTranscript={(t) => setOptionalNote(t)}
+                      size="sm"
+                      label="Dictate"
+                    />
+                  </div>
                 </div>
               )}
 
@@ -305,6 +328,22 @@ export const WellbeingCheckIn: React.FC<WellbeingCheckInProps> = ({
               </div>
             </div>
           )}
+
+          {/* Well Voice Assistant Modal */}
+          <WellVoiceAssistant
+            isOpen={isWellVoiceOpen}
+            onClose={() => setIsWellVoiceOpen(false)}
+            onCompleted={() => {
+              setIsWellVoiceOpen(false);
+              const list = getStoredWellbeingResponses();
+              setHistoryList(list);
+              if (list.length > 0) setSubmittedResponse(list[0]);
+              setTimeout(() => {
+                setModalOpen(false);
+                if (onClose) onClose();
+              }, 1500);
+            }}
+          />
         </div>
       </div>
     );
@@ -337,7 +376,16 @@ export const WellbeingCheckIn: React.FC<WellbeingCheckInProps> = ({
           </h3>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => setIsWellVoiceOpen(true)}
+            className="px-3.5 py-2 rounded-2xl bg-ner-terracotta text-white hover:bg-ner-terracotta/90 text-xs font-mono font-bold flex items-center gap-1.5 shadow-sm active:scale-95 transition"
+            title="Start interactive guided voice check-in"
+          >
+            <Volume2 className="w-3.5 h-3.5 animate-pulse" />
+            <span>Well Voice</span>
+          </button>
           <TTSButton
             text={`${t.wellbeingQuestion}, ${t.patientName}? ${t.moodGood}, ${t.moodOkay}, ${t.moodWorried}, ${t.moodSad}, ${t.moodTired}.`}
             label={t.listenAloud}
@@ -345,7 +393,7 @@ export const WellbeingCheckIn: React.FC<WellbeingCheckInProps> = ({
           <button
             type="button"
             onClick={() => setShowHistory(!showHistory)}
-            className="px-3 py-1.5 rounded-xl border border-ner-border hover:border-ner-black text-xs font-mono text-ner-black/70 flex items-center gap-1.5 transition-colors"
+            className="px-3 py-2 rounded-2xl border border-ner-border hover:border-ner-black text-xs font-mono text-ner-black/70 flex items-center gap-1.5 transition-colors"
           >
             <History className="w-3.5 h-3.5" />
             <span>{showHistory ? 'Hide' : t.recentCheckIns}</span>
@@ -458,6 +506,18 @@ export const WellbeingCheckIn: React.FC<WellbeingCheckInProps> = ({
           )}
         </div>
       )}
+
+      {/* Well Voice Assistant Modal */}
+      <WellVoiceAssistant
+        isOpen={isWellVoiceOpen}
+        onClose={() => setIsWellVoiceOpen(false)}
+        onCompleted={() => {
+          setIsWellVoiceOpen(false);
+          const list = getStoredWellbeingResponses();
+          setHistoryList(list);
+          if (list.length > 0) setSubmittedResponse(list[0]);
+        }}
+      />
     </div>
   );
 };

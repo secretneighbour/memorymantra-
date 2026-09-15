@@ -157,9 +157,13 @@ export interface CaregiverAlert {
   actionLabel?: string;
 }
 
+export type WellbeingMood = 'good' | 'okay' | 'worried' | 'sad' | 'tired';
+export type EnergyLevel = 1 | 2 | 3 | 4 | 5;
+export type PainLevel = 'none' | 'mild' | 'moderate' | 'severe';
+
 export interface WellbeingCheckIn {
   id: string;
-  mood: 'good' | 'okay' | 'worried' | 'sad' | 'tired';
+  mood: WellbeingMood;
   note?: string;
   timestamp: string;
 }

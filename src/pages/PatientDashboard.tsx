@@ -5,6 +5,8 @@ import { useAccessibility } from '../context/AccessibilityContext';
 import { TTSButton } from '../components/TTSButton';
 import { WellbeingCheckIn } from '../components/WellbeingCheckIn';
 import { DailyMoodHealthCheckin } from '../components/DailyMoodHealthCheckin';
+import { WellVoiceAssistant } from '../components/WellVoiceAssistant';
+import { DailyCognitiveGoalsRing } from '../components/DailyCognitiveGoalsRing';
 import { dailyJourneyActivities } from '../data/activities';
 import { 
   Play, 
@@ -19,7 +21,8 @@ import {
   Users,
   Image,
   AlertCircle,
-  Clock3
+  Clock3,
+  Volume2
 } from 'lucide-react';
 
 export const PatientDashboard: React.FC = () => {
@@ -32,6 +35,7 @@ export const PatientDashboard: React.FC = () => {
   const { t } = useAccessibility();
 
   const [relaxModalOpen, setRelaxModalOpen] = useState(false);
+  const [wellVoiceOpen, setWellVoiceOpen] = useState(false);
   const [snoozeFeedback, setSnoozeFeedback] = useState<string | null>(null);
   const [helpFeedback, setHelpFeedback] = useState<string | null>(null);
 
@@ -89,13 +93,24 @@ export const PatientDashboard: React.FC = () => {
             </p>
           </div>
 
-          {/* Large Audio Read-Out Pill */}
-          <div className="shrink-0 flex flex-col sm:items-end gap-2">
-            <TTSButton
-              text={`${greeting.text}, ${t.patientName}. ${t.encouragement} ${t.activitiesCompleted}: ${activePatient.stats.completedToday} / ${activePatient.stats.totalToday}.`}
-              label={t.listenAloud}
-              size="lg"
-            />
+          {/* Large Audio Read-Out Pill & Well Voice Assistant */}
+          <div className="shrink-0 flex flex-col sm:items-end gap-2.5">
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                id="start-well-voice-hero-btn"
+                onClick={() => setWellVoiceOpen(true)}
+                className="px-4 py-3 rounded-2xl bg-ner-terracotta text-white hover:bg-ner-terracotta/90 text-sm font-mono font-bold flex items-center gap-2 shadow-md active:scale-95 transition"
+                title="Open interactive Well Voice assistant"
+              >
+                <Volume2 className="w-4 h-4 animate-pulse" />
+                <span>Well Voice Check-In</span>
+              </button>
+              <TTSButton
+                text={`${greeting.text}, ${t.patientName}. ${t.encouragement} ${t.activitiesCompleted}: ${activePatient.stats.completedToday} / ${activePatient.stats.totalToday}.`}
+                label={t.listenAloud}
+                size="lg"
+              />
+            </div>
             <span className="text-[11px] font-mono text-ner-black/40">
               {t.voiceAssistanceSub}
             </span>
@@ -181,42 +196,9 @@ export const PatientDashboard: React.FC = () => {
       <DailyMoodHealthCheckin />
 
       {/* ========================================================================= */}
-      {/* 4. TODAY'S COGNITIVE JOURNEY HERO (Tactile Monolith)                      */}
+      {/* 4. TODAY'S DAILY COGNITIVE GOALS PROGRESS RING                            */}
       {/* ========================================================================= */}
-      <div className="bg-ner-black text-white rounded-3xl p-6 sm:p-12 mb-10 shadow-2xl border border-white/10 relative overflow-hidden">
-        <div className="absolute inset-0 dot-matrix-dark opacity-15 pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-8 mb-8">
-          <div className="space-y-2">
-            <span className="text-xs font-mono uppercase tracking-widest text-ner-terracotta font-bold block">
-              [ {t.todayJourney} ]
-            </span>
-            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
-              {activePatient.stats.completedToday} / {activePatient.stats.totalToday} {t.activitiesCompleted}
-            </h2>
-            <p className="text-white/60 text-sm sm:text-base font-light max-w-lg">
-              {t.encouragement}
-            </p>
-          </div>
-
-          {/* Large Tactile Play CTA */}
-          <button
-            onClick={() => navigate(nextIncomplete.route)}
-            className="h-16 px-8 sm:px-10 rounded-2xl bg-ner-terracotta hover:bg-ner-terracottaDark text-white font-mono font-bold text-sm sm:text-base uppercase tracking-wider flex items-center justify-center gap-3 shadow-2xl transition-transform active:scale-95 shrink-0"
-          >
-            <Play className="w-5 h-5 fill-current" />
-            <span>{t.playToday}</span>
-          </button>
-        </div>
-
-        {/* Progress bar */}
-        <div className="relative z-10 w-full bg-white/10 h-3.5 rounded-full overflow-hidden">
-          <div
-            className="bg-ner-sage h-full rounded-full transition-all duration-500 shadow-sm"
-            style={{ width: `${(activePatient.stats.completedToday / activePatient.stats.totalToday) * 100}%` }}
-          />
-        </div>
-      </div>
+      <DailyCognitiveGoalsRing className="mb-10" />
 
       {/* ========================================================================= */}
       {/* 5. TACTILE ACTIVITY CARDS                                                  */}
@@ -529,6 +511,12 @@ export const PatientDashboard: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Interactive Well Voice Assistant */}
+      <WellVoiceAssistant
+        isOpen={wellVoiceOpen}
+        onClose={() => setWellVoiceOpen(false)}
+      />
     </div>
   );
 };

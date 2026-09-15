@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useRole } from '../context/RoleContext';
 import { useAccessibility } from '../context/AccessibilityContext';
@@ -12,15 +12,37 @@ import {
   Users, 
   Stethoscope,
   LogIn,
-  LogOut
+  LogOut,
+  Globe,
+  Check
 } from 'lucide-react';
+import { nerLanguages } from '../data/translations';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
   const { role, setIsRoleModalOpen, setIsAICompanionOpen } = useRole();
-  const { t } = useAccessibility();
+  const { t, language, setLanguage } = useAccessibility();
   const { user, isAuthenticated, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const langMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close language menu on outside click
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (langMenuRef.current && !langMenuRef.current.contains(e.target as Node)) {
+        setLangMenuOpen(false);
+      }
+    };
+    if (langMenuOpen) {
+      document.addEventListener('mousedown', handleOutsideClick);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [langMenuOpen]);
+
+  const currentLangMeta = nerLanguages.find((l) => l.code === language) || nerLanguages[0];
 
   const navLinks = [
     { label: t.navHome, path: '/' },
@@ -152,6 +174,50 @@ export const Navbar: React.FC = () => {
             </Link>
           )}
 
+          {/* Regional Language Switcher Pill */}
+          <div className="relative" ref={langMenuRef}>
+            <button
+              onClick={() => setLangMenuOpen(!langMenuOpen)}
+              className="px-2.5 py-1.5 rounded-full bg-ner-offwhite hover:bg-white border border-ner-border flex items-center gap-1.5 text-xs font-semibold text-ner-black transition-all shadow-sm active:scale-95"
+              title="Switch Page & Narration Language"
+              aria-label="Switch Language"
+            >
+              <Globe className="w-3.5 h-3.5 text-ner-calmBlue shrink-0" />
+              <span className="text-[11px] font-mono font-bold max-w-[70px] truncate">{currentLangMeta.native}</span>
+            </button>
+
+            {langMenuOpen && (
+              <div className="absolute right-0 mt-2 w-60 max-h-80 overflow-y-auto rounded-3xl bg-white border border-ner-border shadow-2xl p-2 z-50 animate-fade-in flex flex-col gap-1">
+                <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-ner-black/50 border-b border-ner-border/60 flex items-center justify-between">
+                  <span>Language & Voice</span>
+                  <span>NER</span>
+                </div>
+                {nerLanguages.map((l) => (
+                  <button
+                    key={l.code}
+                    onClick={() => {
+                      setLanguage(l.code);
+                      setLangMenuOpen(false);
+                    }}
+                    className={`px-3 py-2 rounded-2xl text-left text-xs flex items-center justify-between transition ${
+                      language === l.code
+                        ? 'bg-ner-black text-white font-bold'
+                        : 'hover:bg-ner-offwhite text-ner-black'
+                    }`}
+                  >
+                    <div className="flex flex-col">
+                      <span className="font-bold">{l.native}</span>
+                      <span className={`text-[10px] ${language === l.code ? 'text-white/70' : 'text-ner-black/50'}`}>
+                        {l.name}
+                      </span>
+                    </div>
+                    {language === l.code && <Check className="w-4 h-4 text-ner-terracotta" />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* Accessibility Settings */}
           <Link
             to="/settings"
@@ -223,6 +289,36 @@ export const Navbar: React.FC = () => {
                   <span>Sign In to Account</span>
                 </Link>
               )}
+            </div>
+
+            {/* Mobile Regional Language Selector */}
+            <div className="pt-3 mt-2 border-t border-ner-border">
+              <div className="flex items-center justify-between text-xs text-ner-black/60 px-1 mb-2">
+                <span className="font-mono uppercase font-bold text-[10px] tracking-wider text-ner-black/50 flex items-center gap-1">
+                  <Globe className="w-3 h-3 text-ner-calmBlue" />
+                  <span>Language / Voice</span>
+                </span>
+                <span className="text-[10px] font-mono font-bold text-ner-terracotta">{currentLangMeta.native}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5 max-h-36 overflow-y-auto pr-0.5">
+                {nerLanguages.map((l) => (
+                  <button
+                    key={l.code}
+                    onClick={() => {
+                      setLanguage(l.code);
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`p-2 rounded-xl text-left text-xs transition border flex items-center justify-between ${
+                      language === l.code
+                        ? 'bg-ner-black text-white font-bold border-ner-black'
+                        : 'bg-ner-offwhite border-ner-border text-ner-black hover:bg-white'
+                    }`}
+                  >
+                    <span className="truncate">{l.native}</span>
+                    {language === l.code && <Check className="w-3.5 h-3.5 text-ner-terracotta shrink-0" />}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="pt-3 mt-2 border-t border-ner-border flex items-center justify-between text-xs text-ner-black/60 px-2">

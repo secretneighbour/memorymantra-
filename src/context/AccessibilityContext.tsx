@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { TextSize, MotionPreference, ContrastMode, NERLanguage } from '../types';
 import { translations, TranslationDictionary } from '../data/translations';
+import { speechEngine } from '../utils/speechEngine';
 
 interface AccessibilityContextType {
   textSize: TextSize;
@@ -12,9 +13,18 @@ interface AccessibilityContextType {
   language: NERLanguage;
   setLanguage: (lang: NERLanguage) => void;
   t: TranslationDictionary;
-  speakText: (text: string) => void;
+  speakText: (text: string, customLang?: NERLanguage, options?: { onEnd?: () => void; onStart?: () => void }) => void;
   isSpeaking: boolean;
+  speakingText: string;
   stopSpeaking: () => void;
+  pauseSpeaking: () => void;
+  resumeSpeaking: () => void;
+  speechRate: number;
+  setSpeechRate: (rate: number) => void;
+  playCalmingChime: () => void;
+  playAudioAsset: (url: string, options?: { onStart?: () => void; onEnd?: () => void }) => Promise<boolean>;
+  playNarratorWelcome: (lang?: NERLanguage) => Promise<boolean>;
+  playNarratorCue: (cue: 'paused' | 'resumed' | 'stopped' | 'completed' | 'next' | 'prev' | 'restart' | 'chime') => Promise<boolean>;
 }
 
 const AccessibilityContext = createContext<AccessibilityContextType | undefined>(undefined);
@@ -33,6 +43,11 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     return (localStorage.getItem('neuro_language') as NERLanguage) || 'en';
   });
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+  const [speakingText, setSpeakingText] = useState<string>('');
+  const [speechRate, setSpeechRateState] = useState<number>(() => {
+    const saved = localStorage.getItem('neuro_speechRate');
+    return saved ? parseFloat(saved) : 0.88;
+  });
 
   const setTextSize = (size: TextSize) => {
     setTextSizeState(size);
@@ -52,7 +67,29 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   const setLanguage = (lang: NERLanguage) => {
     setLanguageState(lang);
     localStorage.setItem('neuro_language', lang);
+    // If speaking when language changes, stop current narration cleanly
+    speechEngine.stop();
   };
+
+  const setSpeechRate = (rate: number) => {
+    const clamped = Math.max(0.65, Math.min(1.3, rate));
+    setSpeechRateState(clamped);
+    speechEngine.setRate(clamped);
+    localStorage.setItem('neuro_speechRate', clamped.toString());
+  };
+
+  // Subscribe to speechEngine events
+  useEffect(() => {
+    speechEngine.setRate(speechRate);
+    const unsubscribe = speechEngine.subscribe((speaking, text) => {
+      setIsSpeaking(speaking);
+      setSpeakingText(text);
+    });
+    return () => {
+      unsubscribe();
+      speechEngine.stop();
+    };
+  }, [speechRate]);
 
   // Sync DOM classes for font scaling and high contrast
   useEffect(() => {
@@ -76,31 +113,48 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     root.setAttribute('data-text-size', textSize);
   }, [contrast, motion, textSize]);
 
-  // Speech Synthesis Helper
-  const speakText = (text: string) => {
-    if (!('speechSynthesis' in window)) {
-      alert('Speech synthesis not supported in this browser.');
-      return;
-    }
-
-    window.speechSynthesis.cancel();
-    const cleanText = text.replace(/[#*_`]/g, '');
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.rate = 0.88; // Slightly slower, calm cadence for elderly comprehension
-    utterance.pitch = 1.0;
-
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-
-    window.speechSynthesis.speak(utterance);
+  // Unified Multi-Language Speech Synthesis Helper
+  const speakText = (
+    text: string, 
+    customLang?: NERLanguage, 
+    options?: { onEnd?: () => void; onStart?: () => void }
+  ) => {
+    if (!text || !text.trim()) return;
+    const targetLang = customLang || language;
+    speechEngine.speak(text, {
+      lang: targetLang,
+      rate: speechRate,
+      onStart: options?.onStart,
+      onEnd: options?.onEnd,
+    });
   };
 
   const stopSpeaking = () => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
-    setIsSpeaking(false);
+    speechEngine.stop();
+  };
+
+  const pauseSpeaking = () => {
+    speechEngine.pause();
+  };
+
+  const resumeSpeaking = () => {
+    speechEngine.resume();
+  };
+
+  const playCalmingChime = () => {
+    speechEngine.playCalmingChime();
+  };
+
+  const playAudioAsset = (url: string, options?: { onStart?: () => void; onEnd?: () => void }) => {
+    return speechEngine.playAudioAsset(url, options);
+  };
+
+  const playNarratorWelcome = (lang?: NERLanguage) => {
+    return speechEngine.playNarratorWelcome(lang || language);
+  };
+
+  const playNarratorCue = (cue: 'paused' | 'resumed' | 'stopped' | 'completed' | 'next' | 'prev' | 'restart' | 'chime') => {
+    return speechEngine.playNarratorCue(cue);
   };
 
   const t = translations[language] || translations.en;
@@ -119,7 +173,16 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
         t,
         speakText,
         isSpeaking,
+        speakingText,
         stopSpeaking,
+        pauseSpeaking,
+        resumeSpeaking,
+        speechRate,
+        setSpeechRate,
+        playCalmingChime,
+        playAudioAsset,
+        playNarratorWelcome,
+        playNarratorCue,
       }}
     >
       {children}

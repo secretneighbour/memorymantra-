@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRole } from '../context/RoleContext';
+import { useAccessibility } from '../context/AccessibilityContext';
 import { TTSButton } from '../components/TTSButton';
 import { 
   ResponsiveContainer, 
@@ -21,6 +22,7 @@ import { Trophy, Flame, ShieldAlert, Sparkles, TrendingUp, CheckCircle2 } from '
 
 export const ProgressPage: React.FC = () => {
   const { activePatient } = useRole();
+  const { t } = useAccessibility();
 
   const domainData = [
     { subject: 'Memory', score: activePatient.cognitiveDomains.memory, fullMark: 100 },
@@ -67,8 +69,8 @@ export const ProgressPage: React.FC = () => {
         </div>
 
         <TTSButton
-          text="Cognitive progress report for Ananya. Your activity consistency improved this week with an 86% average score across memory and attention."
-          label="Listen to Summary"
+          text={`${t.progressReport}: ${t.patientName}. ${t.consistencyImproved}. ${t.cognitiveVitality}: ${activePatient.stats.weeklyScore}%.`}
+          label={t.listenAloud}
           size="lg"
         />
       </div>

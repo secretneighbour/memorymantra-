@@ -9,6 +9,60 @@ export interface CompanionResponse {
 
 export class MemoryCompanionService {
   /**
+   * Calls the server-side Gemini AI companion endpoint.
+   * If offline or API unavailable, automatically falls back to local NLP.
+   */
+  public static async queryAICompanion(params: {
+    message: string;
+    patient: Patient;
+    reminders: ReminderItem[];
+    language?: string;
+    history?: { role: 'user' | 'assistant'; text: string }[];
+  }): Promise<{ text: string; provider: string }> {
+    try {
+      const response = await fetch('/api/ai/companion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: params.message,
+          history: params.history || [],
+          language: params.language || 'en',
+          patientContext: {
+            name: params.patient.name,
+            location: params.patient.location || 'Guwahati, Assam',
+            reminders: params.reminders,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.reply) {
+        return {
+          text: data.reply,
+          provider: data.provider || 'gemini-3.8-flash',
+        };
+      }
+    } catch (err) {
+      console.warn('Direct AI companion API fallback:', err);
+    }
+
+    // Fallback to local rule engine
+    const local = MemoryCompanionService.processQuery(
+      params.message,
+      params.patient,
+      params.reminders
+    );
+    return {
+      text: local.text,
+      provider: 'local-offline-engine',
+    };
+  }
+
+  /**
    * Deterministic Natural Language Processor for Memory Companion
    * Connects directly to live reminders, patient profile, and routines.
    */

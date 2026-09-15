@@ -1,84 +1,118 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useRole } from '../context/RoleContext';
 import { useAccessibility } from '../context/AccessibilityContext';
-import { Bot, Send, X, Sparkles, Volume2, HelpCircle } from 'lucide-react';
+import { VoiceDictationButton } from './VoiceDictationButton';
+import { MemoryCompanionService } from '../services/ai/memoryCompanion';
+import { Bot, Send, X, Sparkles, Volume2, VolumeX, HelpCircle, Loader2 } from 'lucide-react';
 
 interface ChatMessage {
   id: string;
   sender: 'user' | 'assistant';
   text: string;
   timestamp: string;
+  provider?: string;
 }
 
 export const AICompanionDrawer: React.FC = () => {
   const { isAICompanionOpen, setIsAICompanionOpen, activePatient, reminders } = useRole();
-  const { speakText, t } = useAccessibility();
+  const { speakText, stopSpeaking, isSpeaking, language, playCalmingChime, t } = useAccessibility();
 
   const [inputQuery, setInputQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
+  const chatBottomRef = useRef<HTMLDivElement>(null);
+
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 'init-1',
       sender: 'assistant',
       text: t.aiCompanionGreeting,
-      timestamp: 'Just now'
-    }
+      timestamp: 'Just now',
+      provider: 'gemini-3.8-flash',
+    },
   ]);
+
+  useEffect(() => {
+    if (isAICompanionOpen) {
+      chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isAICompanionOpen, isLoading]);
 
   const quickQuestions = [
     t.aiCompanionQuick1,
     t.aiCompanionQuick2,
     t.aiCompanionQuick3,
     t.aiCompanionQuick4,
-    t.aiCompanionQuick5
+    t.aiCompanionQuick5,
   ];
 
-  const handleSend = (textToSend?: string) => {
-    const query = textToSend || inputQuery;
-    if (!query.trim()) return;
+  const handleSend = async (textToSend?: string) => {
+    const query = (textToSend || inputQuery).trim();
+    if (!query || isLoading) return;
 
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const userMsg: ChatMessage = {
       id: `msg-${Date.now()}`,
       sender: 'user',
       text: query,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      timestamp: timeStr,
     };
 
-    setMessages(prev => [...prev, userMsg]);
+    setMessages((prev) => [...prev, userMsg]);
     if (!textToSend) setInputQuery('');
+    setIsLoading(true);
+    playCalmingChime();
 
-    // Generate intelligent simulated response based on live state
-    setTimeout(() => {
-      let responseText = "";
-      const lower = query.toLowerCase();
+    try {
+      const history = messages.slice(-4).map((m) => ({
+        role: m.sender,
+        text: m.text,
+      }));
 
-      if (lower.includes('what am i doing') || lower.includes('schedule') || lower.includes('today') || lower.includes('aaj') || lower.includes('aji')) {
-        const pendingReminders = reminders.filter(r => !r.completed);
-        if (pendingReminders.length > 0) {
-          responseText = `Today you have ${reminders.length} items scheduled. Your next activity is "${pendingReminders[0].title}" at ${pendingReminders[0].time}. You have already completed ${reminders.filter(r => r.completed).length} items!`;
-        } else {
-          responseText = `You have completed all scheduled reminders for today! You can relax and enjoy some herbal tea or music.`;
-        }
-      } else if (lower.includes('appointment') || lower.includes('doctor')) {
-        responseText = `Your next appointment is with Dr. Debabrata Roy on Monday at 11:00 AM at Dispur Polyclinic. Your son Rohan will accompany you.`;
-      } else if (lower.includes('daughter') || lower.includes('birthday') || lower.includes('churi') || lower.includes('meera')) {
-        responseText = `Your daughter's birthday is on 18 September. We have pinned a note so you won't forget to call her with warm blessings!`;
-      } else if (lower.includes('completed') || lower.includes('activities') || lower.includes('score') || lower.includes('khel')) {
-        responseText = `You completed ${activePatient.stats.completedToday} out of ${activePatient.stats.totalToday} cognitive activities today with an impressive average accuracy of ${activePatient.stats.weeklyScore}%. You have an active ${activePatient.stats.streakDays}-day streak!`;
-      } else if (lower.includes('medicine') || lower.includes('dawa')) {
-        responseText = `Your morning blood pressure medicine (1 tablet with warm water) is marked as taken at 8:00 AM. Your next reminder is at 1:00 PM for lunch.`;
-      } else {
-        responseText = `${activePatient.name}, I have recorded that in your memory notes. Remember, your loved ones are right beside you and you are doing wonderful today.`;
-      }
+      const res = await MemoryCompanionService.queryAICompanion({
+        message: query,
+        patient: activePatient,
+        reminders: reminders,
+        language: language,
+        history,
+      });
 
+      const botMsgId = `bot-${Date.now()}`;
       const botMsg: ChatMessage = {
-        id: `bot-${Date.now()}`,
+        id: botMsgId,
         sender: 'assistant',
-        text: responseText,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        text: res.text,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        provider: res.provider,
       };
 
-      setMessages(prev => [...prev, botMsg]);
-    }, 600);
+      setMessages((prev) => [...prev, botMsg]);
+      speakText(res.text, language);
+      setSpeakingMsgId(botMsgId);
+    } catch (e) {
+      console.warn('AI Drawer query error:', e);
+      const fallbackMsg: ChatMessage = {
+        id: `bot-${Date.now()}`,
+        sender: 'assistant',
+        text: `I am right here with you, ${activePatient.name}. Everything is safe, and your care circle loves you.`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        provider: 'offline-reassurance',
+      };
+      setMessages((prev) => [...prev, fallbackMsg]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const toggleSpeak = (msg: ChatMessage) => {
+    if (isSpeaking && speakingMsgId === msg.id) {
+      stopSpeaking();
+      setSpeakingMsgId(null);
+    } else {
+      stopSpeaking();
+      setSpeakingMsgId(msg.id);
+      speakText(msg.text, language);
+    }
   };
 
   if (!isAICompanionOpen) return null;
@@ -94,8 +128,8 @@ export const AICompanionDrawer: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <h3 className="font-bold text-ner-black text-lg">{t.aiCompanionTitle}</h3>
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-ner-black text-white">
-                {t.aiCompanionBadge}
+              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                Gemini 3.8
               </span>
             </div>
             <p className="text-xs text-ner-black/60">
@@ -105,7 +139,10 @@ export const AICompanionDrawer: React.FC = () => {
         </div>
 
         <button
-          onClick={() => setIsAICompanionOpen(false)}
+          onClick={() => {
+            stopSpeaking();
+            setIsAICompanionOpen(false);
+          }}
           className="p-2 rounded-full hover:bg-ner-black/5 text-ner-black/60 hover:text-ner-black transition-colors"
           aria-label="Close Companion"
         >
@@ -114,9 +151,14 @@ export const AICompanionDrawer: React.FC = () => {
       </div>
 
       {/* Notice Banner */}
-      <div className="bg-ner-terracotta/5 border-b border-ner-terracotta/10 px-4 py-2 flex items-center gap-2 text-xs text-ner-terracotta font-medium">
-        <Sparkles className="w-3.5 h-3.5 shrink-0" />
-        <span>{t.simulationActive}</span>
+      <div className="bg-emerald-50 border-b border-emerald-100 px-4 py-2 flex items-center justify-between text-xs text-emerald-800 font-medium">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-3.5 h-3.5 text-ner-terracotta shrink-0" />
+          <span>Compassionate AI Intelligence Connected</span>
+        </div>
+        <span className="text-[10px] font-mono bg-emerald-200/60 px-2 py-0.5 rounded-full font-bold">
+          Active
+        </span>
       </div>
 
       {/* Messages Thread */}
@@ -134,23 +176,47 @@ export const AICompanionDrawer: React.FC = () => {
               }`}
             >
               <p className="text-[15px]">{msg.text}</p>
-              
+
               {msg.sender === 'assistant' && (
                 <div className="mt-2.5 pt-2 border-t border-ner-border/40 flex items-center justify-between">
                   <span className="text-[11px] text-ner-black/40">{msg.timestamp}</span>
                   <button
-                    onClick={() => speakText(msg.text)}
-                    className="inline-flex items-center gap-1 text-xs text-ner-terracotta hover:underline font-medium"
+                    onClick={() => toggleSpeak(msg)}
+                    className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded transition ${
+                      isSpeaking && speakingMsgId === msg.id
+                        ? 'bg-ner-terracotta text-white'
+                        : 'text-ner-terracotta hover:underline'
+                    }`}
                     title={t.listenAloud}
                   >
-                    <Volume2 className="w-3.5 h-3.5" />
-                    <span>{t.listenAloud}</span>
+                    {isSpeaking && speakingMsgId === msg.id ? (
+                      <>
+                        <VolumeX className="w-3.5 h-3.5" />
+                        <span>Stop</span>
+                      </>
+                    ) : (
+                      <>
+                        <Volume2 className="w-3.5 h-3.5" />
+                        <span>{t.listenAloud}</span>
+                      </>
+                    )}
                   </button>
                 </div>
               )}
             </div>
           </div>
         ))}
+
+        {isLoading && (
+          <div className="flex flex-col items-start animate-fade-in">
+            <div className="bg-white border border-ner-border rounded-2xl p-4 text-xs text-ner-black/70 flex items-center gap-2 shadow-sm">
+              <Loader2 className="w-4 h-4 animate-spin text-ner-terracotta" />
+              <span>Smriti is thinking warmly...</span>
+            </div>
+          </div>
+        )}
+
+        <div ref={chatBottomRef} />
       </div>
 
       {/* Suggested Quick Prompts */}
@@ -180,16 +246,24 @@ export const AICompanionDrawer: React.FC = () => {
           }}
           className="flex items-center gap-2"
         >
-          <input
-            type="text"
-            value={inputQuery}
-            onChange={(e) => setInputQuery(e.target.value)}
-            placeholder={t.aiCompanionPlaceholder}
-            className="flex-1 bg-ner-offwhite border border-ner-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ner-black transition-colors"
-          />
+          <div className="flex items-center gap-1.5 flex-1">
+            <input
+              type="text"
+              value={inputQuery}
+              onChange={(e) => setInputQuery(e.target.value)}
+              placeholder={t.aiCompanionPlaceholder}
+              className="flex-1 bg-ner-offwhite border border-ner-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ner-black transition-colors"
+            />
+            <VoiceDictationButton
+              currentValue={inputQuery}
+              onTranscript={(text) => setInputQuery(text)}
+              size="md"
+              label="Speak"
+            />
+          </div>
           <button
             type="submit"
-            disabled={!inputQuery.trim()}
+            disabled={!inputQuery.trim() || isLoading}
             className="p-3 rounded-xl bg-ner-black text-white hover:bg-ner-black/80 disabled:opacity-40 transition-colors shrink-0"
             aria-label="Send message"
           >

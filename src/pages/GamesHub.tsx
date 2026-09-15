@@ -119,7 +119,7 @@ export const GamesHub: React.FC = () => {
         </div>
 
         <TTSButton
-          text="Welcome to the Cognitive Games Hub. Choose from Memory Match, Sequence Recall, Pattern Recognition, Object Recognition, Routine Recall, or Emotion Recognition."
+          text={`${t.allGamesDirectory}. ${t.activitiesTitle}`}
           label={t.listenAloud}
           size="lg"
         />

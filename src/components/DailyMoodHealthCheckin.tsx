@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useRole } from '../context/RoleContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { TTSButton } from './TTSButton';
+import { VoiceDictationButton } from './VoiceDictationButton';
+import { WellVoiceAssistant } from './WellVoiceAssistant';
 import { isSupabaseConfigured, supabase } from '../lib/supabaseClient';
 import {
   Smile,
@@ -25,7 +27,9 @@ import {
   History,
   Activity,
   ThumbsUp,
-  AlertCircle
+  AlertCircle,
+  Volume2,
+  Mic
 } from 'lucide-react';
 
 export type MoodType = 'great' | 'good' | 'okay' | 'tired' | 'worried' | 'unwell';
@@ -170,6 +174,7 @@ export const DailyMoodHealthCheckin: React.FC<DailyMoodHealthCheckinProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [savedCheckin, setSavedCheckin] = useState<DailyHealthCheckinData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isWellVoiceOpen, setIsWellVoiceOpen] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [pastHistory, setPastHistory] = useState<DailyHealthCheckinData[]>([]);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
@@ -334,7 +339,16 @@ export const DailyMoodHealthCheckin: React.FC<DailyMoodHealthCheckinProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsWellVoiceOpen(true)}
+              className="px-3.5 py-2 rounded-xl bg-ner-terracotta text-white hover:bg-ner-terracotta/90 text-xs font-mono font-bold flex items-center gap-1.5 shadow-sm active:scale-95 transition"
+              title="Guided Well Voice check-in"
+            >
+              <Volume2 className="w-3.5 h-3.5 animate-pulse" />
+              <span>Well Voice</span>
+            </button>
             <TTSButton
               text={`You checked in today feeling ${moodDef.label}, with an energy level of ${savedCheckin.energyLevel} out of 5, and ${savedCheckin.painLevel === 'none' ? 'no physical pain' : savedCheckin.painLevel + ' discomfort'}.`}
               label="Listen"
@@ -462,7 +476,16 @@ export const DailyMoodHealthCheckin: React.FC<DailyMoodHealthCheckinProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setIsWellVoiceOpen(true)}
+            className="px-4 py-2.5 rounded-2xl bg-ner-terracotta text-white hover:bg-ner-terracotta/90 text-xs font-mono font-bold flex items-center gap-2 shadow-sm active:scale-95 transition"
+            title="Start interactive guided voice check-in"
+          >
+            <Volume2 className="w-4 h-4 animate-pulse" />
+            <span>Well Voice Guided</span>
+          </button>
           <TTSButton
             text="How are you feeling right now? Select your mood, energy level, and physical comfort below to complete your daily check-in."
             label="Read Options"
@@ -715,13 +738,21 @@ export const DailyMoodHealthCheckin: React.FC<DailyMoodHealthCheckinProps> = ({
           })}
         </div>
 
-        <input
-          type="text"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder="Add a quick note for your caregiver or doctor (e.g. 'Feeling peaceful today, ready for the garden')..."
-          className="w-full px-4 py-3 bg-white rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-ner-terracotta/40 text-sm text-slate-800 placeholder-slate-400 shadow-inner"
-        />
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Add a quick note for your caregiver or speak with voice..."
+            className="flex-1 px-4 py-3 bg-white rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-ner-terracotta/40 text-sm text-slate-800 placeholder-slate-400 shadow-inner"
+          />
+          <VoiceDictationButton
+            currentValue={note}
+            onTranscript={(t) => setNote(t)}
+            size="md"
+            label="Dictate Note"
+          />
+        </div>
       </div>
 
       {/* ========================================================================= */}
@@ -819,6 +850,38 @@ export const DailyMoodHealthCheckin: React.FC<DailyMoodHealthCheckinProps> = ({
           </div>
         </div>
       )}
+
+      {/* Interactive Well Voice Assistant */}
+      <WellVoiceAssistant
+        isOpen={isWellVoiceOpen}
+        onClose={() => setIsWellVoiceOpen(false)}
+        onCompleted={() => {
+          setIsWellVoiceOpen(false);
+          setIsEditing(false);
+          try {
+            const rawHistory = localStorage.getItem(HISTORY_STORAGE_KEY);
+            const history: DailyHealthCheckinData[] = rawHistory ? JSON.parse(rawHistory) : [];
+            setPastHistory(history);
+            const todaysRecord = history.find((h) => h.dateStr === todayStr);
+            if (todaysRecord) {
+              setSavedCheckin(todaysRecord);
+              setSelectedMood(todaysRecord.mood);
+              setEnergyLevel(todaysRecord.energyLevel);
+              setPainLevel(todaysRecord.painLevel);
+              setSleepQuality(todaysRecord.sleepQuality);
+              setHydrated(todaysRecord.habits?.hydrated ?? true);
+              setHadMeal(todaysRecord.habits?.hadMeal ?? true);
+              setTookMeds(todaysRecord.habits?.tookMeds ?? true);
+              setWalked(todaysRecord.habits?.walked ?? false);
+              setSelectedSymptoms(todaysRecord.symptoms || []);
+              setNote(todaysRecord.note || '');
+              if (onSaved) onSaved(todaysRecord);
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }}
+      />
     </div>
   );
 };
