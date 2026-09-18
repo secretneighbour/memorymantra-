@@ -56,20 +56,20 @@ export const ProgressPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-ner-sage/10 text-ner-sage font-bold">
-              Longitudinal Wellness
+              {t.progressLongitudinalBadge}
             </span>
-            <span className="text-xs text-ner-black/40 font-mono">Patient: {activePatient.name}</span>
+            <span className="text-xs text-ner-black/40 font-mono">{t.rolePatient}: {activePatient.name}</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-ner-black">
-            Small steps become stronger habits.
+            {t.progressHeading}
           </h1>
           <p className="text-ner-black/70 text-base sm:text-lg mt-2 max-w-xl font-normal">
-            Tracking your cognitive consistency and daily mental exercise routines.
+            {t.progressSubheading}
           </p>
         </div>
 
         <TTSButton
-          text={`${t.progressReport}: ${t.patientName}. ${t.consistencyImproved}. ${t.cognitiveVitality}: ${activePatient.stats.weeklyScore}%.`}
+          text={`${t.progressHeading}. ${t.progressSubheading}. ${t.cognitiveVitality}: ${activePatient.stats.weeklyScore}%.`}
           label={t.listenAloud}
           size="lg"
         />
@@ -82,15 +82,14 @@ export const ProgressPage: React.FC = () => {
         </div>
         <div>
           <h3 className="font-bold text-base text-ner-black">
-            Weekly Wellness Insight
+            {t.progressFriendlyTitle}
           </h3>
           <p className="text-sm text-ner-black/75 mt-0.5 leading-relaxed">
-            "Your activity consistency improved this week. Visual recognition and attention to 
-            familiar cultural symbols remained remarkably steady across all morning sessions."
+            {t.progressFriendlyDesc}
           </p>
           <div className="mt-3 flex items-center gap-2 text-[11px] font-mono text-ner-black/50">
             <ShieldAlert className="w-3.5 h-3.5 text-ner-terracotta" />
-            <span>Wellness engagement indicators only. This is not a clinical diagnosis tool.</span>
+            <span>{t.encouragement}</span>
           </div>
         </div>
       </div>

@@ -15,7 +15,7 @@ import {
 
 export const RegionalAccessibilitySection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { language, setLanguage, motion: contextMotion, speakText } = useAccessibility();
+  const { language, setLanguage, motion: contextMotion, speakText, t } = useAccessibility();
   const systemReducedMotion = useReducedMotion();
   const isReduced = contextMotion === 'reduced' || systemReducedMotion;
 
@@ -31,28 +31,28 @@ export const RegionalAccessibilitySection: React.FC = () => {
 
   const accessibilityPillars = [
     {
-      title: 'VOICE ASSISTANCE',
-      desc: 'Hands-free navigation and audio narration across all screens for older adults with limited eyesight.',
+      title: t.pillarVoiceTitle,
+      desc: t.pillarVoiceDesc,
       icon: <Volume2 className="w-5 h-5 text-ner-terracotta" />,
     },
     {
-      title: 'OFFLINE-FIRST',
-      desc: 'Zero mandatory cloud dependency. All games, audio synthesis, and records run locally on the device.',
+      title: t.pillarOfflineTitle,
+      desc: t.pillarOfflineDesc,
       icon: <WifiOff className="w-5 h-5 text-ner-sage" />,
     },
     {
-      title: 'LARGE TYPOGRAPHY',
-      desc: 'High-legibility typography with scalable sizing (up to 130%) and generous touch targets.',
+      title: t.pillarTypographyTitle,
+      desc: t.pillarTypographyDesc,
       icon: <Type className="w-5 h-5 text-ner-calmBlue" />,
     },
     {
-      title: 'HIGH CONTRAST',
-      desc: 'High-contrast black, white, and strategic red palette designed for maximum visual clarity.',
+      title: t.pillarContrastTitle,
+      desc: t.pillarContrastDesc,
       icon: <SunMedium className="w-5 h-5 text-ner-warmAmber" />,
     },
     {
-      title: 'REDUCED MOTION',
-      desc: 'Respects vestibular sensitivities with gentle fades instead of jarring rotations or rapid motion.',
+      title: t.pillarMotionTitle,
+      desc: t.pillarMotionDesc,
       icon: <Eye className="w-5 h-5 text-purple-500" />,
     },
   ];
@@ -70,13 +70,13 @@ export const RegionalAccessibilitySection: React.FC = () => {
     >
       <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-20">
         <span className="text-xs font-mono uppercase tracking-widest text-ner-terracotta font-bold block mb-2">
-          [ 09 // INCLUSIVE BY DESIGN ]
+          {t.regionalSectionBadge}
         </span>
         <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-ner-black uppercase">
-          Regional Accessibility
+          {t.regionalSectionTitle}
         </h2>
         <p className="text-sm sm:text-base text-ner-black/70 font-light mt-3 max-w-2xl mx-auto leading-relaxed">
-          Crafted specifically for the diverse cultural and linguistic landscape of Northeast India, removing technological and language barriers.
+          {t.regionalSectionSubtitle}
         </p>
       </div>
 
@@ -87,10 +87,10 @@ export const RegionalAccessibilitySection: React.FC = () => {
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-mono uppercase tracking-wider font-bold text-ner-black/60 flex items-center gap-1.5">
               <Globe className="w-4 h-4 text-ner-terracotta" />
-              Supported Regional Dialects
+              {t.regionalDialectsTitle}
             </span>
             <span className="text-xs font-mono text-ner-black/40">
-              Tap to activate
+              {t.regionalTapToActivate}
             </span>
           </div>
 
@@ -135,7 +135,7 @@ export const RegionalAccessibilitySection: React.FC = () => {
         {/* Right Column: 5 Core Accessibility Pillars */}
         <div className="lg:col-span-6 space-y-3.5">
           <span className="text-xs font-mono uppercase tracking-wider font-bold text-ner-black/60 block mb-2">
-            Universal Usability Pillars
+            {t.regionalPillarsTitle}
           </span>
 
           {accessibilityPillars.map((pillar, index) => (

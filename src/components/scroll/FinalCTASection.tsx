@@ -16,7 +16,7 @@ export const FinalCTASection: React.FC = () => {
   const containerRef = useRef<HTMLElement>(null);
   const navigate = useNavigate();
   const { setRole } = useRole();
-  const { motion: contextMotion } = useAccessibility();
+  const { motion: contextMotion, t } = useAccessibility();
   const systemReducedMotion = useReducedMotion();
   const isReduced = contextMotion === 'reduced' || systemReducedMotion;
 
@@ -53,7 +53,7 @@ export const FinalCTASection: React.FC = () => {
         {/* Subtle Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full frost-white-intense border border-ner-border text-xs font-mono font-bold text-ner-black shadow-sm mb-6">
           <span className="w-2 h-2 rounded-full bg-ner-terracotta animate-pulse" />
-          <span>SMRITI CARE // 100% OFFLINE READY</span>
+          <span>{t.finalCtaBadge}</span>
         </div>
 
         {/* Large Monolithic Display Typography */}
@@ -62,16 +62,16 @@ export const FinalCTASection: React.FC = () => {
           className="space-y-4"
         >
           <span className="font-mono text-sm sm:text-base font-bold tracking-widest text-ner-black/60 uppercase block">
-            SMRITI CARE
+            {t.appName}
           </span>
 
           <h2 className="text-4xl sm:text-7xl md:text-8xl font-extrabold tracking-tighter text-ner-black uppercase leading-[0.92]">
-            Cognitive Care, <br />
-            <span className="text-ner-terracotta">Made Human.</span>
+            {t.finalCtaTitleLine1} <br />
+            <span className="text-ner-terracotta">{t.finalCtaTitleLine2}</span>
           </h2>
 
           <p className="text-base sm:text-2xl text-ner-black/75 max-w-2xl mx-auto font-light leading-relaxed pt-2">
-            Designed around people, memories, and everyday care.
+            {t.finalCtaSubtitle}
           </p>
         </motion.div>
 
@@ -81,7 +81,7 @@ export const FinalCTASection: React.FC = () => {
             onClick={handleExplore}
             className="h-14 sm:h-16 px-10 sm:px-12 rounded-full bg-ner-black text-white hover:bg-ner-black/85 transition-all text-xs sm:text-sm font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-3 shadow-2xl active:scale-95 group"
           >
-            <span>EXPLORE SMRITI CARE</span>
+            <span>{t.finalCtaButton}</span>
             <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-ner-terracotta group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
@@ -96,8 +96,8 @@ export const FinalCTASection: React.FC = () => {
             className="p-3.5 rounded-2xl frost-white-intense border border-ner-border hover:border-ner-black transition text-left group"
           >
             <Brain className="w-4 h-4 text-ner-terracotta mb-1 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-bold block text-ner-black">Patient Portal</span>
-            <span className="text-[10px] font-mono text-ner-black/50">Daily games & routines</span>
+            <span className="text-xs font-bold block text-ner-black">{t.finalCtaPatientPortal}</span>
+            <span className="text-[10px] font-mono text-ner-black/50">{t.finalCtaPatientSub}</span>
           </button>
 
           <button
@@ -108,8 +108,8 @@ export const FinalCTASection: React.FC = () => {
             className="p-3.5 rounded-2xl frost-white-intense border border-ner-border hover:border-ner-black transition text-left group"
           >
             <HeartHandshake className="w-4 h-4 text-ner-sage mb-1 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-bold block text-ner-black">Caregiver Hub</span>
-            <span className="text-[10px] font-mono text-ner-black/50">Trends & circle logs</span>
+            <span className="text-xs font-bold block text-ner-black">{t.finalCtaCaregiverHub}</span>
+            <span className="text-[10px] font-mono text-ner-black/50">{t.finalCtaCaregiverSub}</span>
           </button>
 
           <button
@@ -120,8 +120,8 @@ export const FinalCTASection: React.FC = () => {
             className="p-3.5 rounded-2xl frost-white-intense border border-ner-border hover:border-ner-black transition text-left group"
           >
             <Stethoscope className="w-4 h-4 text-ner-calmBlue mb-1 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-bold block text-ner-black">Clinical View</span>
-            <span className="text-[10px] font-mono text-ner-black/50">Longitudinal analytics</span>
+            <span className="text-xs font-bold block text-ner-black">{t.finalCtaClinicalView}</span>
+            <span className="text-[10px] font-mono text-ner-black/50">{t.finalCtaClinicalSub}</span>
           </button>
 
           <button
@@ -129,15 +129,15 @@ export const FinalCTASection: React.FC = () => {
             className="p-3.5 rounded-2xl frost-white-intense border border-ner-border hover:border-ner-black transition text-left group"
           >
             <FolderLock className="w-4 h-4 text-ner-warmAmber mb-1 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-bold block text-ner-black">Memory Vault</span>
-            <span className="text-[10px] font-mono text-ner-black/50">Archived recollections</span>
+            <span className="text-xs font-bold block text-ner-black">{t.finalCtaMemoryVault}</span>
+            <span className="text-[10px] font-mono text-ner-black/50">{t.finalCtaMemorySub}</span>
           </button>
         </div>
       </div>
 
       {/* Minimal Footer Credits */}
       <div className="max-w-7xl mx-auto w-full flex items-center justify-between text-[11px] font-mono text-ner-black/40 pt-6">
-        <span>© 2026 SMRITI CARE // NORTHEAST INDIA INITIATIVE</span>
+        <span>{t.finalCtaCopyright}</span>
         <span>ACCESSIBILITY FIRST • OFFLINE FIRST</span>
       </div>
     </section>

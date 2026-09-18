@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useRole } from '../context/RoleContext';
+import { useAccessibility } from '../context/AccessibilityContext';
 import { Link } from 'react-router-dom';
 import { CaregiverSummaryEngine } from '../services/ai/caregiverSummary';
 import { getStoredWellbeingResponses, evaluateConsecutiveNegativeResponses } from '../utils/wellbeingUtils';
@@ -54,6 +55,7 @@ export const CaregiverDashboard: React.FC = () => {
     wellbeingCheckIns,
     sendHelpAlert
   } = useRole();
+  const { t } = useAccessibility();
 
   const [selectedAlertDetail, setSelectedAlertDetail] = useState<string | null>(null);
   const [contactPatientFeedback, setContactPatientFeedback] = useState<string | null>(null);
@@ -148,29 +150,29 @@ export const CaregiverDashboard: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-ner-sage/10 text-ner-sage font-bold">
-              Care Circle • Family Portal
+              {t.caregiverPortalBadge}
             </span>
-            <span className="text-xs text-ner-black/40 font-mono">Patient: {activePatient.name}</span>
+            <span className="text-xs text-ner-black/40 font-mono">{t.caregiverPatientLabel}: {activePatient.name}</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-ner-black">
-            Care Circle
+            {t.caregiverHeading}
           </h1>
           <p className="text-ner-black/70 text-base sm:text-lg mt-2 max-w-xl font-normal">
-            Real-time cognitive telemetry, medication adherence, and alerts for {activePatient.name}.
+            {t.caregiverSubheading}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-100 text-ner-sage text-xs font-bold font-mono">
             <span className="w-2 h-2 rounded-full bg-ner-sage animate-ping"></span>
-            Last Active: 12 min ago
+            {t.caregiverLastActive}
           </span>
           <button
             onClick={handleContactPatient}
             className="px-5 py-2.5 rounded-full bg-ner-black text-white hover:bg-ner-black/85 text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm active:scale-95"
           >
             <Phone className="w-3.5 h-3.5 text-ner-sage" />
-            <span>Contact Patient</span>
+            <span>{t.caregiverContactPatient}</span>
           </button>
         </div>
       </div>
@@ -189,59 +191,59 @@ export const CaregiverDashboard: React.FC = () => {
         {/* Activities Completed */}
         <div className="frost-card rounded-2xl p-5 border border-ner-border shadow-sm">
           <div className="flex items-center justify-between text-ner-black/40 mb-2">
-            <span className="text-[11px] font-mono uppercase font-bold">Activities Completed</span>
+            <span className="text-[11px] font-mono uppercase font-bold">{t.caregiverActivitiesCompleted}</span>
             <Activity className="w-4 h-4 text-ner-terracotta" />
           </div>
           <span className="text-2xl font-bold font-mono text-ner-black">
             4 / 5
           </span>
-          <span className="text-[11px] font-mono text-ner-sage block mt-1">80% Target Met</span>
+          <span className="text-[11px] font-mono text-ner-sage block mt-1">{t.caregiverTargetMet}</span>
         </div>
 
         {/* Medication */}
         <div className="frost-card rounded-2xl p-5 border border-ner-border shadow-sm">
           <div className="flex items-center justify-between text-ner-black/40 mb-2">
-            <span className="text-[11px] font-mono uppercase font-bold">Medication</span>
+            <span className="text-[11px] font-mono uppercase font-bold">{t.caregiverMedication}</span>
             <Clock className="w-4 h-4 text-ner-sage" />
           </div>
           <span className="text-2xl font-bold font-mono text-ner-black">
             3 / 3
           </span>
           <span className="text-[11px] font-mono text-ner-sage block mt-1">
-            All Doses Confirmed
+            {t.caregiverAllDosesConfirmed}
           </span>
         </div>
 
         {/* Hydration */}
         <div className="frost-card rounded-2xl p-5 border border-ner-border shadow-sm">
           <div className="flex items-center justify-between text-ner-black/40 mb-2">
-            <span className="text-[11px] font-mono uppercase font-bold">Hydration</span>
+            <span className="text-[11px] font-mono uppercase font-bold">{t.caregiverHydration}</span>
             <Droplets className="w-4 h-4 text-ner-calmBlue" />
           </div>
           <span className="text-2xl font-bold font-mono text-ner-black">5 / 6</span>
-          <span className="text-[11px] font-mono text-ner-sage block mt-1">Optimal Range</span>
+          <span className="text-[11px] font-mono text-ner-sage block mt-1">{t.caregiverOptimalRange}</span>
         </div>
 
         {/* Engagement */}
         <div className="frost-card rounded-2xl p-5 border border-ner-border shadow-sm">
           <div className="flex items-center justify-between text-ner-black/40 mb-2">
-            <span className="text-[11px] font-mono uppercase font-bold">Engagement</span>
+            <span className="text-[11px] font-mono uppercase font-bold">{t.caregiverEngagement}</span>
             <Sparkles className="w-4 h-4 text-amber-500" />
           </div>
-          <span className="text-2xl font-bold font-mono text-ner-black">High</span>
-          <span className="text-[11px] font-mono text-ner-black/50 block mt-1">Quick Responses</span>
+          <span className="text-2xl font-bold font-mono text-ner-black">{t.caregiverHigh}</span>
+          <span className="text-[11px] font-mono text-ner-black/50 block mt-1">{t.caregiverQuickResponses}</span>
         </div>
 
         {/* Last Active */}
         <div className="frost-card rounded-2xl p-5 border border-ner-border shadow-sm col-span-2 sm:col-span-1">
           <div className="flex items-center justify-between text-ner-black/40 mb-2">
-            <span className="text-[11px] font-mono uppercase font-bold">Last Active</span>
+            <span className="text-[11px] font-mono uppercase font-bold">{t.caregiverLastActive}</span>
             <Smile className="w-4 h-4 text-rose-500" />
           </div>
           <span className="text-xl font-bold font-mono text-ner-black">
             12 min ago
           </span>
-          <span className="text-[11px] font-mono text-ner-sage block mt-1">Device Online</span>
+          <span className="text-[11px] font-mono text-ner-sage block mt-1">{t.caregiverDeviceOnline}</span>
         </div>
       </div>
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useRole } from '../context/RoleContext';
+import { useAccessibility } from '../context/AccessibilityContext';
 import { MemoryItem, FamilyMember } from '../types';
 import { TTSButton } from '../components/TTSButton';
 import { 
@@ -22,6 +23,7 @@ import {
 
 export const MemoriesPage: React.FC = () => {
   const { memories, familyMembers, activePatient, addMemoryItem, sendHelpAlert } = useRole();
+  const { t } = useAccessibility();
   const [activeTab, setActiveTab] = useState<'all' | 'photos' | 'family' | 'stories' | 'songs' | 'therapy'>('all');
   
   // State for Personal Memory Therapy interactive mode
@@ -135,25 +137,25 @@ export const MemoriesPage: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <span className="text-xs font-mono uppercase tracking-widest text-rose-600 font-bold block mb-1">
-            [ Personal Memory Vault & Family Circle ]
+            [ {t.memoriesVaultBadge} ]
           </span>
-          <h1 className="text-3xl sm:text-5xl font-bold text-ner-black">My Cherished Memories</h1>
+          <h1 className="text-3xl sm:text-5xl font-bold text-ner-black">{t.memoriesVaultHeading}</h1>
           <p className="text-sm sm:text-base text-ner-black/70 mt-1 max-w-xl">
-            A secure, soothing archive of your life’s favorite moments, loved family members, and comforting songs.
+            {t.memoriesVaultSubheading}
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <TTSButton
-            text="Welcome to your Memory Vault. Here you can see your family members, treasured photos, and remember wonderful moments together."
-            label="Listen"
+            text={`${t.memoriesVaultHeading}. ${t.memoriesVaultSubheading}`}
+            label={t.listenAloud}
           />
           <button
             onClick={() => setIsNewMemoryModalOpen(true)}
             className="h-12 px-5 rounded-2xl bg-ner-black text-white hover:bg-ner-black/85 text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2 shadow-md transition-all active:scale-95"
           >
             <Plus className="w-4 h-4 text-ner-sage" />
-            <span>Add Memory</span>
+            <span>{t.memoriesAddBtn}</span>
           </button>
         </div>
       </div>
@@ -161,12 +163,12 @@ export const MemoriesPage: React.FC = () => {
       {/* Segmented Filter Bar */}
       <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-8 no-scrollbar">
         {[
-          { id: 'all', label: 'All Memories', icon: Heart },
-          { id: 'photos', label: 'Photos & Places', icon: ImageIcon },
-          { id: 'family', label: 'Family Circle', icon: Heart },
-          { id: 'stories', label: 'Life Stories', icon: BookOpen },
-          { id: 'songs', label: 'Beloved Songs', icon: Music },
-          { id: 'therapy', label: 'Memory Game Mode', icon: Sparkles }
+          { id: 'all', label: t.memoriesTabAll, icon: Heart },
+          { id: 'photos', label: t.memoriesFilterPhotos, icon: ImageIcon },
+          { id: 'family', label: t.memoriesFilterFamily, icon: Heart },
+          { id: 'stories', label: t.memoriesFilterStories, icon: BookOpen },
+          { id: 'songs', label: t.memoriesFilterSongs, icon: Music },
+          { id: 'therapy', label: t.memoriesTabTherapy, icon: Sparkles }
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -483,20 +485,20 @@ export const MemoriesPage: React.FC = () => {
               <X className="w-4 h-4" />
             </button>
 
-            <h3 className="text-2xl font-bold text-ner-black mb-1">Add a New Memory</h3>
+            <h3 className="text-2xl font-bold text-ner-black mb-1">{t.memoriesAddModalTitle}</h3>
             <p className="text-xs text-ner-black/60 mb-6">
-              Preserve a story or photo for Ananya's daily cognitive and emotional well-being.
+              {t.memoriesVaultSubheading}
             </p>
 
             <form onSubmit={handleCreateMemory} className="space-y-4">
               <div>
                 <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                  Title / Event
+                  {t.memoriesTitleLabel}
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Guwahati Tea Garden Morning"
+                  placeholder={t.memoriesTitlePlaceholder}
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   className="w-full h-12 px-4 rounded-xl bg-white border-2 border-ner-border text-sm font-medium focus:outline-none focus:border-ner-black"
@@ -505,11 +507,11 @@ export const MemoriesPage: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                  Person or Place
+                  {t.memoriesPersonPlaceLabel}
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Ward's Lake, Shillong with Rohan"
+                  placeholder={t.memoriesPersonPlacePlaceholder}
                   value={newPersonPlace}
                   onChange={(e) => setNewPersonPlace(e.target.value)}
                   className="w-full h-12 px-4 rounded-xl bg-white border-2 border-ner-border text-sm font-medium focus:outline-none focus:border-ner-black"
@@ -518,23 +520,23 @@ export const MemoriesPage: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                  Category
+                  {t.memoriesCategoryLabel}
                 </label>
                 <select
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value as any)}
                   className="w-full h-12 px-4 rounded-xl bg-white border-2 border-ner-border text-sm font-medium focus:outline-none focus:border-ner-black"
                 >
-                  <option value="family">Family Moment</option>
-                  <option value="place">Beloved Place</option>
-                  <option value="story">Life Story</option>
-                  <option value="song">Cherished Song</option>
+                  <option value="family">{t.memoriesTabFamily}</option>
+                  <option value="place">{t.memoriesTabPhotos}</option>
+                  <option value="story">{t.memoriesTabStories}</option>
+                  <option value="song">{t.memoriesTabSongs}</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                  Memory Photo (Optional)
+                  {t.memoriesImageLabel}
                 </label>
                 <input
                   type="file"
@@ -576,11 +578,11 @@ export const MemoriesPage: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                  Story & Warm Details
+                  {t.memoriesStoryLabelText}
                 </label>
                 <textarea
                   rows={3}
-                  placeholder="Describe what happened, what you ate, or who laughed..."
+                  placeholder={t.memoriesStoryPlaceholder}
                   value={newStory}
                   onChange={(e) => setNewStory(e.target.value)}
                   className="w-full p-4 rounded-xl bg-white border-2 border-ner-border text-sm font-medium focus:outline-none focus:border-ner-black"
@@ -593,13 +595,13 @@ export const MemoriesPage: React.FC = () => {
                   onClick={() => setIsNewMemoryModalOpen(false)}
                   className="h-12 px-5 rounded-xl bg-white border border-ner-border font-mono text-xs uppercase"
                 >
-                  Cancel
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
                   className="h-12 px-6 rounded-xl bg-ner-black text-white font-mono font-bold text-xs uppercase"
                 >
-                  Save to Vault
+                  {t.save}
                 </button>
               </div>
             </form>

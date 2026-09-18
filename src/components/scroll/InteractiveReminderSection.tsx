@@ -26,61 +26,64 @@ interface ReminderItem {
 
 export const InteractiveReminderSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { playCalmingChime, speakText, motion: contextMotion } = useAccessibility();
+  const { playCalmingChime, speakText, motion: contextMotion, t } = useAccessibility();
   const systemReducedMotion = useReducedMotion();
   const isReduced = contextMotion === 'reduced' || systemReducedMotion;
 
-  const [reminders, setReminders] = useState<ReminderItem[]>([
+  const [statuses, setStatuses] = useState<Record<string, 'due' | 'snoozed' | 'done'>>({
+    r1: 'due',
+    r2: 'due',
+    r3: 'due',
+  });
+
+  const reminders: ReminderItem[] = [
     {
       id: 'r1',
       type: 'MEDICINE',
       time: '10:00 AM',
-      title: 'Blood Pressure & Heart Tablet',
-      subtitle: 'Take 1 tablet with lukewarm water after breakfast',
+      title: t.reminderMedicineTitle,
+      subtitle: t.reminderMedicineSub,
       priority: 'high',
       icon: <Pill className="w-5 h-5 text-ner-terracotta" />,
-      status: 'due',
+      status: statuses.r1 || 'due',
     },
     {
       id: 'r2',
       type: 'HYDRATION',
       time: '12:30 PM',
-      title: 'Fresh Water & Herbal Infusion',
-      subtitle: 'Midday hydration (1 full glass of water or mild lemon tea)',
+      title: t.reminderHydrationTitle,
+      subtitle: t.reminderHydrationSub,
       priority: 'normal',
       icon: <Droplet className="w-5 h-5 text-ner-sage" />,
-      status: 'due',
+      status: statuses.r2 || 'due',
     },
     {
       id: 'r3',
       type: 'APPOINTMENT',
       time: '03:00 PM',
-      title: 'Dr. Baruah Clinic Check-in & Memory Stroll',
-      subtitle: 'Routine wellness consultation & garden walk with daughter',
+      title: t.reminderAppointmentTitle,
+      subtitle: t.reminderAppointmentSub,
       priority: 'normal',
       icon: <Calendar className="w-5 h-5 text-ner-calmBlue" />,
-      status: 'due',
+      status: statuses.r3 || 'due',
     },
-  ]);
+  ];
 
   const [activeMessage, setActiveMessage] = useState<string | null>(null);
 
   const handleAction = (id: string, action: 'done' | 'snooze' | 'help') => {
     if (action === 'done') {
       playCalmingChime();
-      setReminders((prev) =>
-        prev.map((r) => (r.id === id ? { ...r, status: 'done' } : r))
-      );
-      setActiveMessage('Great job! Reminder marked as completed.');
-      speakText('Completed. Fantastic work staying on schedule today.');
+      setStatuses((prev) => ({ ...prev, [id]: 'done' }));
+      setActiveMessage(t.reminderDoneSuccess);
+      speakText(t.reminderDoneSuccess);
     } else if (action === 'snooze') {
-      setReminders((prev) =>
-        prev.map((r) => (r.id === id ? { ...r, status: 'snoozed' } : r))
-      );
-      setActiveMessage('Reminder snoozed for 15 minutes.');
+      setStatuses((prev) => ({ ...prev, [id]: 'snoozed' }));
+      setActiveMessage(t.reminderSnoozedSuccess);
+      speakText(t.reminderSnoozedSuccess);
     } else if (action === 'help') {
-      setActiveMessage('Caregiver notified. Support is on the way.');
-      speakText('Caregiver notification sent. Your family circle has been alerted.');
+      setActiveMessage(t.reminderHelpSuccess);
+      speakText(t.reminderHelpSuccess);
     }
   };
 
@@ -92,13 +95,13 @@ export const InteractiveReminderSection: React.FC = () => {
     >
       <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-20">
         <span className="text-xs font-mono uppercase tracking-widest text-ner-terracotta font-bold block mb-2">
-          [ 07 // CHRONO ORIENTATION ]
+          {t.remindersSectionBadge}
         </span>
         <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-ner-black uppercase">
-          Smart Reminders
+          {t.remindersSectionTitle}
         </h2>
         <p className="text-sm sm:text-base text-ner-black/70 font-light mt-3 max-w-2xl mx-auto leading-relaxed">
-          Tactile, high-contrast reminder cues with large accessible action targets, ensuring crucial daily routines and hydration are maintained without anxiety.
+          {t.remindersSectionSubtitle}
         </p>
       </div>
 
@@ -155,12 +158,12 @@ export const InteractiveReminderSection: React.FC = () => {
                       </span>
                       {isHighPriority && (
                         <span className="px-2 py-0.5 rounded-full bg-ner-terracotta text-white font-mono text-[10px] font-bold uppercase animate-pulse">
-                          ACTIVE DUE
+                          {t.reminderActiveDue}
                         </span>
                       )}
                       {isDone && (
                         <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold uppercase">
-                          COMPLETED
+                          {t.completed}
                         </span>
                       )}
                     </div>
@@ -180,7 +183,7 @@ export const InteractiveReminderSection: React.FC = () => {
                   {isDone ? (
                     <div className="h-12 px-6 rounded-2xl bg-emerald-600 text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm">
                       <Check className="w-4 h-4" />
-                      <span>Recorded</span>
+                      <span>{t.completed}</span>
                     </div>
                   ) : (
                     <>
@@ -188,32 +191,30 @@ export const InteractiveReminderSection: React.FC = () => {
                       <button
                         onClick={() => handleAction(rem.id, 'done')}
                         className="h-12 px-6 sm:px-8 rounded-2xl bg-ner-black hover:bg-emerald-600 text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
-                        title="Mark Reminder as Done"
+                        title={t.reminderMarkDone}
                       >
                         <Check className="w-4 h-4" />
-                        <span>DONE</span>
+                        <span>{t.reminderMarkDone}</span>
                       </button>
 
                       {/* REMIND ME LATER Button */}
                       <button
                         onClick={() => handleAction(rem.id, 'snooze')}
                         className="h-12 px-4 sm:px-5 rounded-2xl frost-white-intense hover:border-ner-black text-ner-black font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow-xs active:scale-95 cursor-pointer"
-                        title="Snooze Reminder for 15 Minutes"
+                        title={t.reminderSnooze}
                       >
                         <Clock className="w-4 h-4 text-ner-black/60" />
-                        <span className="hidden sm:inline">REMIND ME LATER</span>
-                        <span className="sm:hidden">SNOOZE</span>
+                        <span>{t.reminderSnooze}</span>
                       </button>
 
                       {/* I NEED HELP Button */}
                       <button
                         onClick={() => handleAction(rem.id, 'help')}
                         className="h-12 px-4 sm:px-5 rounded-2xl bg-ner-terracotta/10 hover:bg-ner-terracotta hover:text-white text-ner-terracotta border border-ner-terracotta/30 font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow-xs active:scale-95 cursor-pointer"
-                        title="Alert Family & Caregiver"
+                        title={t.reminderNeedHelp}
                       >
                         <AlertCircle className="w-4 h-4" />
-                        <span className="hidden sm:inline">I NEED HELP</span>
-                        <span className="sm:hidden">HELP</span>
+                        <span>{t.reminderNeedHelp}</span>
                       </button>
                     </>
                   )}
@@ -235,7 +236,7 @@ export const InteractiveReminderSection: React.FC = () => {
               onClick={() => setActiveMessage(null)}
               className="text-white/60 hover:text-white underline text-[10px]"
             >
-              Dismiss
+              {t.reminderDismiss}
             </button>
           </motion.div>
         )}

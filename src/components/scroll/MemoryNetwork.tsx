@@ -47,80 +47,80 @@ export const MemoryNetwork: React.FC = () => {
   const nodes: NetworkNode[] = [
     {
       id: 'memory',
-      label: 'MEMORY',
-      sublabel: 'Personal Vault',
+      label: t.networkNodeMemory,
+      sublabel: t.networkNodeMemorySub,
       category: '01 // ARCHIVE',
       icon: <Brain className="w-4 h-4" />,
       angle: -90, // Top
       route: '/memory',
       color: '#DE4A30',
-      description: 'Preserving personal history, family voices, photographs, and sensory stories.',
+      description: t.networkNodeMemoryDesc,
     },
     {
       id: 'games',
-      label: 'COGNITIVE GAMES',
-      sublabel: 'Adaptive Exercises',
+      label: t.networkNodeGames,
+      sublabel: t.networkNodeGamesSub,
       category: '02 // STIMULATION',
       icon: <Gamepad2 className="w-4 h-4" />,
       angle: -40, // Top-Right
       route: '/games',
       color: '#10B981',
-      description: 'Culturally-grounded neuroplasticity exercises tailored to individual stamina.',
+      description: t.networkNodeGamesDesc,
     },
     {
       id: 'companion',
-      label: 'AI COMPANION',
-      sublabel: 'Voice Reflection',
+      label: t.networkNodeCompanion,
+      sublabel: t.networkNodeCompanionSub,
       category: '03 // ASSISTANCE',
       icon: <Sparkles className="w-4 h-4" />,
       angle: 15, // Mid-Right
       route: '/memory-companion',
       color: '#E67E22',
-      description: 'Supportive multilingual companion guiding gentle reminiscence and daily routine recall.',
+      description: t.networkNodeCompanionDesc,
     },
     {
       id: 'reminders',
-      label: 'REMINDERS',
-      sublabel: 'Smart Routine',
+      label: t.networkNodeReminders,
+      sublabel: t.networkNodeRemindersSub,
       category: '04 // CHRONO',
       icon: <Bell className="w-4 h-4" />,
       angle: 70, // Bottom-Right
       route: '/reminders',
       color: '#3B82F6',
-      description: 'High-contrast, audio-backed medication and hydration schedule cues.',
+      description: t.networkNodeRemindersDesc,
     },
     {
       id: 'family',
-      label: 'FAMILY',
-      sublabel: 'Care Circle',
+      label: t.networkNodeFamily,
+      sublabel: t.networkNodeFamilySub,
       category: '05 // KINSHIP',
       icon: <Users className="w-4 h-4" />,
       angle: 125, // Bottom-Left
       route: '/caregiver',
       color: '#8B5CF6',
-      description: 'Transparent updates, shared photo uploads, and warm reassurance for relatives.',
+      description: t.networkNodeFamilyDesc,
     },
     {
       id: 'caregiver',
-      label: 'CAREGIVER',
-      sublabel: 'Telemetry Hub',
+      label: t.networkNodeCaregiver,
+      sublabel: t.networkNodeCaregiverSub,
       category: '06 // OVERSIGHT',
       icon: <HeartHandshake className="w-4 h-4" />,
       angle: 180, // Left
       route: '/caregiver',
       color: '#EC4899',
-      description: 'Non-invasive daily cognitive activity tracking, mood logs, and caregiver relief tools.',
+      description: t.networkNodeCaregiverDesc,
     },
     {
       id: 'doctor',
-      label: 'HEALTHCARE PROFESSIONAL',
-      sublabel: 'Clinical Portal',
+      label: t.networkNodeDoctor,
+      sublabel: t.networkNodeDoctorSub,
       category: '07 // CLINICAL',
       icon: <Stethoscope className="w-4 h-4" />,
       angle: 230, // Top-Left
       route: '/doctor',
       color: '#06B6D4',
-      description: 'Objective cognitive activity trends and longitudinal engagement data.',
+      description: t.networkNodeDoctorDesc,
     },
   ];
 
@@ -135,13 +135,13 @@ export const MemoryNetwork: React.FC = () => {
       {/* Header Label */}
       <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-20">
         <span className="text-xs font-mono uppercase tracking-widest text-ner-terracotta font-bold block mb-2">
-          [ 02 // SMRITI DIGITAL MEMORY SYSTEM ]
+          {t.networkBadge}
         </span>
         <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-ner-black uppercase">
-          Interconnected Care Network
+          {t.networkTitle}
         </h2>
         <p className="text-sm sm:text-base text-ner-black/70 font-light mt-4 max-w-2xl mx-auto leading-relaxed">
-          A synchronized, digital memory architecture that links the patient’s inner recollections with family members, daily care routines, and clinical oversight.
+          {t.networkDescription}
         </p>
       </div>
 
@@ -222,13 +222,13 @@ export const MemoryNetwork: React.FC = () => {
           >
             <span className="w-2 h-2 rounded-full bg-ner-terracotta animate-pulse mb-1" />
             <span className="font-mono text-[10px] tracking-widest text-ner-terracotta uppercase font-bold">
-              CORE NODE
+              {t.networkCoreNode}
             </span>
             <span className="font-bold text-xs sm:text-sm tracking-tight text-white mt-0.5">
               SMRITI CARE
             </span>
             <span className="text-[9px] font-mono text-white/50 mt-0.5">
-              ECOSYSTEM
+              {t.networkEcosystem}
             </span>
           </motion.div>
 
@@ -290,7 +290,7 @@ export const MemoryNetwork: React.FC = () => {
             <span className="w-2.5 h-2.5 rounded-full bg-ner-terracotta animate-pulse shrink-0" />
             <div>
               <span className="font-mono text-[9px] uppercase tracking-widest text-ner-terracotta font-bold block">
-                CENTRAL ECOSYSTEM
+                {t.networkEcosystem}
               </span>
               <h3 className="font-bold text-sm text-white">SMRITI CARE ARCHITECTURE</h3>
             </div>
@@ -380,7 +380,7 @@ export const MemoryNetwork: React.FC = () => {
               onClick={() => navigate(selectedNodeData.route!)}
               className="px-5 py-2.5 rounded-full bg-ner-black text-white hover:bg-ner-black/85 text-xs font-mono font-bold uppercase tracking-wider shrink-0 transition-transform active:scale-95 shadow-md flex items-center gap-2"
             >
-              <span>Explore Node</span>
+              <span>{t.viewAll}</span>
               <span>→</span>
             </button>
           )}

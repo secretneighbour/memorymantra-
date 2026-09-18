@@ -349,21 +349,21 @@ export const AICompanionScrollSection: React.FC = () => {
       {/* Section Header */}
       <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16">
         <span className="text-xs font-mono uppercase tracking-widest text-ner-terracotta font-bold block mb-2">
-          [ 05 // COMPASSIONATE AI INTERACTION ]
+          {t.aiTag}
         </span>
         <div className="flex items-center justify-center gap-3 flex-wrap">
           <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-ner-black uppercase">
-            AI Memory Companion
+            {t.aiTitle}
           </h2>
           <TTSButton 
-            text="AI Memory Companion. Experience gentle reassurance, heritage reminiscence, and schedule clarity without clinical friction." 
-            label="Listen Section"
+            text={t.aiDescription} 
+            label={t.listenAloud}
             size="sm"
             lang={selectedLang}
           />
         </div>
         <p className="text-sm sm:text-base text-ner-black/70 font-light mt-3 max-w-2xl mx-auto leading-relaxed">
-          Test the live, voice-first dementia memory companion powered by Gemini 3.8 Intelligence. Experience gentle reassurance, heritage reminiscence, and schedule clarity without clinical friction.
+          {t.aiDescription}
         </p>
       </div>
 
@@ -480,14 +480,14 @@ export const AICompanionScrollSection: React.FC = () => {
                 className="w-full h-11 px-4 rounded-2xl frost-white-intense border border-ner-border hover:border-ner-black text-ner-black text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition active:scale-95 shadow-xs"
               >
                 <Volume2 className={`w-4 h-4 text-ner-terracotta ${speakingMsgId === 'audition' ? 'animate-pulse' : ''}`} />
-                <span>Audition Voice ({NER_LANG_OPTIONS.find((l) => l.code === selectedLang)?.native})</span>
+                <span>{t.listenAloud} ({NER_LANG_OPTIONS.find((l) => l.code === selectedLang)?.native})</span>
               </button>
 
               <button
                 onClick={() => setIsAICompanionOpen(true)}
                 className="w-full h-11 px-4 rounded-2xl bg-ner-black text-white hover:bg-ner-black/85 text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition active:scale-95 shadow-md"
               >
-                <span>Open Fullscreen Companion</span>
+                <span>{t.btnLaunchCompanion}</span>
                 <ArrowRight className="w-3.5 h-3.5 text-ner-terracotta" />
               </button>
             </div>

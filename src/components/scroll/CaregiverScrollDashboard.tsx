@@ -20,7 +20,7 @@ export const CaregiverScrollDashboard: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { activePatient } = useRole();
-  const { motion: contextMotion } = useAccessibility();
+  const { motion: contextMotion, t } = useAccessibility();
   const systemReducedMotion = useReducedMotion();
   const isReduced = contextMotion === 'reduced' || systemReducedMotion;
 
@@ -31,30 +31,30 @@ export const CaregiverScrollDashboard: React.FC = () => {
 
   const stats = [
     {
-      label: 'Activity Overview',
+      label: t.caregiverActivityOverview,
       val: '18 / 20',
-      sub: 'Weekly Target Sessions',
+      sub: t.caregiverTargetSessions,
       icon: <Activity className="w-4 h-4 text-ner-terracotta" />,
       color: 'text-ner-black',
     },
     {
-      label: 'Reminder Adherence',
+      label: t.caregiverAdherence,
       val: '96%',
-      sub: 'On-Time Medication & Water',
+      sub: t.caregiverAdherenceSub,
       icon: <CheckCircle2 className="w-4 h-4 text-ner-sage" />,
       color: 'text-ner-sage',
     },
     {
-      label: 'Engagement Index',
+      label: t.caregiverEngagement,
       val: '88%',
-      sub: 'High Vitality & Calmness',
+      sub: t.caregiverEngagementSub,
       icon: <TrendingUp className="w-4 h-4 text-ner-calmBlue" />,
       color: 'text-ner-calmBlue',
     },
     {
-      label: 'Continuity Streak',
-      val: `${activePatient.stats.streakDays} Days`,
-      sub: 'Unbroken Daily Routine',
+      label: t.caregiverStreak,
+      val: `${activePatient.stats.streakDays} ${t.days}`,
+      sub: t.caregiverStreakSub,
       icon: <Clock className="w-4 h-4 text-ner-warmAmber" />,
       color: 'text-ner-warmAmber',
     },
@@ -101,13 +101,13 @@ export const CaregiverScrollDashboard: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-14 sm:mb-18 gap-6">
         <div>
           <span className="text-xs font-mono uppercase tracking-widest text-ner-terracotta font-bold block mb-2">
-            [ 08 // CLINICAL & CAREGIVER PERSPECTIVE ]
+            {t.caregiverSectionBadge}
           </span>
           <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-ner-black uppercase">
-            Caregiver Dashboard
+            {t.caregiverSectionTitle}
           </h2>
           <p className="text-sm sm:text-base text-ner-black/70 font-light mt-3 max-w-2xl leading-relaxed">
-            Transitioning from the patient’s tactile interface to actionable longitudinal telemetry for family circles and clinical specialists.
+            {t.caregiverSectionSubtitle}
           </p>
         </div>
 
@@ -115,7 +115,7 @@ export const CaregiverScrollDashboard: React.FC = () => {
           onClick={() => navigate('/caregiver')}
           className="h-12 px-7 rounded-full bg-ner-black text-white hover:bg-ner-black/85 text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2 shadow-lg active:scale-95 shrink-0"
         >
-          <span>Open Portal</span>
+          <span>{t.caregiverOpenPortal}</span>
           <ArrowRight className="w-4 h-4 text-ner-terracotta" />
         </button>
       </div>
@@ -166,19 +166,19 @@ export const CaregiverScrollDashboard: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-ner-border/70">
               <div>
                 <span className="text-[10px] font-mono uppercase tracking-widest text-ner-terracotta font-bold block">
-                  LONGITUDINAL TELEMETRY
+                  {t.longitudinalTelemetry}
                 </span>
                 <h3 className="text-xl sm:text-2xl font-bold text-ner-black tracking-tight">
-                  Cognitive Activity Trend
+                  {t.cognitiveActivityTrend}
                 </h3>
               </div>
               <span className="px-3 py-1 rounded-full bg-ner-sage/15 text-ner-sage font-mono text-xs font-bold border border-ner-sage/30 w-max">
-                +14.2% Stability Index
+                {t.stabilityIndex}
               </span>
             </div>
 
             <p className="text-xs text-ner-black/65 font-light mb-6">
-              Continuous 14-day record measuring active session frequency, memory match accuracy, and reaction composure.
+              {t.cognitiveActivityTrendDesc}
             </p>
           </div>
 
@@ -284,26 +284,26 @@ export const CaregiverScrollDashboard: React.FC = () => {
           >
             <div className="flex items-center gap-2 text-xs font-mono text-ner-terracotta uppercase font-bold">
               <Sparkles className="w-4 h-4" />
-              <span>AI-Assisted Clinical Insights</span>
+              <span>{t.aiAssistedInsights}</span>
             </div>
 
             <div className="p-4 rounded-2xl bg-ner-offwhite border border-ner-border text-xs text-ner-black/80 space-y-2">
               <p className="font-semibold text-ner-black">
-                Optimal Morning Stamina Observed
+                {t.optimalMorningStamina}
               </p>
               <p className="leading-relaxed text-ner-black/70">
-                Cognitive recall scores are highest between 9:00 AM – 11:30 AM following morning breakfast and tea.
+                {t.optimalMorningStaminaDesc}
               </p>
             </div>
 
             <div className="space-y-2 pt-1 text-xs">
               <div className="flex items-center justify-between text-ner-black/70">
-                <span>Recent Activity:</span>
-                <span className="font-bold text-ner-black">Heritage Memory Match</span>
+                <span>{t.recentActivityLabel}</span>
+                <span className="font-bold text-ner-black">{t.recentActivityVal}</span>
               </div>
               <div className="flex items-center justify-between text-ner-black/70">
-                <span>Reaction Composure:</span>
-                <span className="font-bold text-ner-sage">Stable & Unhurried</span>
+                <span>{t.reactionComposureLabel}</span>
+                <span className="font-bold text-ner-sage">{t.reactionComposureVal}</span>
               </div>
             </div>
 
@@ -312,7 +312,7 @@ export const CaregiverScrollDashboard: React.FC = () => {
               className="w-full h-11 rounded-2xl bg-ner-black text-white hover:bg-ner-black/85 text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm transition active:scale-95"
             >
               <FileText className="w-3.5 h-3.5 text-ner-terracotta" />
-              <span>Export PDF Report</span>
+              <span>{t.exportPdfReport}</span>
             </button>
           </motion.div>
         </div>

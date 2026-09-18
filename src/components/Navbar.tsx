@@ -153,8 +153,8 @@ export const Navbar: React.FC = () => {
               <button
                 onClick={signOut}
                 className="p-1.5 sm:p-2 rounded-full hover:bg-rose-50 text-ner-black/70 hover:text-rose-600 transition-colors"
-                title="Sign Out"
-                aria-label="Sign Out"
+                title={t.navLogout}
+                aria-label={t.navLogout}
               >
                 <LogOut className="w-3.5 h-3.5" />
               </button>
@@ -167,10 +167,10 @@ export const Navbar: React.FC = () => {
                   ? 'bg-ner-black text-white'
                   : 'bg-ner-offwhite hover:bg-ner-black hover:text-white border border-ner-border text-ner-black'
               }`}
-              title="Sign in to your care account"
+              title={t.navLogin}
             >
               <LogIn className="w-3.5 h-3.5 text-ner-terracotta" />
-              <span>Sign In</span>
+              <span>{t.navLogin}</span>
             </Link>
           )}
 
@@ -276,7 +276,7 @@ export const Navbar: React.FC = () => {
                     }}
                     className="px-2.5 py-1 rounded-lg bg-white border border-ner-border text-rose-600 font-mono text-[11px] font-bold"
                   >
-                    Logout
+                    {t.navLogout}
                   </button>
                 </div>
               ) : (
@@ -286,7 +286,7 @@ export const Navbar: React.FC = () => {
                   className="w-full py-2.5 px-4 rounded-2xl bg-ner-black text-white text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2"
                 >
                   <LogIn className="w-4 h-4 text-ner-terracotta" />
-                  <span>Sign In to Account</span>
+                  <span>{t.navLogin}</span>
                 </Link>
               )}
             </div>
@@ -296,7 +296,7 @@ export const Navbar: React.FC = () => {
               <div className="flex items-center justify-between text-xs text-ner-black/60 px-1 mb-2">
                 <span className="font-mono uppercase font-bold text-[10px] tracking-wider text-ner-black/50 flex items-center gap-1">
                   <Globe className="w-3 h-3 text-ner-calmBlue" />
-                  <span>Language / Voice</span>
+                  <span>{t.footerLanguageLabel}</span>
                 </span>
                 <span className="text-[10px] font-mono font-bold text-ner-terracotta">{currentLangMeta.native}</span>
               </div>

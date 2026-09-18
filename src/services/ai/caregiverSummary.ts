@@ -72,4 +72,40 @@ export class CaregiverSummaryEngine {
       suggestedCaregiverActions: suggestedActions
     };
   }
+
+  /**
+   * Asynchronously fetches rich clinical assessment and proactive tips from Gemini API
+   */
+  public static async fetchAsyncCareInsights(
+    patient: Patient,
+    reminders: ReminderItem[],
+    checkIns: WellbeingCheckIn[] = []
+  ): Promise<{ assessment: string; recommendations: string[] }> {
+    try {
+      const response = await fetch('/api/ai/care-insights', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+        body: JSON.stringify({ patient, reminders, checkIns }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.assessment && Array.isArray(data.recommendations)) {
+          return {
+            assessment: data.assessment,
+            recommendations: data.recommendations,
+          };
+        }
+      }
+    } catch (e) {
+      console.warn('Async care insights fallback:', e);
+    }
+    const local = CaregiverSummaryEngine.generateDailySummary(patient, reminders, checkIns);
+    return {
+      assessment: `${local.overallAdherenceText} ${local.memoryInsight}`,
+      recommendations: local.suggestedCaregiverActions,
+    };
+  }
 }

@@ -149,7 +149,7 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
             <div className="flex items-center gap-3">
               <span className="px-3 py-1 rounded-full bg-ner-terracotta/10 text-ner-terracotta border border-ner-terracotta/20 font-mono text-[11px] uppercase tracking-widest font-bold inline-flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-ner-terracotta" />
-                NEURO-COGNITIVE ASSISTIVE ECOSYSTEM
+                {t.neuroAssistiveEcosystem}
               </span>
               <span className="font-mono text-xs text-ner-black/50 hidden sm:inline">
                 [ v2.4 ]
@@ -159,11 +159,12 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
             {/* Wordmark & Main Tagline */}
             <div>
               <h2 className="font-mono text-sm sm:text-base font-bold tracking-widest text-ner-black/60 uppercase mb-2">
-                SMRITI CARE
+                {t.appName.toUpperCase()}
               </h2>
               <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-ner-black leading-[0.92] uppercase">
-                Cognitive Care, <br />
-                <span className="text-ner-terracotta">Made Human.</span>
+                {t.heroTitleLine1} <br />
+                {t.heroTitleLine2} <br />
+                <span className="text-ner-terracotta">{t.heroTitleLine3}</span>
               </h1>
             </div>
 
@@ -172,7 +173,7 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
               className="text-base sm:text-xl text-ner-black/75 font-light max-w-xl leading-relaxed pt-1"
               style={isReduced ? {} : { opacity: taglineOpacity }}
             >
-              Personalized memory-assisted cognitive care for older adults, families, and caregivers across Northeast India.
+              {t.heroDescription}
             </motion.p>
 
             {/* Interactive Tactile CTA Buttons */}
@@ -189,14 +190,14 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
                 onClick={() => setIsRoleModalOpen(true)}
                 className="h-12 sm:h-13 px-5 sm:px-6 rounded-full frost-white-intense text-ner-black hover:border-ner-black/60 transition-all text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm active:scale-95 min-h-[44px]"
               >
-                <span>Switch Portal</span>
+                <span>{t.btnRoleSwitcher}</span>
                 <span className="w-2 h-2 rounded-full bg-ner-sage animate-pulse" />
               </button>
 
               <div className="flex justify-center sm:justify-start">
                 <TTSButton
-                  text="SMRITI CARE. Cognitive Care, Made Human. Personalized memory-assisted cognitive care for older adults, families and caregivers."
-                  label="Listen"
+                  text={t.ttsHeroIntro}
+                  label={t.btnListen}
                   size="md"
                 />
               </div>
@@ -211,10 +212,10 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-ner-black/50 font-bold flex items-center gap-1.5">
                   <Activity className="w-3.5 h-3.5 text-ner-terracotta" />
-                  Telemetry Node 01
+                  {t.widgetTelemetryTitle}
                 </span>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-300">
-                  ACTIVE
+                  {t.active.toUpperCase()}
                 </span>
               </div>
               <div className="flex items-center gap-3.5">
@@ -222,8 +223,8 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
                   NER
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-ner-black">Offline-First Engine</h3>
-                  <p className="text-xs text-ner-black/60">Local audio & ML synthesis</p>
+                  <h3 className="font-bold text-sm text-ner-black">{t.infra1Title}</h3>
+                  <p className="text-xs text-ner-black/60">{t.widgetTelemetrySubtitle}</p>
                 </div>
               </div>
             </div>
@@ -233,21 +234,21 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-ner-black/50 font-bold flex items-center gap-1.5">
                   <Heart className="w-3.5 h-3.5 text-ner-terracotta" />
-                  Active Profile
+                  {t.widgetSessionTitle}
                 </span>
                 <span className="text-xs font-bold text-ner-terracotta font-mono">
-                  {activePatient.stats.completedToday}/{activePatient.stats.totalToday} Done
+                  {activePatient.stats.completedToday}/{activePatient.stats.totalToday} {t.done}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="font-bold text-sm text-ner-black">{activePatient.name}</h4>
-                  <p className="text-xs text-ner-black/60 mt-0.5">{activePatient.stats.streakDays} Day Continuity Streak</p>
+                  <h4 className="font-bold text-sm text-ner-black">{t.patientName}</h4>
+                  <p className="text-xs text-ner-black/60 mt-0.5">{activePatient.stats.streakDays} {t.streak}</p>
                 </div>
                 <button
                   onClick={() => navigate('/patient')}
                   className="w-10 h-10 rounded-full bg-ner-black text-white flex items-center justify-center hover:bg-ner-terracotta transition-colors shadow-sm"
-                  title="Open Patient Portal"
+                  title={t.navCare}
                 >
                   <ArrowRight className="w-4 h-4" />
                 </button>
@@ -265,9 +266,9 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
                 </div>
                 <div>
                   <span className="text-[10px] font-mono text-ner-terracotta font-bold uppercase tracking-wider block">
-                    AI Memory Assistant
+                    {t.heroBottomTitle}
                   </span>
-                  <span className="text-xs font-bold text-white">Tap to converse in local language</span>
+                  <span className="text-xs font-bold text-white">{t.heroBottomBtn}</span>
                 </div>
               </div>
               <span className="text-xs font-mono font-bold text-white/60 group-hover:text-white transition-colors">

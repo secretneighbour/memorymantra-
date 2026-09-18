@@ -66,20 +66,20 @@ export const RemindersPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-ner-sage/10 text-ner-sage font-bold">
-              Adherence Center
+              {t.remindersPageBadge}
             </span>
-            <span className="text-xs text-ner-black/40 font-mono">Medication & Activity</span>
+            <span className="text-xs text-ner-black/40 font-mono">{t.remindersPageSubBadge}</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-ner-black">
-            Reminders & Daily Schedule
+            {t.remindersPageHeading}
           </h1>
           <p className="text-ner-black/70 text-base sm:text-lg mt-2 max-w-xl font-normal">
-            Gentle acoustic alerts and visual cards designed for elderly peace of mind.
+            {t.remindersPageSubheading}
           </p>
         </div>
 
         <TTSButton
-          text={`${t.remindersTitle}. ${t.thingsToRemember}.`}
+          text={`${t.remindersPageHeading}. ${t.remindersPageSubheading}`}
           label={t.listenAloud}
           size="lg"
         />
@@ -88,19 +88,25 @@ export const RemindersPage: React.FC = () => {
       {/* Filter Chips */}
       <div className="flex flex-wrap items-center gap-2 mb-6">
         <span className="text-xs font-mono text-ner-black/50 flex items-center gap-1 mr-2">
-          <Filter className="w-3.5 h-3.5" /> Filter by:
+          <Filter className="w-3.5 h-3.5" /> {t.remindersFilterBy}
         </span>
-        {(['all', 'medication', 'exercise', 'meal', 'family'] as const).map((cat) => (
+        {([
+          { id: 'all', label: t.all },
+          { id: 'medication', label: t.remindersFilterMed },
+          { id: 'exercise', label: t.remindersFilterEx },
+          { id: 'meal', label: t.remindersFilterMeal },
+          { id: 'family', label: t.remindersFilterFam }
+        ] as const).map((cat) => (
           <button
-            key={cat}
-            onClick={() => setFilter(cat)}
+            key={cat.id}
+            onClick={() => setFilter(cat.id as any)}
             className={`text-xs px-4 py-2 rounded-full border transition-all font-semibold capitalize ${
-              filter === cat
+              filter === cat.id
                 ? 'bg-ner-black text-white border-ner-black shadow-sm'
                 : 'bg-white text-ner-black/70 border-ner-border hover:border-ner-black/40'
             }`}
           >
-            {cat}
+            {cat.label}
           </button>
         ))}
       </div>
@@ -158,10 +164,10 @@ export const RemindersPage: React.FC = () => {
                   playSimulatedChime(item.title);
                 }}
                 className="px-3 py-1.5 rounded-full border border-ner-border bg-white hover:bg-black/5 text-xs font-semibold text-ner-black inline-flex items-center gap-1.5 shadow-sm active:scale-95"
-                title="Test reminder chime"
+                title={t.remindersTestChime}
               >
                 <Bell className="w-3.5 h-3.5 text-ner-terracotta" />
-                <span>Test Chime</span>
+                <span>{t.remindersTestChime}</span>
               </button>
 
               <button
@@ -170,7 +176,7 @@ export const RemindersPage: React.FC = () => {
                   deleteReminder(item.id);
                 }}
                 className="p-2 rounded-full hover:bg-black/5 text-ner-black/40 hover:text-red-600 transition-colors"
-                title="Delete reminder"
+                title={t.remindersDeletePrompt}
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -187,7 +193,7 @@ export const RemindersPage: React.FC = () => {
           </div>
           <div>
             <h4 className="font-bold text-xs font-mono uppercase tracking-wider text-ner-terracotta">
-              Chime Triggered
+              {t.remindersChimeTriggered}
             </h4>
             <p className="text-sm font-semibold">{chimePlayed}</p>
           </div>

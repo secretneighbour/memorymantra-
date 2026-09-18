@@ -36,7 +36,7 @@ interface FeatureItem {
 export const StickyFeatureSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { motion: contextMotion } = useAccessibility();
+  const { motion: contextMotion, t } = useAccessibility();
   const systemReducedMotion = useReducedMotion();
   const isReduced = contextMotion === 'reduced' || systemReducedMotion;
 
@@ -46,16 +46,16 @@ export const StickyFeatureSection: React.FC = () => {
     {
       id: 'vault',
       number: '01',
-      title: 'Personal Memory Vault',
-      tagline: 'Preserve sensory roots, family faces, and regional lore.',
-      description: 'A dedicated tactile vault for biographical photographs, spoken audio recordings in local languages, and familiar family stories that anchor orientation.',
+      title: t.feature1Title,
+      tagline: t.feature1Tagline,
+      description: t.feature1Desc,
       bullets: [
-        'Local Northeast folklore, recipes & village memories',
-        'Facial name recall anchors with gentle voice hints',
-        'Private encrypted storage with offline accessibility'
+        t.feature1Bullet1,
+        t.feature1Bullet2,
+        t.feature1Bullet3
       ],
       route: '/memory',
-      badge: 'ARCHIVAL MEMORY',
+      badge: t.feature1Badge,
       accentColor: '#DE4A30',
       preview: {
         type: 'vault',
@@ -70,16 +70,16 @@ export const StickyFeatureSection: React.FC = () => {
     {
       id: 'games',
       number: '02',
-      title: 'Adaptive Cognitive Games',
-      tagline: 'Neuro-stimulation calibrated to daily fatigue and ability.',
-      description: 'Clinically-inspired cognitive exercises incorporating cultural patterns (Assamese Gamosa patterns, tea garden flora, regional instruments) without stressful timers.',
+      title: t.feature2Title,
+      tagline: t.feature2Tagline,
+      description: t.feature2Desc,
       bullets: [
-        '6 specialized cognitive domains (Memory, Executive, Language)',
-        'Automatic difficulty titration based on fatigue',
-        'Zero-failure feedback with warm acoustic reinforcement'
+        t.feature2Bullet1,
+        t.feature2Bullet2,
+        t.feature2Bullet3
       ],
       route: '/games',
-      badge: 'NEURO-PLASTICITY',
+      badge: t.feature2Badge,
       accentColor: '#10B981',
       preview: {
         type: 'games',
@@ -94,16 +94,16 @@ export const StickyFeatureSection: React.FC = () => {
     {
       id: 'companion',
       number: '03',
-      title: 'AI Memory Companion',
-      tagline: 'Supportive multilingual conversational reflections.',
-      description: 'A gentle, conversational companion that engages the patient in calming reminiscing dialogue, reads stories, and confirms daily plans without clinical jargon.',
+      title: t.feature3Title,
+      tagline: t.feature3Tagline,
+      description: t.feature3Desc,
       bullets: [
-        'Speaks and understands 8 Northeast regional dialects',
-        'Non-diagnostic, conversational empathy engine',
-        'Offline fallback for remote high-altitude regions'
+        t.feature3Bullet1,
+        t.feature3Bullet2,
+        t.feature3Bullet3
       ],
       route: '/memory-companion',
-      badge: 'VOICE AI',
+      badge: t.feature3Badge,
       accentColor: '#E67E22',
       preview: {
         type: 'companion',
@@ -118,16 +118,16 @@ export const StickyFeatureSection: React.FC = () => {
     {
       id: 'reminders',
       number: '04',
-      title: 'Smart Reminders',
-      tagline: 'High-contrast, audio-anchored medication and hydration cues.',
-      description: 'Gentle, large-buttoned prompts for daily essentials that alert family circles if a critical dose is missed, preventing over-medication and anxiety.',
+      title: t.feature4Title,
+      tagline: t.feature4Tagline,
+      description: t.feature4Desc,
       bullets: [
-        'One-tap tactile completion with audio confirmation',
-        'Snooze with gentle periodic voice nudge',
-        'Auto-sync with caregiver timeline'
+        t.feature4Bullet1,
+        t.feature4Bullet2,
+        t.feature4Bullet3
       ],
       route: '/reminders',
-      badge: 'CHRONO CARE',
+      badge: t.feature4Badge,
       accentColor: '#3B82F6',
       preview: {
         type: 'reminders',
@@ -142,16 +142,16 @@ export const StickyFeatureSection: React.FC = () => {
     {
       id: 'circle',
       number: '05',
-      title: 'Family & Care Circle',
-      tagline: 'Uniting relatives across distances into a circle of support.',
-      description: 'Enables family members near and far to upload uplifting photo memories, check in on well-being, and share notes with appointed caregivers.',
+      title: t.feature5Title,
+      tagline: t.feature5Tagline,
+      description: t.feature5Desc,
       bullets: [
-        'Shared memory contribution portal for extended family',
-        'Reassuring daily summary without invasive cameras',
-        'Encouraging voice message broadcasting'
+        t.feature5Bullet1,
+        t.feature5Bullet2,
+        t.feature5Bullet3
       ],
       route: '/caregiver',
-      badge: 'COLLABORATIVE CARE',
+      badge: t.feature5Badge,
       accentColor: '#8B5CF6',
       preview: {
         type: 'circle',
@@ -166,16 +166,16 @@ export const StickyFeatureSection: React.FC = () => {
     {
       id: 'dashboard',
       number: '06',
-      title: 'Caregiver Dashboard',
-      tagline: 'Objective cognitive activity trends and clinical telemetry.',
-      description: 'Actionable visibility for primary caregivers and physicians. Tracks longitudinal activity consistency, fatigue levels, and engagement trends without clinical stigma.',
+      title: t.feature6Title,
+      tagline: t.feature6Tagline,
+      description: t.feature6Desc,
       bullets: [
-        'Cognitive Activity Trend with historical continuity',
-        'Early indicator insights for subtle routine shifts',
-        'Clinical exportable PDF summaries for doctor visits'
+        t.feature6Bullet1,
+        t.feature6Bullet2,
+        t.feature6Bullet3
       ],
       route: '/caregiver',
-      badge: 'CLINICAL TELEMETRY',
+      badge: t.feature6Badge,
       accentColor: '#DE4A30',
       preview: {
         type: 'dashboard',
@@ -201,15 +201,15 @@ export const StickyFeatureSection: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 sm:mb-16 gap-4">
         <div>
           <span className="text-xs font-mono uppercase tracking-widest text-ner-terracotta font-bold block mb-2">
-            [ 03 // PRODUCT LAYERS ]
+            {t.featuresBadge}
           </span>
           <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-ner-black uppercase">
-            Architected For Human Memory
+            {t.featuresTitle}
           </h2>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs font-mono text-ner-black/60 uppercase">
-            Layer {currentFeature.number} of {features.length}
+            {t.featuresLayerCount} {currentFeature.number} / {features.length}
           </span>
         </div>
       </div>

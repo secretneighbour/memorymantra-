@@ -14,9 +14,25 @@ import {
   Stethoscope,
   Eye,
   EyeOff,
-  ShieldCheck
+  ShieldCheck,
+  Zap,
+  Sparkles,
+  MapPin
 } from 'lucide-react';
 import { UserRole } from '../types';
+
+const NER_LOCATIONS = [
+  'Guwahati, Assam',
+  'Dispur, Assam',
+  'Shillong, Meghalaya',
+  'Imphal, Manipur',
+  'Aizawl, Mizoram',
+  'Kohima, Nagaland',
+  'Agartala, Tripura',
+  'Itanagar, Arunachal Pradesh',
+  'Gangtok, Sikkim',
+  'Other / Custom'
+];
 
 export const SignupPage: React.FC = () => {
   const navigate = useNavigate();
@@ -27,6 +43,7 @@ export const SignupPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<UserRole>('patient');
   const [location, setLocation] = useState('Guwahati, Assam');
+  const [customLocation, setCustomLocation] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -73,12 +90,14 @@ export const SignupPage: React.FC = () => {
 
     if (!validate()) return;
 
+    const resolvedLocation = location === 'Other / Custom' ? customLocation.trim() || 'North Eastern Region' : location;
+
     const result = await signUp({
       name: name.trim(),
       email: email.trim(),
       password,
       role,
-      location
+      location: resolvedLocation
     });
 
     if (result.success) {
@@ -124,15 +143,35 @@ export const SignupPage: React.FC = () => {
           <p className="text-xs sm:text-sm text-ner-black/70 font-light mt-1">
             Personalized cognitive assistance, family tracking, and clinical telemetry.
           </p>
+
+          {/* Connection Pill */}
+          <div className="mt-2.5 flex items-center justify-center">
+            {isConfigured ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-mono font-medium shadow-xs">
+                <Zap className="w-3 h-3 text-emerald-600 fill-emerald-600" />
+                <span>Supabase Live Auth Connected</span>
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-mono font-medium shadow-xs">
+                <Sparkles className="w-3 h-3 text-amber-600" />
+                <span>Demo Mode Active • Add Supabase Keys for Live Auth</span>
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Card */}
         <div className="frost-white-intense rounded-3xl p-6 sm:p-9 shadow-2xl border border-ner-border/90">
           
           <div className="flex items-center justify-between mb-5 pb-3 border-b border-ner-border/60">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-ner-terracotta font-bold">
-              [ Registration • Secure Account ]
-            </span>
+            <div className="text-left">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-ner-terracotta font-bold block">
+                [ Registration • Secure Account ]
+              </span>
+              <h2 className="text-base sm:text-lg font-bold text-ner-black mt-0.5">
+                New User Registration
+              </h2>
+            </div>
             <TTSButton
               text="Please fill out your details and choose whether you are an elderly patient, family caregiver, or healthcare clinician."
               label="Listen"
@@ -141,24 +180,30 @@ export const SignupPage: React.FC = () => {
           </div>
 
           {error && (
-            <div role="alert" className="mb-4 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2 animate-fade-in">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{error}</span>
+            <div role="alert" className="mb-4 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2.5 animate-fade-in text-left">
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+              <div>
+                <strong className="font-bold block">Registration Notice</strong>
+                <span className="mt-0.5 block">{error}</span>
+              </div>
             </div>
           )}
 
           {isSuccess && (
-            <div role="alert" className="mb-4 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs flex items-center gap-2 animate-fade-in">
-              <CheckCircle2 className="w-4 h-4 text-ner-sage shrink-0" />
-              <span>{statusMessage}</span>
+            <div role="alert" className="mb-4 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs flex items-start gap-2.5 animate-fade-in text-left">
+              <CheckCircle2 className="w-4 h-4 text-ner-sage shrink-0 mt-0.5" />
+              <div>
+                <strong className="font-bold block">Success</strong>
+                <span className="mt-0.5 block">{statusMessage}</span>
+              </div>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} noValidate className="space-y-4">
+          <form onSubmit={handleSubmit} noValidate className="space-y-4 text-left">
             
             {/* Role Selection Tabs */}
             <div>
-              <label className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-2">
+              <label className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-2 text-left">
                 Select Your Role
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -205,7 +250,7 @@ export const SignupPage: React.FC = () => {
 
             {/* Name */}
             <div>
-              <label htmlFor="signup-name" className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-1">
+              <label htmlFor="signup-name" className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-1 text-left">
                 Full Name
               </label>
               <div className="relative">
@@ -216,19 +261,25 @@ export const SignupPage: React.FC = () => {
                   id="signup-name"
                   type="text"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (formErrors.name) setFormErrors({ ...formErrors, name: undefined });
+                  }}
                   placeholder="e.g. Ananya Sharma"
                   className="w-full h-11 pl-10 pr-4 rounded-2xl bg-white border border-ner-border text-sm text-ner-black focus:outline-none focus:border-ner-black focus:ring-2 focus:ring-ner-black/10"
                 />
               </div>
               {formErrors.name && (
-                <p className="text-xs text-rose-600 mt-1 font-mono">{formErrors.name}</p>
+                <p className="text-xs text-rose-600 mt-1 font-mono flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3 shrink-0" />
+                  <span>{formErrors.name}</span>
+                </p>
               )}
             </div>
 
             {/* Email */}
             <div>
-              <label htmlFor="signup-email" className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-1">
+              <label htmlFor="signup-email" className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-1 text-left">
                 Email Address
               </label>
               <div className="relative">
@@ -239,45 +290,75 @@ export const SignupPage: React.FC = () => {
                   id="signup-email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (formErrors.email) setFormErrors({ ...formErrors, email: undefined });
+                  }}
                   placeholder="e.g. ananya@neuroner.in"
                   className="w-full h-11 pl-10 pr-4 rounded-2xl bg-white border border-ner-border text-sm text-ner-black focus:outline-none focus:border-ner-black focus:ring-2 focus:ring-ner-black/10"
                 />
               </div>
               {formErrors.email && (
-                <p className="text-xs text-rose-600 mt-1 font-mono">{formErrors.email}</p>
+                <p className="text-xs text-rose-600 mt-1 font-mono flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3 shrink-0" />
+                  <span>{formErrors.email}</span>
+                </p>
               )}
             </div>
 
-            {/* Location (optional context for NER) */}
+            {/* Regional Location in NER */}
             <div>
-              <label htmlFor="signup-location" className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-1">
+              <label htmlFor="signup-location" className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-1 text-left">
                 Regional Location (NER)
               </label>
-              <input
-                id="signup-location"
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="e.g. Guwahati, Assam"
-                className="w-full h-11 px-3.5 rounded-2xl bg-white border border-ner-border text-sm text-ner-black focus:outline-none focus:border-ner-black focus:ring-2 focus:ring-ner-black/10"
-              />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ner-black/40">
+                  <MapPin className="w-4 h-4" />
+                </div>
+                <select
+                  id="signup-location"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="w-full h-11 pl-10 pr-4 rounded-2xl bg-white border border-ner-border text-sm text-ner-black focus:outline-none focus:border-ner-black focus:ring-2 focus:ring-ner-black/10"
+                >
+                  {NER_LOCATIONS.map((loc) => (
+                    <option key={loc} value={loc}>
+                      {loc}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {location === 'Other / Custom' && (
+                <input
+                  type="text"
+                  value={customLocation}
+                  onChange={(e) => setCustomLocation(e.target.value)}
+                  placeholder="Enter your location (City, State)"
+                  className="w-full h-10 mt-2 px-3.5 rounded-xl bg-white border border-ner-border text-xs text-ner-black focus:outline-none focus:border-ner-black focus:ring-1 focus:ring-ner-black/10"
+                />
+              )}
             </div>
 
             {/* Password & Confirm */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label htmlFor="signup-password" className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-1">
+                <label htmlFor="signup-password" className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-1 text-left">
                   Password
                 </label>
                 <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ner-black/40">
+                    <Lock className="w-4 h-4" />
+                  </div>
                   <input
                     id="signup-password"
                     type={showPassword ? 'text' : 'password'}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (formErrors.password) setFormErrors({ ...formErrors, password: undefined });
+                    }}
                     placeholder="Min 6 chars"
-                    className="w-full h-11 px-3.5 rounded-2xl bg-white border border-ner-border text-sm text-ner-black focus:outline-none focus:border-ner-black focus:ring-2 focus:ring-ner-black/10"
+                    className="w-full h-11 pl-10 pr-10 rounded-2xl bg-white border border-ner-border text-sm text-ner-black focus:outline-none focus:border-ner-black focus:ring-2 focus:ring-ner-black/10"
                   />
                   <button
                     type="button"
@@ -289,26 +370,38 @@ export const SignupPage: React.FC = () => {
                   </button>
                 </div>
                 {formErrors.password && (
-                  <p className="text-xs text-rose-600 mt-1 font-mono">{formErrors.password}</p>
+                  <p className="text-xs text-rose-600 mt-1 font-mono flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3 shrink-0" />
+                    <span>{formErrors.password}</span>
+                  </p>
                 )}
               </div>
 
               <div>
-                <label htmlFor="signup-confirm" className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-1">
+                <label htmlFor="signup-confirm" className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-1 text-left">
                   Confirm Password
                 </label>
                 <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ner-black/40">
+                    <Lock className="w-4 h-4" />
+                  </div>
                   <input
                     id="signup-confirm"
                     type={showPassword ? 'text' : 'password'}
                     value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value);
+                      if (formErrors.confirmPassword) setFormErrors({ ...formErrors, confirmPassword: undefined });
+                    }}
                     placeholder="Repeat password"
-                    className="w-full h-11 px-3.5 rounded-2xl bg-white border border-ner-border text-sm text-ner-black focus:outline-none focus:border-ner-black focus:ring-2 focus:ring-ner-black/10"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl bg-white border border-ner-border text-sm text-ner-black focus:outline-none focus:border-ner-black focus:ring-2 focus:ring-ner-black/10"
                   />
                 </div>
                 {formErrors.confirmPassword && (
-                  <p className="text-xs text-rose-600 mt-1 font-mono">{formErrors.confirmPassword}</p>
+                  <p className="text-xs text-rose-600 mt-1 font-mono flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3 shrink-0" />
+                    <span>{formErrors.confirmPassword}</span>
+                  </p>
                 )}
               </div>
             </div>
@@ -320,7 +413,13 @@ export const SignupPage: React.FC = () => {
                 className="w-full h-12 rounded-2xl bg-ner-black text-white hover:bg-ner-black/85 font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 disabled:opacity-50"
               >
                 {isLoading ? (
-                  <span>Sending Real Verification Email...</span>
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Creating Account...</span>
+                  </>
                 ) : (
                   <>
                     <span>Create Account & Verify</span>
@@ -349,3 +448,4 @@ export const SignupPage: React.FC = () => {
     </div>
   );
 };
+

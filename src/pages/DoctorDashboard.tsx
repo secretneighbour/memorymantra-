@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { mockPatients } from '../data/patients';
 import { Patient } from '../types';
+import { useAccessibility } from '../context/AccessibilityContext';
 import { 
   Stethoscope, 
   Search, 
@@ -39,6 +40,7 @@ import {
 } from 'recharts';
 
 export const DoctorDashboard: React.FC = () => {
+  const { t } = useAccessibility();
   const [patientsList, setPatientsList] = useState<Patient[]>(mockPatients);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPatientModal, setSelectedPatientModal] = useState<Patient | null>(null);
@@ -141,24 +143,24 @@ NOTE: This report is generated from supportive cognitive exercise telemetry and 
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-ner-calmBlue/10 text-ner-calmBlue font-bold">
-              Clinician Roster
+              {t.doctorPatientRoster}
             </span>
-            <span className="text-xs text-ner-black/40 font-mono">NER Tele-Support</span>
+            <span className="text-xs text-ner-black/40 font-mono">{t.doctorTitle}</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-ner-black">
-            Clinician Cognitive Dashboard
+            {t.doctorTitle}
           </h1>
           <p className="text-ner-black/70 text-base sm:text-lg mt-2 max-w-2xl font-normal">
-            Dr. Debabrata Roy • Dispur Polyclinic & Regional Geriatric Tele-Care
+            {t.doctorSubtitle}
           </p>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-ner-border text-xs font-mono text-ner-black/60 max-w-xs">
           <div className="flex items-center gap-1.5 text-ner-terracotta font-bold mb-1">
             <ShieldAlert className="w-4 h-4" />
-            <span>Supportive Assistive Platform</span>
+            <span>{t.encouragement}</span>
           </div>
-          NEURO NER is a supportive cognitive assistance platform, not an automated diagnostic device.
+          {t.doctorCognitiveTrajectory}
         </div>
       </div>
 

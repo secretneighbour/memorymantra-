@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useAccessibility } from '../context/AccessibilityContext';
 import { TTSButton } from '../components/TTSButton';
 import { Mail, ArrowLeft, CheckCircle2, AlertCircle, ShieldCheck } from 'lucide-react';
 
 export const ForgotPasswordPage: React.FC = () => {
   const { sendPasswordReset } = useAuth();
+  const { t } = useAccessibility();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -15,7 +17,7 @@ export const ForgotPasswordPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) {
-      setError('Please enter your registered email address.');
+      setError(t.loginErrorEmail || 'Please enter your registered email address.');
       return;
     }
 
@@ -46,14 +48,14 @@ export const ForgotPasswordPage: React.FC = () => {
         <div className="text-center mb-6">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full frost-white-intense text-xs font-mono font-bold text-ner-black shadow-sm mb-3">
             <span className="w-2 h-2 rounded-full bg-ner-terracotta"></span>
-            <span>ACCOUNT RECOVERY</span>
+            <span>{t.forgotPasswordBadge}</span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-ner-black">
-            Reset Your Password
+            {t.forgotPasswordTitle}
           </h1>
           <p className="text-xs sm:text-sm text-ner-black/70 font-light mt-1">
-            We will help you regain secure access to your cognitive care circle.
+            {t.forgotPasswordSubtitle}
           </p>
         </div>
 
@@ -61,10 +63,10 @@ export const ForgotPasswordPage: React.FC = () => {
           
           <div className="flex items-center justify-between mb-5 pb-3 border-b border-ner-border/60">
             <span className="text-[10px] font-mono uppercase tracking-widest text-ner-terracotta font-bold">
-              [ Password Recovery ]
+              [ {t.forgotPasswordBadge} ]
             </span>
             <TTSButton
-              text="Enter your email address and we will assist in resetting your account password using secure authentication."
+              text={`${t.forgotPasswordTitle}. ${t.forgotPasswordAudioPrompt}`}
               label="Listen"
               size="sm"
             />
@@ -75,7 +77,7 @@ export const ForgotPasswordPage: React.FC = () => {
               <div className="w-12 h-12 rounded-full bg-emerald-100 text-ner-sage flex items-center justify-center mx-auto border border-ner-sage/20">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
-              <h2 className="text-lg font-bold text-ner-black">Check Your Inbox</h2>
+              <h2 className="text-lg font-bold text-ner-black">{t.loginVerifyEmailBtn}</h2>
               <p className="text-xs text-ner-black/75 leading-relaxed">
                 {message}
               </p>
@@ -85,7 +87,7 @@ export const ForgotPasswordPage: React.FC = () => {
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-ner-black text-white hover:bg-ner-black/85 font-mono text-xs uppercase font-bold tracking-wider"
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  <span>Return to Sign In</span>
+                  <span>{t.forgotPasswordBack}</span>
                 </Link>
               </div>
             </div>
@@ -99,12 +101,12 @@ export const ForgotPasswordPage: React.FC = () => {
               )}
 
               <p className="text-xs text-ner-black/75 leading-relaxed">
-                Please enter the email address linked to your patient, caregiver, or clinician account. We'll send instructions to restore access.
+                {t.forgotPasswordSubtitle}
               </p>
 
               <div>
                 <label htmlFor="forgot-email" className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-1.5">
-                  Email Address
+                  {t.loginEmailLabel}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ner-black/40">
@@ -115,7 +117,7 @@ export const ForgotPasswordPage: React.FC = () => {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="e.g. ananya@neuroner.in"
+                    placeholder={t.loginEmailPlaceholder}
                     className="w-full h-12 pl-10 pr-4 rounded-2xl bg-white border border-ner-border text-sm text-ner-black focus:outline-none focus:border-ner-black focus:ring-2 focus:ring-ner-black/10"
                   />
                 </div>
@@ -127,7 +129,7 @@ export const ForgotPasswordPage: React.FC = () => {
                   disabled={isLoading}
                   className="w-full h-12 rounded-2xl bg-ner-black text-white hover:bg-ner-black/85 font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 disabled:opacity-50"
                 >
-                  {isLoading ? 'Sending Reset Link...' : 'Send Password Reset Link'}
+                  {isLoading ? t.loginBtnSigning : t.forgotPasswordBtn}
                 </button>
               </div>
 
@@ -137,7 +139,7 @@ export const ForgotPasswordPage: React.FC = () => {
                   className="inline-flex items-center gap-1.5 text-xs font-mono text-ner-black hover:text-ner-terracotta"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Back to Sign In</span>
+                  <span>{t.forgotPasswordBack}</span>
                 </Link>
               </div>
             </form>
@@ -146,7 +148,7 @@ export const ForgotPasswordPage: React.FC = () => {
 
         <div className="mt-6 text-center text-xs font-mono text-ner-black/40 flex items-center justify-center gap-1.5">
           <ShieldCheck className="w-3.5 h-3.5 text-ner-sage" />
-          <span>Secure Email Delivery</span>
+          <span>{t.loginSecurityNotice}</span>
         </div>
       </div>
     </div>

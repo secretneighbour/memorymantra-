@@ -103,7 +103,7 @@ export const PatientDashboard: React.FC = () => {
                 title="Open interactive Well Voice assistant"
               >
                 <Volume2 className="w-4 h-4 animate-pulse" />
-                <span>Well Voice Check-In</span>
+                <span>{t.wellVoiceCheckinBtn}</span>
               </button>
               <TTSButton
                 text={`${greeting.text}, ${t.patientName}. ${t.encouragement} ${t.activitiesCompleted}: ${activePatient.stats.completedToday} / ${activePatient.stats.totalToday}.`}
@@ -358,18 +358,18 @@ export const PatientDashboard: React.FC = () => {
                   🌸
                 </span>
                 <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-ner-sage/10 text-ner-sage font-bold">
-                  Mindfulness
+                  {t.sensoryCalmTag}
                 </span>
               </div>
               <h4 className="font-bold text-xl text-ner-black group-hover:text-ner-sage transition-colors">
-                Sensory Calm
+                {t.sensoryCalmTitle}
               </h4>
               <p className="text-xs text-ner-black/70 mt-1 leading-relaxed">
                 {t.encouragement}
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-ner-border/60 flex items-center justify-between text-xs font-mono text-ner-black/50">
-              <span>3 Mins</span>
+              <span>{t.sensoryCalmDuration}</span>
               <ArrowRight className="w-4 h-4 text-ner-black group-hover:translate-x-1 transition-transform" />
             </div>
           </button>
@@ -487,7 +487,7 @@ export const PatientDashboard: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ner-black/70 backdrop-blur-sm animate-fade-in">
           <div className="bg-ner-offwhite border-2 border-ner-black rounded-3xl p-8 max-w-md w-full text-center shadow-2xl">
             <span className="text-xs font-mono uppercase tracking-widest text-ner-sage font-bold block mb-2">
-              [ sensory calm ]
+              [ {t.sensoryCalmModalBadge} ]
             </span>
             <h2 className="text-3xl font-bold text-ner-black">
               {t.patientName}
@@ -498,7 +498,7 @@ export const PatientDashboard: React.FC = () => {
 
             <div className="my-12 flex items-center justify-center">
               <div className="w-48 h-48 rounded-full bg-ner-sage/20 border-4 border-ner-sage flex items-center justify-center animate-ping">
-                <span className="text-xl font-mono font-bold text-ner-sage">Breathe</span>
+                <span className="text-xl font-mono font-bold text-ner-sage">{t.breatheLabel}</span>
               </div>
             </div>
 

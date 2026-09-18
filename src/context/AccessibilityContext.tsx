@@ -1,7 +1,9 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { TextSize, MotionPreference, ContrastMode, NERLanguage } from '../types';
-import { translations, TranslationDictionary } from '../data/translations';
+import { translations, translate, TranslationDictionary, TranslationKey, auditTranslations } from '../i18n';
 import { speechEngine } from '../utils/speechEngine';
+
+export type TranslationFunction = ((key: TranslationKey, params?: Record<string, string | number>) => string) & TranslationDictionary;
 
 interface AccessibilityContextType {
   textSize: TextSize;
@@ -12,7 +14,8 @@ interface AccessibilityContextType {
   setContrast: (mode: ContrastMode) => void;
   language: NERLanguage;
   setLanguage: (lang: NERLanguage) => void;
-  t: TranslationDictionary;
+  t: TranslationFunction;
+  translate: (key: TranslationKey, params?: Record<string, string | number>) => string;
   speakText: (text: string, customLang?: NERLanguage, options?: { onEnd?: () => void; onStart?: () => void }) => void;
   isSpeaking: boolean;
   speakingText: string;
@@ -49,6 +52,19 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     const saved = localStorage.getItem('neuro_speechRate');
     return saved ? parseFloat(saved) : 0.88;
   });
+
+  // Run translation audit in development mode
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'production') {
+      const missing = auditTranslations();
+      const languagesWithMissing = Object.keys(missing);
+      if (languagesWithMissing.length > 0) {
+        console.info('[i18n Audit Report] Audited all 8 languages. Missing keys report:', missing);
+      } else {
+        console.info('[i18n Audit Report] ✅ 100% of keys exist across all 8 supported North East languages!');
+      }
+    }
+  }, []);
 
   const setTextSize = (size: TextSize) => {
     setTextSizeState(size);
@@ -121,6 +137,9 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     options?: { onEnd?: () => void; onStart?: () => void }
   ) => {
     if (!text || !text.trim()) return;
+    try {
+      speechEngine.primeAudio();
+    } catch {}
     const targetLang = customLang || language;
     speechEngine.speak(text, {
       lang: targetLang,
@@ -162,7 +181,25 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     return speechEngine.playNarratorCue(cue);
   };
 
-  const t = translations[language] || translations.en;
+  const translateHelper = (key: TranslationKey, params?: Record<string, string | number>) => {
+    return translate(language, key, params);
+  };
+
+  // Hybrid translation accessor: callable function t('key') + property accessor t.key
+  const t = useMemo(() => {
+    const fn = (key: TranslationKey, params?: Record<string, string | number>) => {
+      return translate(language, key, params);
+    };
+
+    return new Proxy(fn, {
+      get(target, prop: string) {
+        if (prop in target) {
+          return (target as any)[prop];
+        }
+        return translate(language, prop as TranslationKey);
+      }
+    }) as TranslationFunction;
+  }, [language]);
 
   return (
     <AccessibilityContext.Provider
@@ -176,6 +213,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
         language,
         setLanguage,
         t,
+        translate: translateHelper,
         speakText,
         isSpeaking,
         speakingText,

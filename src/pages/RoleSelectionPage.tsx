@@ -32,19 +32,19 @@ export const RoleSelectionPage: React.FC = () => {
       <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full frost-white-intense text-xs font-mono font-bold text-ner-black shadow-sm mb-4">
           <span className="w-2 h-2 rounded-full bg-ner-terracotta animate-pulse"></span>
-          <span>SMART INDIA HACKATHON 2026 • PROTOTYPE</span>
+          <span>{t.roleModalTag}</span>
         </div>
 
         <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-ner-black">
-          Choose Your Perspective
+          {t.roleSwitcherTitle}
         </h1>
         <p className="text-base sm:text-xl text-ner-black/70 mt-3 font-light leading-relaxed">
-          NEURO NER adapts its entire interface, information density, and telemetry to match each person in the care circle.
+          {t.roleSwitcherDesc}
         </p>
 
         <div className="mt-4 flex justify-center">
           <TTSButton
-            text="Please select your role: Patient for a friendly, simple memory experience; Caregiver for family monitoring and alerts; or Healthcare Professional for clinical cognitive analytics."
+            text={`${t.roleSwitcherTitle}. ${t.roleSwitcherDesc}`}
             label={t.listenAloud}
           />
         </div>
@@ -61,7 +61,7 @@ export const RoleSelectionPage: React.FC = () => {
         >
           {role === 'patient' && (
             <div className="absolute top-4 right-4 px-2.5 py-0.5 rounded-full bg-ner-black text-white text-[10px] font-mono uppercase font-bold">
-              Current
+              {t.active}
             </div>
           )}
 
@@ -71,27 +71,27 @@ export const RoleSelectionPage: React.FC = () => {
             </div>
 
             <span className="text-[11px] font-mono uppercase tracking-widest text-ner-terracotta font-bold block mb-1">
-              Role 01 • Calm & Tactile
+              {t.rolePatientBadge}
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold text-ner-black mb-2">
-              Elderly Patient
+              {t.rolePatientTitle}
             </h2>
             <p className="text-sm text-ner-black/70 leading-relaxed mb-6 font-normal">
-              Designed specifically for senior citizens. Features extra-large text, high contrast, zero cognitive clutter, voice prompts, and culturally familiar games.
+              {t.rolePatientPersona}
             </p>
 
             <div className="space-y-2 pt-4 border-t border-ner-border/60 text-xs text-ner-black/75">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-ner-sage shrink-0" />
-                <span>Extremely simple 1-tap navigation</span>
+                <span>{t.rolePatientBenefit1}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-ner-sage shrink-0" />
-                <span>Large buttons & read-aloud voice guidance</span>
+                <span>{t.rolePatientBenefit2}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-ner-sage shrink-0" />
-                <span>Low information density & friendly praise</span>
+                <span>{t.rolePatientBenefit3}</span>
               </div>
             </div>
           </div>
@@ -104,7 +104,7 @@ export const RoleSelectionPage: React.FC = () => {
               }}
               className="w-full h-12 rounded-2xl bg-ner-black text-white hover:bg-ner-black/85 font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 shadow-md group-hover:bg-ner-terracotta transition-colors"
             >
-              <span>Enter as Patient</span>
+              <span>{t.start}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -119,7 +119,7 @@ export const RoleSelectionPage: React.FC = () => {
         >
           {role === 'caregiver' && (
             <div className="absolute top-4 right-4 px-2.5 py-0.5 rounded-full bg-ner-black text-white text-[10px] font-mono uppercase font-bold">
-              Current
+              {t.active}
             </div>
           )}
 
@@ -129,27 +129,27 @@ export const RoleSelectionPage: React.FC = () => {
             </div>
 
             <span className="text-[11px] font-mono uppercase tracking-widest text-ner-sage font-bold block mb-1">
-              Role 02 • Care Circle
+              {t.roleCaregiverBadge}
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold text-ner-black mb-2">
-              Family Caregiver
+              {t.roleCaregiverTitle}
             </h2>
             <p className="text-sm text-ner-black/70 leading-relaxed mb-6 font-normal">
-              Built for daughters, sons, and home companions. Provides daily activity summaries, missed medication alerts, mood histories, and direct contact tools.
+              {t.roleCaregiverPersona}
             </p>
 
             <div className="space-y-2 pt-4 border-t border-ner-border/60 text-xs text-ner-black/75">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-ner-sage shrink-0" />
-                <span>Daily cognitive activity overview</span>
+                <span>{t.roleCaregiverBenefit1}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-ner-sage shrink-0" />
-                <span>Medication, hydration & wellbeing alerts</span>
+                <span>{t.roleCaregiverBenefit2}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-ner-sage shrink-0" />
-                <span>Upload family photos & personal memories</span>
+                <span>{t.roleCaregiverBenefit3}</span>
               </div>
             </div>
           </div>
@@ -162,7 +162,7 @@ export const RoleSelectionPage: React.FC = () => {
               }}
               className="w-full h-12 rounded-2xl bg-ner-black text-white hover:bg-ner-black/85 font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 shadow-md group-hover:bg-ner-sage transition-colors"
             >
-              <span>Enter as Caregiver</span>
+              <span>{t.start}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -177,7 +177,7 @@ export const RoleSelectionPage: React.FC = () => {
         >
           {role === 'doctor' && (
             <div className="absolute top-4 right-4 px-2.5 py-0.5 rounded-full bg-ner-black text-white text-[10px] font-mono uppercase font-bold">
-              Current
+              {t.active}
             </div>
           )}
 
@@ -187,27 +187,27 @@ export const RoleSelectionPage: React.FC = () => {
             </div>
 
             <span className="text-[11px] font-mono uppercase tracking-widest text-ner-calmBlue font-bold block mb-1">
-              Role 03 • Clinical Telemetry
+              {t.doctorRoleBadge}
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold text-ner-black mb-2">
-              Healthcare Professional
+              {t.doctorRoleTitle}
             </h2>
             <p className="text-sm text-ner-black/70 leading-relaxed mb-6 font-normal">
-              For geriatricians, neurologists, and tele-health counselors. Multi-patient overview, longitudinal response latency trends, domain radar profiles, and report exports.
+              {t.doctorRolePersona}
             </p>
 
             <div className="space-y-2 pt-4 border-t border-ner-border/60 text-xs text-ner-black/75">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-ner-calmBlue shrink-0" />
-                <span>Longitudinal telemetry & 7d/30d/90d trends</span>
+                <span>{t.doctorRoleBenefit1}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-ner-calmBlue shrink-0" />
-                <span>Multi-domain cognitive radar visualization</span>
+                <span>{t.doctorRoleBenefit2}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-ner-calmBlue shrink-0" />
-                <span>Exportable clinical review summaries</span>
+                <span>{t.doctorRoleBenefit3}</span>
               </div>
             </div>
           </div>
@@ -220,7 +220,7 @@ export const RoleSelectionPage: React.FC = () => {
               }}
               className="w-full h-12 rounded-2xl bg-ner-black text-white hover:bg-ner-black/85 font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 shadow-md group-hover:bg-ner-calmBlue transition-colors"
             >
-              <span>Enter as Clinician</span>
+              <span>{t.start}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>

@@ -13,13 +13,15 @@ import {
   Lock, 
   Mail, 
   ShieldCheck,
-  Send
+  Send,
+  Zap,
+  Sparkles
 } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signIn, isLoading, error, clearError, fillDemoAccount, user } = useAuth();
+  const { signIn, isLoading, error, clearError, fillDemoAccount, user, isConfigured } = useAuth();
   const { t } = useAccessibility();
 
   // Form state
@@ -186,6 +188,21 @@ export const LoginPage: React.FC = () => {
           <p className="text-xs sm:text-sm text-ner-black/70 font-light max-w-xs mx-auto leading-relaxed">
             Your intelligent companion for everyday cognitive support.
           </p>
+
+          {/* Connection Status Pill */}
+          <div className="mt-2.5 flex items-center justify-center">
+            {isConfigured ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-mono font-medium shadow-xs">
+                <Zap className="w-3 h-3 text-emerald-600 fill-emerald-600" />
+                <span>Supabase Live Auth Connected</span>
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-mono font-medium shadow-xs">
+                <Sparkles className="w-3 h-3 text-amber-600" />
+                <span>Demo Mode Active • Add Supabase Keys for Live Auth</span>
+              </span>
+            )}
+          </div>
         </div>
 
         {/* 3. LIVING INTERACTIVE CAT (Physical, draggable, pettable visual creature) */}
@@ -205,11 +222,11 @@ export const LoginPage: React.FC = () => {
         <div className="frost-white-intense rounded-3xl p-6 sm:p-9 shadow-2xl border border-ner-border/90 relative z-10 pt-7 sm:pt-8">
           
           <div className="flex items-center justify-between mb-5 pb-3 border-b border-ner-border/60">
-            <div>
+            <div className="text-left">
               <span className="text-[10px] font-mono uppercase tracking-widest text-ner-terracotta font-bold block">
                 [ Secure Authentication ]
               </span>
-              <h2 className="text-lg sm:text-xl font-bold text-ner-black">
+              <h2 className="text-lg sm:text-xl font-bold text-ner-black mt-0.5">
                 Sign in to your account
               </h2>
             </div>

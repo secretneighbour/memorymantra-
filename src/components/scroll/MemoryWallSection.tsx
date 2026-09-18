@@ -28,7 +28,7 @@ interface MemoryCard {
 export const MemoryWallSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { motion: contextMotion } = useAccessibility();
+  const { motion: contextMotion, t } = useAccessibility();
   const systemReducedMotion = useReducedMotion();
   const isReduced = contextMotion === 'reduced' || systemReducedMotion;
 
@@ -112,13 +112,13 @@ export const MemoryWallSection: React.FC = () => {
     >
       <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-20">
         <span className="text-xs font-mono uppercase tracking-widest text-ner-terracotta font-bold block mb-2">
-          [ 06 // REMINISCENCE WALL ]
+          {t.memoryWallBadge}
         </span>
         <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-ner-black uppercase">
-          Memory Wall
+          {t.memoryWallTitle}
         </h2>
         <p className="text-sm sm:text-base text-ner-black/70 font-light mt-3 max-w-2xl mx-auto leading-relaxed">
-          Memories coming together: grounding autobiographical touchpoints spanning beloved family faces, ancestral places, cherished heirlooms, and pivotal life milestones.
+          {t.memoryWallSubtitle}
         </p>
       </div>
 
@@ -199,9 +199,9 @@ export const MemoryWallSection: React.FC = () => {
             <div className="w-12 h-12 rounded-2xl bg-ner-black text-white flex items-center justify-center mx-auto shadow-sm">
               <Camera className="w-6 h-6 text-ner-terracotta" />
             </div>
-            <h4 className="font-bold text-base text-ner-black">Add Family Memory</h4>
+            <h4 className="font-bold text-base text-ner-black">{t.memoriesAddBtn}</h4>
             <p className="text-xs text-ner-black/60 max-w-xs leading-relaxed">
-              Upload family photos, record spoken stories, or save regional landmarks in your secure vault.
+              {t.memoryWallSubtitle}
             </p>
           </div>
 
@@ -209,7 +209,7 @@ export const MemoryWallSection: React.FC = () => {
             onClick={() => navigate('/memory')}
             className="w-full h-11 rounded-full bg-ner-black text-white hover:bg-ner-black/85 text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm transition active:scale-95 mt-4"
           >
-            <span>Open Memory Vault</span>
+            <span>{t.memoryWallOpenVault}</span>
             <ArrowRight className="w-3.5 h-3.5 text-ner-terracotta" />
           </button>
         </div>

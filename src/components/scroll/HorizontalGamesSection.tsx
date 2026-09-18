@@ -29,7 +29,7 @@ export const HorizontalGamesSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { motion: contextMotion } = useAccessibility();
+  const { motion: contextMotion, t } = useAccessibility();
   const systemReducedMotion = useReducedMotion();
   const isReduced = contextMotion === 'reduced' || systemReducedMotion;
 
@@ -38,9 +38,9 @@ export const HorizontalGamesSection: React.FC = () => {
   const games: GameCard[] = [
     {
       id: 'memory',
-      name: 'Memory Match',
-      shortDesc: 'Pair culturally rich motifs including one-horned rhinos, tea leaves, and traditional instruments.',
-      domain: 'Working Memory',
+      name: t.gameMemoryMatchName,
+      shortDesc: t.gameMemoryMatchDesc,
+      domain: t.gamesHubFilterMemory,
       domainColor: '#DE4A30',
       icon: '🦏',
       culturalAnchor: 'Kaziranga & Assam Wildlife',
@@ -50,9 +50,9 @@ export const HorizontalGamesSection: React.FC = () => {
     },
     {
       id: 'sequence',
-      name: 'Sequence Recall',
-      shortDesc: 'Listen to and recreate rhythmic patterns of the Bihu Dhol and Northeast regional percussion.',
-      domain: 'Executive Processing',
+      name: t.gameSequenceRecallName,
+      shortDesc: t.gameSequenceRecallDesc,
+      domain: t.gamesHubFilterExecutive,
       domainColor: '#10B981',
       icon: '🥁',
       culturalAnchor: 'Bihu Percussion & Beats',
@@ -62,9 +62,9 @@ export const HorizontalGamesSection: React.FC = () => {
     },
     {
       id: 'pattern',
-      name: 'Pattern Recognition',
-      shortDesc: 'Trace traditional geometric weaves found in Muga silk and Gamosa textile borders.',
-      domain: 'Visual-Spatial Attention',
+      name: t.gamePatternFinderName,
+      shortDesc: t.gamePatternFinderDesc,
+      domain: t.gamesHubFilterAttention,
       domainColor: '#E67E22',
       icon: '🧣',
       culturalAnchor: 'Eri & Muga Weaving',
@@ -74,9 +74,9 @@ export const HorizontalGamesSection: React.FC = () => {
     },
     {
       id: 'object',
-      name: 'Object Recognition',
-      shortDesc: 'Identify beloved heritage utensils, brass Xorai, and flora with multi-lingual audio name cues.',
-      domain: 'Semantic Memory',
+      name: t.gamePictureRecognitionName,
+      shortDesc: t.gamePictureRecognitionDesc,
+      domain: t.gamesHubFilterLanguage,
       domainColor: '#3B82F6',
       icon: '🏛️',
       culturalAnchor: 'Assamese Brass & Artefacts',
@@ -86,9 +86,9 @@ export const HorizontalGamesSection: React.FC = () => {
     },
     {
       id: 'routine',
-      name: 'Daily Routine Recall',
-      shortDesc: 'Sequence daily living milestones: morning tea, medication, afternoon stroll, and rest.',
-      domain: 'Temporal Orientation',
+      name: t.gameRoutineRecallName,
+      shortDesc: t.gameRoutineRecallDesc,
+      domain: t.gamesHubFilterAttention,
       domainColor: '#8B5CF6',
       icon: '☀️',
       culturalAnchor: 'Everyday Daily Living',
@@ -98,9 +98,9 @@ export const HorizontalGamesSection: React.FC = () => {
     },
     {
       id: 'emotion',
-      name: 'Emotion Recognition',
-      shortDesc: 'Connect facial expressions and voice intonations with emotional cues to maintain empathy.',
-      domain: 'Social Cognition',
+      name: t.gameEmotionRecognitionName,
+      shortDesc: t.gameEmotionRecognitionDesc,
+      domain: t.gamesHubFilterAttention,
       domainColor: '#EC4899',
       icon: '🎭',
       culturalAnchor: 'Facial & Vocal Affect',
@@ -135,13 +135,13 @@ export const HorizontalGamesSection: React.FC = () => {
       <div className="max-w-7xl mx-auto mb-10 sm:mb-14 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
         <div>
           <span className="text-xs font-mono uppercase tracking-widest text-ner-terracotta font-bold block mb-2">
-            [ 04 // COGNITIVE SUITE ]
+            {t.gamesSectionBadge}
           </span>
           <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-ner-black uppercase">
-            Culturally-Grounded Exercises
+            {t.gamesSectionTitle}
           </h2>
           <p className="text-sm sm:text-base text-ner-black/70 font-light mt-3 max-w-xl">
-            Targeted neuro-stimulation games designed with familiar cultural cues, zero countdown stress, and soothing acoustic feedback.
+            {t.gamesSectionSubtitle}
           </p>
         </div>
 
@@ -167,7 +167,7 @@ export const HorizontalGamesSection: React.FC = () => {
             onClick={() => navigate('/games')}
             className="h-11 px-5 rounded-full bg-ner-black text-white hover:bg-ner-black/85 text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2 shadow-md transition-all active:scale-95"
           >
-            <span>All Hub</span>
+            <span>{t.viewAll}</span>
             <ArrowRight className="w-3.5 h-3.5 text-ner-terracotta" />
           </button>
         </div>

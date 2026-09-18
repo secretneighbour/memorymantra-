@@ -11,91 +11,91 @@ export const GamesHub: React.FC = () => {
   const games = [
     {
       id: 'memory',
-      title: 'MEMORY MATCH',
-      subtitle: 'Find matching pairs and exercise visual memory.',
-      category: 'Visual Recall',
+      title: t.gameMemoryMatchName || 'MEMORY MATCH',
+      subtitle: t.gameMemoryMatchDesc || 'Find matching pairs and exercise visual memory.',
+      category: t.gamesHubVisualRecall || 'Visual Recall',
       icon: '🦏',
       difficulty: 'Gentle',
       estimatedTime: '5 mins',
       route: '/games/memory',
-      description: 'Exercise photographic memory and pair recognition using nostalgic North Eastern elements like tea estates and rhinos.'
+      description: t.gameMemoryMatchInst || 'Exercise photographic memory and pair recognition using nostalgic North Eastern elements like tea estates and rhinos.'
     },
     {
       id: 'sequence',
-      title: 'SEQUENCE RECALL',
-      subtitle: 'Remember the sequence and repeat it.',
-      category: 'Reasoning & Order',
+      title: t.gameSequenceRecallName || 'SEQUENCE RECALL',
+      subtitle: t.gameSequenceRecallDesc || 'Remember the sequence and repeat it.',
+      category: t.gamesHubReasoningOrder || 'Reasoning & Order',
       icon: '⭐',
       difficulty: 'Adaptive',
       estimatedTime: '4 mins',
       route: '/games/sequence',
-      description: 'Strengthen short-term working memory and rhythmic reasoning through progressive visual symbol patterns.'
+      description: t.gameSequenceRecallInst || 'Strengthen short-term working memory and rhythmic reasoning through progressive visual symbol patterns.'
     },
     {
       id: 'pattern',
-      title: 'PATTERN RECOGNITION',
-      subtitle: 'Identify the missing or altered element.',
-      category: 'Attention & Logic',
+      title: t.gamePatternFinderName || 'PATTERN RECOGNITION',
+      subtitle: t.gamePatternFinderDesc || 'Identify the missing or altered element.',
+      category: t.gamesHubAttentionLogic || 'Attention & Logic',
       icon: '🔍',
       difficulty: 'Adaptive',
       estimatedTime: '4 mins',
       route: '/games/pattern',
-      description: 'Discover subtle geometric rhythms and textile motifs inspired by Assam handloom and traditional shawls.'
+      description: t.gamePatternFinderInst || 'Discover subtle geometric rhythms and textile motifs inspired by Assam handloom and traditional shawls.'
     },
     {
       id: 'object',
-      title: 'OBJECT RECOGNITION',
-      subtitle: 'Identify familiar everyday objects.',
-      category: 'Episodic Memory',
+      title: t.gamePictureRecognitionName || 'OBJECT RECOGNITION',
+      subtitle: t.gamePictureRecognitionDesc || 'Identify familiar everyday objects.',
+      category: t.gamesHubEpisodicMemory || 'Episodic Memory',
       icon: '🧣',
       difficulty: 'Gentle',
       estimatedTime: '5 mins',
       route: '/games/object',
-      description: 'Trigger warm memories of North Eastern landscapes, traditional handlooms, and cultural artifacts.'
+      description: t.gamePictureRecognitionInst || 'Trigger warm memories of North Eastern landscapes, traditional handlooms, and cultural artifacts.'
     },
     {
       id: 'routine',
-      title: 'DAILY ROUTINE RECALL',
-      subtitle: 'Remember daily routine steps in sequence.',
-      category: 'Routine & Executive',
+      title: t.gameRoutineRecallName || 'DAILY ROUTINE RECALL',
+      subtitle: t.gameRoutineRecallDesc || 'Remember daily routine steps in sequence.',
+      category: t.gamesHubRoutineExecutive || 'Routine & Executive',
       icon: '⏰',
       difficulty: 'Gentle',
       estimatedTime: '4 mins',
       route: '/games/routine',
-      description: 'Reinforce comforting morning habits like waking, brushing, morning tea, medication, and daily walks.'
+      description: t.gameRoutineRecallInst || 'Reinforce comforting morning habits like waking, brushing, morning tea, medication, and daily walks.'
     },
     {
       id: 'emotion',
-      title: 'EMOTION RECOGNITION',
-      subtitle: 'Recognize emotional cues and feelings.',
-      category: 'Social & Empathy',
+      title: t.gameEmotionRecognitionName || 'EMOTION RECOGNITION',
+      subtitle: t.gameEmotionRecognitionDesc || 'Recognize emotional cues and feelings.',
+      category: t.gamesHubSocialEmpathy || 'Social & Empathy',
       icon: '😊',
       difficulty: 'Gentle',
       estimatedTime: '3 mins',
       route: '/games/emotion',
-      description: 'Recognize emotional expressions, gestures, and warm social moments with family and friends.'
+      description: t.gameEmotionRecognitionInst || 'Recognize emotional expressions, gestures, and warm social moments with family and friends.'
     },
     {
       id: 'words',
-      title: 'WORD CONNECT',
-      subtitle: 'Connect related words and strengthen vocabulary.',
-      category: 'Language & Lexical',
+      title: t.gameWordConnectName || 'WORD CONNECT',
+      subtitle: t.gameWordConnectDesc || 'Connect related words and strengthen vocabulary.',
+      category: t.gamesHubLanguageLexical || 'Language & Lexical',
       icon: '🍎',
       difficulty: 'Gentle',
       estimatedTime: '4 mins',
       route: '/games/words',
-      description: 'Stimulate everyday associative memory and concept pairing through friendly, stress-free prompts.'
+      description: t.gameWordConnectInst || 'Stimulate everyday associative memory and concept pairing through friendly, stress-free prompts.'
     },
     {
       id: 'market',
-      title: 'REMEMBER THE MARKET',
-      subtitle: 'Nostalgic local bazaar memory shopping list.',
-      category: 'Working Memory',
+      title: t.gameMarketMemoryName || 'REMEMBER THE MARKET',
+      subtitle: t.gameMarketMemoryDesc || 'Nostalgic local bazaar memory shopping list.',
+      category: t.gamesHubWorkingMemory || 'Working Memory',
       icon: '🛍️',
       difficulty: 'Adaptive',
       estimatedTime: '4 mins',
       route: '/games/market',
-      description: 'Recall items from the weekly Sunday bazaar: fresh ginger, red rice, local tea leaves, and bananas.'
+      description: t.gameMarketMemoryInst || 'Recall items from the weekly Sunday bazaar: fresh ginger, red rice, local tea leaves, and bananas.'
     }
   ];
 
@@ -106,20 +106,20 @@ export const GamesHub: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-ner-terracotta/10 text-ner-terracotta font-bold">
-              Cognitive Gym
+              {t.gamesHubGymBadge}
             </span>
-            <span className="text-xs text-ner-black/40 font-mono">8 Therapeutic Exercises</span>
+            <span className="text-xs text-ner-black/40 font-mono">{t.gamesHubExercisesBadge}</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-ner-black">
-            Cognitive Games Hub
+            {t.gamesHubHeading}
           </h1>
           <p className="text-ner-black/70 text-base sm:text-lg mt-2 max-w-xl font-normal">
-            Engaging, clinically inspired mental exercises tailored for elderly users with regional cultural familiarity.
+            {t.gamesHubSubheading}
           </p>
         </div>
 
         <TTSButton
-          text={`${t.allGamesDirectory}. ${t.activitiesTitle}`}
+          text={`${t.gamesHubHeading}. ${t.gamesHubSubheading}`}
           label={t.listenAloud}
           size="lg"
         />
@@ -172,7 +172,7 @@ export const GamesHub: React.FC = () => {
                 className="px-4 py-2.5 rounded-full bg-ner-black text-white hover:bg-ner-terracotta text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition-colors"
               >
                 <Play className="w-3 h-3 fill-current" />
-                <span>Play</span>
+                <span>{t.gamesHubPlayBtn}</span>
               </button>
             </div>
           </div>

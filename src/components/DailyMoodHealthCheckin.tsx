@@ -266,7 +266,7 @@ export const DailyMoodHealthCheckin: React.FC<DailyMoodHealthCheckinProps> = ({
     // 3. Database Sync (Supabase if available)
     if (isSupabaseConfigured()) {
       try {
-        const { error } = await supabase.from('daily_health_checkins').upsert({
+        const { error } = await (supabase.from('daily_health_checkins') as any).upsert({
           patient_id: activePatient.id,
           date_str: todayStr,
           mood: selectedMood,
