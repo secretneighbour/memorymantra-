@@ -265,7 +265,7 @@ export const SignupPage: React.FC = () => {
                     setName(e.target.value);
                     if (formErrors.name) setFormErrors({ ...formErrors, name: undefined });
                   }}
-                  placeholder="e.g. Ananya Sharma"
+                  placeholder="e.g. Full Name"
                   className="w-full h-11 pl-10 pr-4 rounded-2xl bg-white border border-ner-border text-sm text-ner-black focus:outline-none focus:border-ner-black focus:ring-2 focus:ring-ner-black/10"
                 />
               </div>
@@ -294,7 +294,7 @@ export const SignupPage: React.FC = () => {
                     setEmail(e.target.value);
                     if (formErrors.email) setFormErrors({ ...formErrors, email: undefined });
                   }}
-                  placeholder="e.g. ananya@neuroner.in"
+                  placeholder="e.g. user@smriticare.in"
                   className="w-full h-11 pl-10 pr-4 rounded-2xl bg-white border border-ner-border text-sm text-ner-black focus:outline-none focus:border-ner-black focus:ring-2 focus:ring-ner-black/10"
                 />
               </div>

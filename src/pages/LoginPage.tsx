@@ -361,7 +361,7 @@ export const LoginPage: React.FC = () => {
                     if (emailError) setEmailError(null);
                   }}
                   autoComplete="email"
-                  placeholder="e.g. ananya@neuroner.in"
+                  placeholder="e.g. user@smriticare.in"
                   disabled={isLoading || isSuccess}
                   aria-invalid={!!emailError}
                   aria-describedby={emailError ? 'email-error' : undefined}

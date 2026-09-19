@@ -155,7 +155,7 @@ export const StickyFeatureSection: React.FC = () => {
       accentColor: '#8B5CF6',
       preview: {
         type: 'circle',
-        title: 'Ananya & Family Circle Network',
+        title: 'Caregiver & Family Circle Network',
         metrics: [
           { label: 'Circle Members', val: '5 Family' },
           { label: 'New Photos', val: '+3 Today' },
@@ -377,7 +377,7 @@ export const StickyFeatureSection: React.FC = () => {
                       <div className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-white/30 transition">
                         <span className="text-3xl block mb-2">📸</span>
                         <h5 className="font-bold text-xs text-white">Family Photos & Names</h5>
-                        <p className="text-[11px] text-white/60 mt-1">Rajen & Daughter Ananya in Shillong</p>
+                        <p className="text-[11px] text-white/60 mt-1">Family gathering in Shillong</p>
                       </div>
                       <div className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-white/30 transition">
                         <span className="text-3xl block mb-2">🎙️</span>
@@ -415,7 +415,7 @@ export const StickyFeatureSection: React.FC = () => {
                       </div>
                       <div className="p-3 rounded-xl bg-ner-terracotta/20 border border-ner-terracotta/30 text-xs text-white">
                         <span className="font-mono text-[10px] text-ner-terracotta font-bold block mb-1">AI COMPANION</span>
-                        “Of course. At 4:00 PM your daughter Ananya is coming over for warm tea and your daily word puzzle.”
+                        “Of course. At 4:00 PM your family caregiver is coming over for warm tea and your daily word puzzle.”
                       </div>
                     </div>
                   )}
@@ -454,10 +454,10 @@ export const StickyFeatureSection: React.FC = () => {
                     <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-ner-sage/20 text-ner-sage flex items-center justify-center font-bold font-mono">
-                          AK
+                          VC
                         </div>
                         <div>
-                          <span className="text-xs font-bold text-white block">Ananya Kalita (Daughter)</span>
+                          <span className="text-xs font-bold text-white block">Visitor (Caregiver)</span>
                           <span className="text-[10px] font-mono text-white/60">Primary Family Care Contact • Active</span>
                         </div>
                       </div>

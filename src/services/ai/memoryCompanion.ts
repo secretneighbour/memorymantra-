@@ -344,8 +344,8 @@ export class MemoryCompanionService {
     }
 
     // 6. Family & Caregiver
-    if (q.includes('family') || q.includes('daughter') || q.includes('son') || q.includes('rohan') || q.includes('priya') || q.includes('ananya') || q.includes('পৰিয়াল')) {
-      let text = `Your son Rohan is your dedicated primary caregiver, and your daughter Priya and granddaughter Ananya look forward to speaking with you. They love you dearly.`;
+    if (q.includes('family') || q.includes('daughter') || q.includes('son') || q.includes('caregiver') || q.includes('পৰিয়াল')) {
+      let text = `Your dedicated family care circle is right beside you and looks forward to speaking with you. They love you dearly.`;
       return {
         text,
         provider: 'local-reassurance-engine',

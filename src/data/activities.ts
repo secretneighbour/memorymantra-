@@ -67,7 +67,7 @@ export const dailyJourneyActivities: DailyActivity[] = [
 ];
 
 export const encouragingMessages = [
-  "You're doing wonderful today, Ananya.",
+  "You're doing wonderful today, Visitor.",
   "Every small memory exercise keeps your mind vibrant and clear.",
   "Consistency is your superpower. Great to have you back.",
   "Your smile and curiosity brighten our entire community."

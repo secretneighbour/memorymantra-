@@ -2,13 +2,15 @@ import React from 'react';
 import { useRole } from '../context/RoleContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { useNavigate } from 'react-router-dom';
+import { useCurrentUser } from '../context/AuthContext';
 import { User, Users, Stethoscope, Check, X, ShieldAlert, Sparkles } from 'lucide-react';
 import { UserRole } from '../types';
 
 export const RoleSwitcherModal: React.FC = () => {
+  const navigate = useNavigate();
   const { role, setRole, isRoleModalOpen, setIsRoleModalOpen } = useRole();
   const { t } = useAccessibility();
-  const navigate = useNavigate();
+  const { displayName } = useCurrentUser();
 
   if (!isRoleModalOpen) return null;
 
@@ -25,7 +27,7 @@ export const RoleSwitcherModal: React.FC = () => {
     {
       id: 'patient',
       title: t.rolePatientTitle,
-      persona: t.rolePatientPersona,
+      persona: `${displayName} (Patient)`,
       tagline: t.rolePatientTagline,
       icon: <User className="w-6 h-6 text-ner-terracotta" />,
       badge: t.rolePatientBadge,
@@ -39,7 +41,7 @@ export const RoleSwitcherModal: React.FC = () => {
     {
       id: 'caregiver',
       title: t.roleCaregiverTitle,
-      persona: t.roleCaregiverPersona,
+      persona: `${displayName} (Caregiver)`,
       tagline: t.roleCaregiverTagline,
       icon: <Users className="w-6 h-6 text-ner-sage" />,
       badge: t.roleCaregiverBadge,
@@ -53,7 +55,7 @@ export const RoleSwitcherModal: React.FC = () => {
     {
       id: 'doctor',
       title: t.doctorRoleTitle,
-      persona: t.doctorRolePersona,
+      persona: `${displayName} (Doctor)`,
       tagline: t.doctorRoleTagline,
       icon: <Stethoscope className="w-6 h-6 text-ner-calmBlue" />,
       badge: t.doctorRoleBadge,

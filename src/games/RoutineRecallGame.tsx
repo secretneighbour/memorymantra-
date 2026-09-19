@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRole } from '../context/RoleContext';
+import { useCurrentUser } from '../context/AuthContext';
 import { routineRecallQuestions } from '../data/routines';
 import { RecommendationEngine } from '../services/ai/recommendationEngine';
 import { TTSButton } from '../components/TTSButton';
@@ -9,6 +10,7 @@ import { ArrowLeft, CheckCircle2, RotateCcw, Sparkles, Trophy, ArrowRight } from
 export const RoutineRecallGame: React.FC = () => {
   const navigate = useNavigate();
   const { activePatient, recordActivityResult } = useRole();
+  const { displayName } = useCurrentUser();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -196,7 +198,7 @@ export const RoutineRecallGame: React.FC = () => {
           <span className="text-xs font-mono uppercase tracking-widest text-ner-sage font-bold block mb-1">
             [ Routine Recall Complete ]
           </span>
-          <h2 className="text-3xl sm:text-5xl font-bold text-ner-black">Wonderful, Ananya!</h2>
+          <h2 className="text-3xl sm:text-5xl font-bold text-ner-black">Wonderful, {displayName}!</h2>
           <p className="text-base text-ner-black/70 mt-2 max-w-lg mx-auto">
             Anchoring your daily routine strengthens your independence and peace of mind.
           </p>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRole } from '../context/RoleContext';
+import { useCurrentUser } from '../context/AuthContext';
 import { patternExercises } from '../data/marketItems';
 import { RecommendationEngine } from '../services/ai/recommendationEngine';
 import { TTSButton } from '../components/TTSButton';
@@ -9,6 +10,7 @@ import { ArrowLeft, CheckCircle2, RotateCcw, Sparkles, Trophy, ArrowRight } from
 export const PatternFinderGame: React.FC = () => {
   const navigate = useNavigate();
   const { activePatient, recordActivityResult } = useRole();
+  const { displayName } = useCurrentUser();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -212,7 +214,7 @@ export const PatternFinderGame: React.FC = () => {
           <span className="text-xs font-mono uppercase tracking-widest text-ner-sage font-bold block mb-1">
             [ Cognitive Exercise Complete ]
           </span>
-          <h2 className="text-3xl sm:text-5xl font-bold text-ner-black">Wonderful job, Ananya!</h2>
+          <h2 className="text-3xl sm:text-5xl font-bold text-ner-black">Wonderful job, {displayName}!</h2>
           <p className="text-base text-ner-black/70 mt-2 max-w-lg mx-auto">
             Your visual pattern reasoning was completed with great attention. Your results are safely recorded on your device.
           </p>

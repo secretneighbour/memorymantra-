@@ -108,7 +108,7 @@ export interface ConsecutiveNegativeEvaluation {
 export const evaluateConsecutiveNegativeResponses = (
   responses: WellbeingResponse[],
   threshold: number = 2,
-  patientName: string = 'Ananya'
+  patientName: string = 'Visitor'
 ): ConsecutiveNegativeEvaluation => {
   if (!responses || responses.length === 0) {
     return {
@@ -176,7 +176,7 @@ export const evaluateConsecutiveNegativeResponses = (
 export const saveWellbeingResponse = (
   mood: WellbeingMood,
   note?: string,
-  patientName: string = 'Ananya',
+  patientName: string = 'Visitor',
   threshold: number = 2
 ): {
   response: WellbeingResponse;

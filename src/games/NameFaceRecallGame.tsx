@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRole } from '../context/RoleContext';
+import { useCurrentUser } from '../context/AuthContext';
 import { RecommendationEngine } from '../services/ai/recommendationEngine';
 import { TTSButton } from '../components/TTSButton';
 import { ArrowLeft, CheckCircle2, Sparkles, Trophy, ArrowRight, Heart } from 'lucide-react';
@@ -8,6 +9,7 @@ import { ArrowLeft, CheckCircle2, Sparkles, Trophy, ArrowRight, Heart } from 'lu
 export const NameFaceRecallGame: React.FC = () => {
   const navigate = useNavigate();
   const { familyMembers, activePatient, recordActivityResult } = useRole();
+  const { displayName } = useCurrentUser();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedName, setSelectedName] = useState<string | null>(null);
@@ -213,7 +215,7 @@ export const NameFaceRecallGame: React.FC = () => {
           <span className="text-xs font-mono uppercase tracking-widest text-rose-600 font-bold block mb-1">
             [ Family Memory Therapy Complete ]
           </span>
-          <h2 className="text-3xl sm:text-5xl font-bold text-ner-black">Beautiful, Ananya!</h2>
+          <h2 className="text-3xl sm:text-5xl font-bold text-ner-black">Beautiful, {displayName}!</h2>
           <p className="text-base text-ner-black/70 mt-2 max-w-lg mx-auto">
             Remembering your family circle anchors warmth, safety, and cherished relationships.
           </p>

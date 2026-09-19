@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { memoryCardPairs, MemoryCardData } from '../data/gamesData';
 import { useRole } from '../context/RoleContext';
+import { useCurrentUser } from '../context/AuthContext';
 import { TTSButton } from '../components/TTSButton';
 import { 
   RotateCcw, 
@@ -25,6 +26,7 @@ interface PlayCard extends MemoryCardData {
 export const MemoryMatchGame: React.FC = () => {
   const navigate = useNavigate();
   const { recordGameCompletion } = useRole();
+  const { displayName } = useCurrentUser();
 
   const [cards, setCards] = useState<PlayCard[]>([]);
   const [flippedCards, setFlippedCards] = useState<PlayCard[]>([]);
@@ -315,7 +317,7 @@ export const MemoryMatchGame: React.FC = () => {
               </span>
 
               <h2 className="text-2xl font-bold text-ner-black mt-1">
-                Excellent work, Ananya!
+                Excellent work, {displayName}!
               </h2>
 
               <p className="text-ner-black/70 text-xs sm:text-sm mt-1">

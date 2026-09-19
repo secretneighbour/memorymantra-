@@ -79,7 +79,7 @@ const initialAlertsList: CaregiverAlert[] = [
     id: 'alt-2',
     type: 'activity_pattern',
     title: 'Observed Performance Trend',
-    message: 'Ananya showed high consistency (88%+) across morning memory and word exercises.',
+    message: 'Patient showed high consistency (88%+) across morning memory and word exercises.',
     severity: 'info',
     createdAt: 'Today, 11:30 AM',
     reviewed: false,
@@ -241,7 +241,7 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children
         severity: 'urgent',
         createdAt: 'Just now',
         reviewed: false,
-        actionLabel: 'Contact Ananya'
+        actionLabel: 'Contact Caregiver'
       };
       setAlerts(prev => [alert, ...prev]);
     }

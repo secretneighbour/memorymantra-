@@ -39,7 +39,7 @@ export const mockFamilyMembers: FamilyMember[] = [
     phone: '+91 98640 12345',
     avatarUrl: 'https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1?w=200&auto=format&fit=crop&q=80',
     birthDate: '25 December',
-    notes: 'Loves drawing rhinos and listening to Ananya grandma stories.'
+    notes: 'Loves drawing rhinos and listening to gentle memory stories.'
   }
 ];
 

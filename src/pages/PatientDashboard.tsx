@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRole } from '../context/RoleContext';
+import { useCurrentUser } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { TTSButton } from '../components/TTSButton';
 import { WellbeingCheckIn } from '../components/WellbeingCheckIn';
@@ -35,6 +36,7 @@ export const PatientDashboard: React.FC = () => {
     setIsAICompanionOpen
   } = useRole();
   const { t, simpleUIMode, setSimpleUIMode } = useAccessibility();
+  const { displayName } = useCurrentUser();
 
   const [relaxModalOpen, setRelaxModalOpen] = useState(false);
   const [wellVoiceOpen, setWellVoiceOpen] = useState(false);
@@ -112,7 +114,7 @@ export const PatientDashboard: React.FC = () => {
             </div>
 
             <h1 className="text-2xl sm:text-5xl font-bold tracking-tight text-ner-black">
-              {greeting.text}, <span className="text-ner-terracotta">{t.patientName}.</span>
+              {greeting.text}, <span className="text-ner-terracotta">{displayName}.</span>
             </h1>
 
             <p className="text-sm sm:text-xl text-ner-black/75 font-light leading-relaxed max-w-2xl">
@@ -133,7 +135,7 @@ export const PatientDashboard: React.FC = () => {
                 <span>{t.wellVoiceCheckinBtn}</span>
               </button>
               <TTSButton
-                text={`${greeting.text}, ${t.patientName}. ${t.encouragement} ${t.activitiesCompleted}: ${activePatient.stats.completedToday} / ${activePatient.stats.totalToday}.`}
+                text={`${greeting.text}, ${displayName}. ${t.encouragement} ${t.activitiesCompleted}: ${activePatient.stats.completedToday} / ${activePatient.stats.totalToday}.`}
                 label={t.listenAloud}
                 size="lg"
               />
@@ -724,7 +726,7 @@ export const PatientDashboard: React.FC = () => {
                 [ {t.sensoryCalmModalBadge} ]
               </span>
               <h2 className="text-2xl font-bold text-ner-black">
-                {t.patientName}
+                {displayName}
               </h2>
               <p className="text-xs text-ner-black/60 mt-1">
                 {t.encouragement}

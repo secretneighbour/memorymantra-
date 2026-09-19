@@ -358,3 +358,33 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
+
+export interface CurrentUser {
+  name: string;
+  role: string;
+  email?: string;
+  isAuthenticated: boolean;
+}
+
+/**
+ * Central state hook for user identity:
+ * - Returns user.name if signed in.
+ * - Automatically falls back to "Visitor" placeholder when not signed in.
+ * - Allows plugging in real auth later with zero UI refactoring.
+ */
+export const useCurrentUser = (): {
+  currentUser: CurrentUser;
+  displayName: string;
+  isAuthenticated: boolean;
+} => {
+  const { user, isAuthenticated } = useAuth();
+  const displayName = isAuthenticated && user?.name?.trim() ? user.name : 'Visitor';
+  const currentUser: CurrentUser = {
+    name: displayName,
+    role: isAuthenticated && user?.role ? user.role : 'Guest',
+    email: user?.email || '',
+    isAuthenticated,
+  };
+  return { currentUser, displayName, isAuthenticated };
+};
+

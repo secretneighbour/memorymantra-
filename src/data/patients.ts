@@ -3,7 +3,7 @@ import { Patient } from '../types';
 export const mockPatients: Patient[] = [
   {
     id: 'patient-01',
-    name: 'Ananya Sharma',
+    name: 'Visitor',
     age: 72,
     gender: 'Female',
     location: 'Guwahati',
@@ -12,13 +12,13 @@ export const mockPatients: Patient[] = [
     preferredLanguage: 'as',
     avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
     primaryCaregiver: {
-      name: 'Rohan Sharma',
-      relation: 'Son',
+      name: 'Visitor (Caregiver)',
+      relation: 'Caregiver',
       phone: '+91 98640 12345',
     },
     emergencyContact: {
-      name: 'Dr. Debabrata Roy (Dispur Polyclinic)',
-      relation: 'Consultant Geriatrician',
+      name: 'Visitor (Doctor)',
+      relation: 'Consultant Specialist',
       phone: '+91 94350 98765',
     },
     stats: {

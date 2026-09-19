@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRole } from '../context/RoleContext';
 import { useAccessibility } from '../context/AccessibilityContext';
+import { useCurrentUser } from '../context/AuthContext';
 import { TTSButton } from '../components/TTSButton';
 import { 
   User, 
@@ -20,6 +21,7 @@ export const RoleSelectionPage: React.FC = () => {
   const navigate = useNavigate();
   const { role, setRole, activePatient } = useRole();
   const { t } = useAccessibility();
+  const { displayName } = useCurrentUser();
 
   const handleSelect = (selectedRole: UserRole, targetRoute: string) => {
     setRole(selectedRole);
@@ -77,7 +79,7 @@ export const RoleSelectionPage: React.FC = () => {
               {t.rolePatientTitle}
             </h2>
             <p className="text-sm text-ner-black/70 leading-relaxed mb-6 font-normal">
-              {t.rolePatientPersona}
+              {displayName} (Patient)
             </p>
 
             <div className="space-y-2 pt-4 border-t border-ner-border/60 text-xs text-ner-black/75">
@@ -135,7 +137,7 @@ export const RoleSelectionPage: React.FC = () => {
               {t.roleCaregiverTitle}
             </h2>
             <p className="text-sm text-ner-black/70 leading-relaxed mb-6 font-normal">
-              {t.roleCaregiverPersona}
+              {displayName} (Caregiver)
             </p>
 
             <div className="space-y-2 pt-4 border-t border-ner-border/60 text-xs text-ner-black/75">
@@ -193,7 +195,7 @@ export const RoleSelectionPage: React.FC = () => {
               {t.doctorRoleTitle}
             </h2>
             <p className="text-sm text-ner-black/70 leading-relaxed mb-6 font-normal">
-              {t.doctorRolePersona}
+              {displayName} (Doctor)
             </p>
 
             <div className="space-y-2 pt-4 border-t border-ner-border/60 text-xs text-ner-black/75">

@@ -48,9 +48,9 @@ export const MemoryWallSection: React.FC = () => {
     {
       id: 'family',
       category: 'Family',
-      title: 'Daughter Ananya at Cotton College',
+      title: 'Family Graduation at Cotton College',
       subtitle: 'Graduation Day in Guwahati',
-      narrative: 'A bright sunny morning in June. Ananya wore the red Muga silk Mekhela Sador with gold borders, smiling beside the historic college gate.',
+      narrative: 'A bright sunny morning in June. Dressed in the red Muga silk Mekhela Sador with gold borders, smiling beside the historic college gate.',
       dateOrPlace: 'Guwahati, 2018',
       emoji: '🎓',
       color: '#DE4A30',

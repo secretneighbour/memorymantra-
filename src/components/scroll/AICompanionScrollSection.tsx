@@ -26,6 +26,7 @@ import {
 import { NERLanguage } from '../../types';
 import { TTSButton } from '../TTSButton';
 import { MemoryCompanionService } from '../../services/ai/memoryCompanion';
+import { useCurrentUser } from '../../context/AuthContext';
 
 interface DemoMessage {
   id: string;
@@ -67,7 +68,7 @@ const INITIAL_CONVERSATION: DemoMessage[] = [
     id: 'demo-2',
     sender: 'ai',
     role: 'SMRITI COMPANION',
-    text: 'Of course! At 4:00 PM your daughter Ananya is coming over for warm tea, and you both planned to complete the Brahmaputra Word Puzzle.',
+    text: 'Of course! At 4:00 PM your family caregiver is coming over for warm tea, and you both planned to complete the Brahmaputra Word Puzzle.',
     timestamp: '2:15 PM',
     provider: 'gemini-3.8-flash',
   },
@@ -92,6 +93,7 @@ export const AICompanionScrollSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const { setIsAICompanionOpen, activePatient, reminders } = useRole();
+  const { displayName } = useCurrentUser();
   const { 
     speakText, 
     isSpeaking, 
@@ -165,10 +167,10 @@ export const AICompanionScrollSection: React.FC = () => {
   const handleAuditionVoice = () => {
     primeSpeechEngine();
     const greetings: Record<string, string> = {
-      en: `Hello ${activePatient.name}. I am Smriti, your caring memory companion.`,
-      as: `নমস্কাৰ ${activePatient.name}। মই স্মৃতি, আপোনাৰ মৰমৰ সংগী।`,
-      bn: `নমস্কার ${activePatient.name}। আমি স্মৃতি, আপনার স্মৃতি সঙ্গী।`,
-      hi: `नमस्ते ${activePatient.name} जी। मैं स्मृति हूँ, आपकी अपनी देखभाल साथी।`,
+      en: `Hello ${displayName}. I am Smriti, your caring memory companion.`,
+      as: `নমস্কাৰ ${displayName}। মই স্মৃতি, আপোনাৰ মৰমৰ সংগী।`,
+      bn: `নমস্কার ${displayName}। আমি স্মৃতি, আপনার স্মৃতি সঙ্গী।`,
+      hi: `नमस्ते ${displayName} जी। मैं स्मृति हूँ, आपकी अपनी देखभाल साथी।`,
       mni: `খুরুমজরি! ঐহাক স্মৃতিনি, নহাক্কী নুংশিরবা মেমোরী কম্প্যানিয়ননি।`,
       kha: `Khublei! Nga dei ka Smriti, ka paralok ban kynmaw ia ki jingkynmaw ba thiang jong phi.`,
       bodo: `खुलुमबाय! आं स्मृती, नोंथांनि मोजां मोन्नाय गोसोखांथि लोगो।`,
@@ -224,14 +226,14 @@ export const AICompanionScrollSection: React.FC = () => {
       // Unified call to MemoryCompanionService (uses sessionStorage cache + server proxy)
       const companionResult = await MemoryCompanionService.queryAICompanion({
         message: query,
-        patient: activePatient,
+        patient: { ...activePatient, name: displayName },
         reminders: reminders,
         language: selectedLang,
         history: historyPayload,
         mode: 'companion',
       });
 
-      const aiReply = companionResult.text || `I am right here with you, ${activePatient.name}. Everything is safe and serene.`;
+      const aiReply = companionResult.text || `I am right here with you, ${displayName}. Everything is safe and serene.`;
 
       const aiMsgId = `ai-${Date.now()}`;
       const aiMsg: DemoMessage = {
@@ -253,7 +255,7 @@ export const AICompanionScrollSection: React.FC = () => {
     } catch (err) {
       console.warn('AI endpoint fallback:', err);
       // Fallback message
-      const fallbackReply = `I hear you warmly, ${activePatient.name}. Remember, your family is right beside you, and you are having a wonderful day in Guwahati.`;
+      const fallbackReply = `I hear you warmly, ${displayName}. Remember, your family is right beside you, and you are having a wonderful day.`;
       const fallbackMsg: DemoMessage = {
         id: `ai-err-${Date.now()}`,
         sender: 'ai',
@@ -511,7 +513,7 @@ export const AICompanionScrollSection: React.FC = () => {
                     </span>
                   </h4>
                   <span className="text-[11px] font-mono text-ner-black/50">
-                    Patient Profile: {activePatient.name} (Guwahati)
+                    Patient Profile: {displayName}
                   </span>
                 </div>
               </div>

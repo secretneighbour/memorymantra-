@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useRole } from '../context/RoleContext';
+import { useCurrentUser } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { MemoryItem, FamilyMember } from '../types';
 import { TTSButton } from '../components/TTSButton';
@@ -23,6 +24,7 @@ import {
 
 export const MemoriesPage: React.FC = () => {
   const { memories, familyMembers, activePatient, addMemoryItem, sendHelpAlert } = useRole();
+  const { displayName } = useCurrentUser();
   const { t } = useAccessibility();
   const [activeTab, setActiveTab] = useState<'all' | 'photos' | 'family' | 'stories' | 'songs' | 'therapy'>('all');
   
@@ -464,7 +466,7 @@ export const MemoriesPage: React.FC = () => {
               <h3 className="text-2xl font-bold text-ner-black">{callingContact.name}</h3>
               <p className="text-xs text-ner-black/60 font-mono mt-1">{callingContact.phone}</p>
               <p className="text-sm text-ner-black/80 mt-4 leading-relaxed bg-white p-4 rounded-2xl border border-ner-border">
-                "Ring, ring... Connecting to {callingContact.name}. A notification has also been sent to their phone to say hello to Ananya!"
+                "Ring, ring... Connecting to {callingContact.name}. A notification has also been sent to their phone to say hello to {displayName}!"
               </p>
             </div>
 

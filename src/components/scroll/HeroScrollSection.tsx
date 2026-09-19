@@ -13,6 +13,8 @@ import {
   Heart
 } from 'lucide-react';
 
+import { useCurrentUser } from '../../context/AuthContext';
+
 interface HeroScrollSectionProps {
   onScrollToExplore: () => void;
 }
@@ -24,6 +26,7 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
   const containerRef = useRef<HTMLElement>(null);
   const { setRole, setIsRoleModalOpen, setIsAICompanionOpen, activePatient } = useRole();
   const { t, motion: contextMotion } = useAccessibility();
+  const { displayName } = useCurrentUser();
   const systemReducedMotion = useReducedMotion();
   const isReduced = contextMotion === 'reduced' || systemReducedMotion;
 
@@ -244,7 +247,7 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <div className="min-w-0">
-                    <h4 className="font-bold text-sm text-ner-black truncate">{t.patientName}</h4>
+                    <h4 className="font-bold text-sm text-ner-black truncate">{displayName}</h4>
                     <p className="text-xs text-ner-black/60 mt-0.5">{activePatient.stats.streakDays} {t.streak}</p>
                   </div>
                   <button

@@ -809,8 +809,8 @@ export const MemoryCompanionPage: React.FC = () => {
                   <span className="font-mono text-[10px] uppercase font-bold text-ner-terracotta block">
                     Primary Caregiver & Family
                   </span>
-                  <p className="font-bold text-ner-black">Rohan Sharma (Son)</p>
-                  <p className="text-[11px] text-ner-black/60">Daughter Priya & Granddaughter Ananya</p>
+                  <p className="font-bold text-ner-black">{activePatient.caregiverName || 'Caregiver'}</p>
+                  <p className="text-[11px] text-ner-black/60">Family & Loved Ones Circle</p>
                 </div>
 
                 <div className="p-3 rounded-xl bg-ner-offwhite border border-ner-border space-y-1">

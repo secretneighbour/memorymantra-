@@ -239,7 +239,7 @@ async function startServer() {
       const langLabel = langNames[language] || "English";
 
       // Patient background description
-      const patientName = patientContext.name || "Minoti Devi";
+      const patientName = patientContext.name || "Visitor";
       const patientLocation = patientContext.location || "Guwahati, Assam";
       const patientStage = patientContext.stage || "Mild Cognitive Support";
       const pendingReminders = Array.isArray(patientContext.reminders)

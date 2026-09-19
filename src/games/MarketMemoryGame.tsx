@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRole } from '../context/RoleContext';
+import { useCurrentUser } from '../context/AuthContext';
 import { marketItemsList } from '../data/marketItems';
 import { RecommendationEngine } from '../services/ai/recommendationEngine';
 import { TTSButton } from '../components/TTSButton';
@@ -9,6 +10,7 @@ import { ArrowLeft, CheckCircle2, Trophy, ArrowRight, Eye, ShoppingBag } from 'l
 export const MarketMemoryGame: React.FC = () => {
   const navigate = useNavigate();
   const { activePatient, recordActivityResult } = useRole();
+  const { displayName } = useCurrentUser();
 
   // Pick 4 items from the market catalogue
   const [round, setRound] = useState(1);
@@ -186,7 +188,7 @@ export const MarketMemoryGame: React.FC = () => {
                 </div>
               ) : (
                 <div className="p-6 rounded-3xl bg-amber-50 border-2 border-amber-400 text-amber-900 mb-6">
-                  <h3 className="text-2xl font-bold">Good effort, Ananya!</h3>
+                  <h3 className="text-2xl font-bold">Good effort, {displayName}!</h3>
                   <p className="text-sm text-ner-black/70 mt-1">
                     The missing item was the {missingItem.name} {missingItem.emoji} ({missingItem.localNameAs}).
                   </p>
@@ -212,7 +214,7 @@ export const MarketMemoryGame: React.FC = () => {
           <span className="text-xs font-mono uppercase tracking-widest text-amber-900 font-bold block mb-1">
             [ Market Recall Complete ]
           </span>
-          <h2 className="text-3xl sm:text-5xl font-bold text-ner-black">Well done, Ananya!</h2>
+          <h2 className="text-3xl sm:text-5xl font-bold text-ner-black">Well done, {displayName}!</h2>
           <p className="text-base text-ner-black/70 mt-2 max-w-lg mx-auto">
             Culturally grounded memory exercises stimulate sensory and episodic retention.
           </p>
