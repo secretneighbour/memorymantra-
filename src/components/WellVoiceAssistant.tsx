@@ -262,10 +262,10 @@ export const WellVoiceAssistant: React.FC<WellVoiceAssistantProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ner-black/60 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-lg rounded-3xl bg-white shadow-2xl border border-ner-border overflow-hidden p-6 sm:p-8">
-        {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-ner-border/60">
+    <div className="modal-overlay animate-fade-in">
+      <div className="modal-wrapper border border-ner-border">
+        {/* Modal Header */}
+        <div className="modal-header flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-full bg-ner-terracotta text-white flex items-center justify-center shadow-sm">
               <Volume2 className="w-5 h-5 animate-pulse" />
@@ -294,8 +294,10 @@ export const WellVoiceAssistant: React.FC<WellVoiceAssistantProps> = ({
           </button>
         </div>
 
+        {/* Modal Body */}
+        <div className="modal-body">
         {/* Step Progress Pills */}
-        <div className="flex items-center gap-1.5 my-4">
+        <div className="flex items-center gap-1.5 mb-4">
           {(['mood', 'energy', 'comfort', 'note', 'completed'] as Step[]).map((s, idx) => {
             const isCurrent = step === s;
             const isDone =
@@ -543,9 +545,10 @@ export const WellVoiceAssistant: React.FC<WellVoiceAssistantProps> = ({
             </div>
           )}
         </div>
+        </div>
 
-        {/* Footer info */}
-        <div className="pt-3 border-t border-ner-border/60 flex items-center justify-between text-[11px] font-mono text-ner-black/50">
+        {/* Modal Footer */}
+        <div className="modal-footer flex items-center justify-between text-[11px] font-mono text-ner-black/50">
           <div className="flex items-center gap-1">
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
             <span>NEURO NER Adaptive Voice System</span>

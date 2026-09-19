@@ -717,30 +717,34 @@ export const PatientDashboard: React.FC = () => {
 
       {/* Guided Breathing Modal */}
       {relaxModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ner-black/70 backdrop-blur-sm animate-fade-in">
-          <div className="bg-ner-offwhite border-2 border-ner-black rounded-3xl p-8 max-w-md w-full text-center shadow-2xl">
-            <span className="text-xs font-mono uppercase tracking-widest text-ner-sage font-bold block mb-2">
-              [ {t.sensoryCalmModalBadge} ]
-            </span>
-            <h2 className="text-3xl font-bold text-ner-black">
-              {t.patientName}
-            </h2>
-            <p className="text-sm text-ner-black/60 mt-2">
-              {t.encouragement}
-            </p>
+        <div className="modal-overlay animate-fade-in">
+          <div className="modal-wrapper border-2 border-ner-black max-w-md w-full text-center shadow-2xl">
+            <div className="modal-header">
+              <span className="text-xs font-mono uppercase tracking-widest text-ner-sage font-bold block mb-1">
+                [ {t.sensoryCalmModalBadge} ]
+              </span>
+              <h2 className="text-2xl font-bold text-ner-black">
+                {t.patientName}
+              </h2>
+              <p className="text-xs text-ner-black/60 mt-1">
+                {t.encouragement}
+              </p>
+            </div>
 
-            <div className="my-12 flex items-center justify-center">
-              <div className="w-48 h-48 rounded-full bg-ner-sage/20 border-4 border-ner-sage flex items-center justify-center animate-ping">
+            <div className="modal-body my-4 flex items-center justify-center">
+              <div className="w-44 h-44 rounded-full bg-ner-sage/20 border-4 border-ner-sage flex items-center justify-center animate-ping">
                 <span className="text-xl font-mono font-bold text-ner-sage">{t.breatheLabel}</span>
               </div>
             </div>
 
-            <button
-              onClick={() => setRelaxModalOpen(false)}
-              className="w-full h-14 rounded-2xl bg-ner-black text-white font-mono font-bold text-xs uppercase tracking-wider hover:bg-ner-black/85 transition-colors"
-            >
-              ✓ {t.activitiesCompleted}
-            </button>
+            <div className="modal-footer">
+              <button
+                onClick={() => setRelaxModalOpen(false)}
+                className="w-full h-12 rounded-xl bg-ner-black text-white font-mono font-bold text-xs uppercase tracking-wider hover:bg-ner-black/85 transition-colors"
+              >
+                ✓ {t.activitiesCompleted}
+              </button>
+            </div>
           </div>
         </div>
       )}

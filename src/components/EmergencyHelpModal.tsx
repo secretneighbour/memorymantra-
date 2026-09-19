@@ -82,48 +82,51 @@ export const EmergencyHelpModal: React.FC = () => {
 
   return (
     <div 
-      className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-ner-black/80 backdrop-blur-sm animate-fade-in"
+      className="modal-overlay animate-fade-in"
       role="dialog"
       aria-modal="true"
       aria-labelledby="emergency-modal-title"
     >
-      <div className="bg-ner-offwhite border-2 border-ner-black rounded-3xl p-6 sm:p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl relative">
-        {/* Close Button */}
-        <button
-          onClick={handleClose}
-          className="absolute top-5 right-5 w-10 h-10 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60 hover:text-ner-black transition-colors"
-          aria-label="Close Help Dialog"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
+      <div className="modal-wrapper border-2 border-ner-black relative">
         {/* Modal Header */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className={`w-11 h-11 rounded-2xl flex items-center justify-center border ${
-            selectedUrgency === 'critical' && mode !== 'select'
-              ? 'bg-red-100 text-red-600 border-red-300'
-              : 'bg-ner-terracotta/15 text-ner-terracotta border-ner-terracotta/30'
-          }`}>
-            {selectedUrgency === 'critical' && mode !== 'select' ? (
-              <ShieldAlert className="w-6 h-6 animate-pulse" />
-            ) : (
-              <HeartHandshake className="w-6 h-6" />
-            )}
+        <div className="modal-header flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center border ${
+              selectedUrgency === 'critical' && mode !== 'select'
+                ? 'bg-red-100 text-red-600 border-red-300'
+                : 'bg-ner-terracotta/15 text-ner-terracotta border-ner-terracotta/30'
+            }`}>
+              {selectedUrgency === 'critical' && mode !== 'select' ? (
+                <ShieldAlert className="w-6 h-6 animate-pulse" />
+              ) : (
+                <HeartHandshake className="w-6 h-6" />
+              )}
+            </div>
+            <div>
+              <span className="text-[11px] font-mono uppercase tracking-widest text-ner-terracotta font-bold block">
+                {t.emergencySMS}
+              </span>
+              <h2 id="emergency-modal-title" className="text-xl sm:text-2xl font-bold text-ner-black tracking-tight">
+                {mode === 'confirm' 
+                  ? t.confirmEmergencySMSTitle 
+                  : mode === 'status' 
+                    ? t.emergencySMS 
+                    : t.emergencyNeedHelp}
+              </h2>
+            </div>
           </div>
-          <div>
-            <span className="text-[11px] font-mono uppercase tracking-widest text-ner-terracotta font-bold block">
-              {t.emergencySMS}
-            </span>
-            <h2 id="emergency-modal-title" className="text-2xl font-bold text-ner-black tracking-tight">
-              {mode === 'confirm' 
-                ? t.confirmEmergencySMSTitle 
-                : mode === 'status' 
-                  ? t.emergencySMS 
-                  : t.emergencyNeedHelp}
-            </h2>
-          </div>
+
+          <button
+            onClick={handleClose}
+            className="w-9 h-9 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60 hover:text-ner-black transition-colors shrink-0"
+            aria-label="Close Help Dialog"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
+        {/* Modal Body */}
+        <div className="modal-body">
         {/* VIEW 1: SELECT URGENCY & CONTACT */}
         {mode === 'select' && (
           <div className="space-y-4">
@@ -320,8 +323,10 @@ export const EmergencyHelpModal: React.FC = () => {
           </div>
         )}
 
-        {/* Honest Simulation / Demo Disclaimer */}
-        <div className="mt-6 pt-3 border-t border-ner-border/60 text-center">
+        </div>
+
+        {/* Modal Footer */}
+        <div className="modal-footer text-center">
           <span className="text-[10px] font-mono text-ner-black/45 tracking-wide">
             [ {t.simulationActive} • Safe Emergency Testing Layer ]
           </span>

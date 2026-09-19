@@ -73,10 +73,10 @@ export const RoleSwitcherModal: React.FC = () => {
   };
 
   return (
-    <div className="modal-overlay-backdrop animate-fade-in">
-      <div className="modal-contained-card animate-scale-up">
-        {/* Sticky Header: "Choose Your Experience Mode" */}
-        <div className="modal-sticky-header">
+    <div className="modal-overlay animate-fade-in">
+      <div className="modal-wrapper animate-scale-up">
+        {/* Modal Header */}
+        <div className="modal-header">
           <div className="flex items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -101,8 +101,8 @@ export const RoleSwitcherModal: React.FC = () => {
           </div>
         </div>
 
-        {/* Scrollable Body: Experience Mode Cards */}
-        <div className="modal-scrollable-body">
+        {/* Scrollable Body */}
+        <div className="modal-body">
           <div className="space-y-3.5">
             {rolesConfig.map((item) => {
               const isSelected = role === item.id;
@@ -155,8 +155,8 @@ export const RoleSwitcherModal: React.FC = () => {
           </div>
         </div>
 
-        {/* Sticky Footer: "Prototype Simulation Mode Active" */}
-        <div className="modal-sticky-footer">
+        {/* Modal Footer */}
+        <div className="modal-footer">
           <div className="flex items-center justify-between text-xs text-ner-black/50">
             <span className="flex items-center gap-1.5 font-medium">
               <ShieldAlert className="w-3.5 h-3.5 text-ner-terracotta" />

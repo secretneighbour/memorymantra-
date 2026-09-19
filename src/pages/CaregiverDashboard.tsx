@@ -646,18 +646,30 @@ export const CaregiverDashboard: React.FC = () => {
 
       {/* Alert Detail Modal */}
       {selectedAlertDetail && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ner-black/70 backdrop-blur-sm animate-fade-in">
-          <div className="bg-ner-offwhite border-2 border-ner-black rounded-3xl p-6 max-w-md w-full shadow-2xl">
-            <h3 className="text-xl font-bold text-ner-black mb-2">Alert Detail</h3>
-            <p className="text-sm text-ner-black/80 bg-white p-4 rounded-xl border border-ner-border mb-6">
-              {selectedAlertDetail}
-            </p>
-            <button
-              onClick={() => setSelectedAlertDetail(null)}
-              className="w-full h-12 rounded-xl bg-ner-black text-white font-mono text-xs uppercase font-bold"
-            >
-              Close
-            </button>
+        <div className="modal-overlay animate-fade-in">
+          <div className="modal-wrapper border-2 border-ner-black max-w-md w-full shadow-2xl">
+            <div className="modal-header flex items-center justify-between">
+              <h3 className="text-xl font-bold text-ner-black">Alert Detail</h3>
+              <button
+                onClick={() => setSelectedAlertDetail(null)}
+                className="w-8 h-8 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60 hover:text-ner-black shadow-xs"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              <p className="text-sm text-ner-black/80 bg-white p-4 rounded-xl border border-ner-border">
+                {selectedAlertDetail}
+              </p>
+            </div>
+            <div className="modal-footer">
+              <button
+                onClick={() => setSelectedAlertDetail(null)}
+                className="w-full h-12 rounded-xl bg-ner-black text-white font-mono text-xs uppercase font-bold hover:bg-ner-black/85"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -440,166 +440,177 @@ export const MemoriesPage: React.FC = () => {
 
       {/* Simulated Call Modal */}
       {callingContact && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ner-black/75 backdrop-blur-sm animate-fade-in">
-          <div className="bg-ner-offwhite border-2 border-ner-black rounded-3xl p-8 max-w-md w-full shadow-2xl text-center relative">
-            <button
-              onClick={() => setCallingContact(null)}
-              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60"
-            >
-              <X className="w-4 h-4" />
-            </button>
+        <div className="modal-overlay animate-fade-in">
+          <div className="modal-wrapper border-2 border-ner-black max-w-md w-full text-center relative">
+            <div className="modal-header flex items-center justify-between">
+              <span className="text-xs font-mono uppercase tracking-widest text-ner-sage font-bold">
+                [ Connecting Family Call ]
+              </span>
+              <button
+                onClick={() => setCallingContact(null)}
+                className="w-8 h-8 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60 hover:text-ner-black shadow-xs"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
-            <img
-              src={callingContact.avatarUrl}
-              alt={callingContact.name}
-              className="w-24 h-24 rounded-full object-cover border-4 border-ner-sage mx-auto mb-4 animate-pulse"
-              referrerPolicy="no-referrer"
-            />
-            <span className="text-xs font-mono uppercase tracking-widest text-ner-sage font-bold block mb-1">
-              [ Connecting Family Call ]
-            </span>
-            <h3 className="text-2xl font-bold text-ner-black">{callingContact.name}</h3>
-            <p className="text-xs text-ner-black/60 font-mono mt-1">{callingContact.phone}</p>
-            <p className="text-sm text-ner-black/80 mt-4 leading-relaxed bg-white p-4 rounded-2xl border border-ner-border">
-              "Ring, ring... Connecting to {callingContact.name}. A notification has also been sent to their phone to say hello to Ananya!"
-            </p>
+            <div className="modal-body flex flex-col items-center">
+              <img
+                src={callingContact.avatarUrl}
+                alt={callingContact.name}
+                className="w-24 h-24 rounded-full object-cover border-4 border-ner-sage mx-auto mb-4 animate-pulse"
+                referrerPolicy="no-referrer"
+              />
+              <h3 className="text-2xl font-bold text-ner-black">{callingContact.name}</h3>
+              <p className="text-xs text-ner-black/60 font-mono mt-1">{callingContact.phone}</p>
+              <p className="text-sm text-ner-black/80 mt-4 leading-relaxed bg-white p-4 rounded-2xl border border-ner-border">
+                "Ring, ring... Connecting to {callingContact.name}. A notification has also been sent to their phone to say hello to Ananya!"
+              </p>
+            </div>
 
-            <button
-              onClick={() => setCallingContact(null)}
-              className="mt-6 w-full h-12 rounded-xl bg-ner-black text-white font-mono text-xs uppercase tracking-wider"
-            >
-              Close Call
-            </button>
+            <div className="modal-footer">
+              <button
+                onClick={() => setCallingContact(null)}
+                className="w-full h-12 rounded-xl bg-ner-black text-white font-mono text-xs uppercase tracking-wider hover:bg-ner-black/85"
+              >
+                Close Call
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {/* Add New Memory Modal */}
       {isNewMemoryModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ner-black/75 backdrop-blur-sm animate-fade-in">
-          <div className="bg-ner-offwhite border-2 border-ner-black rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative">
-            <button
-              onClick={() => setIsNewMemoryModalOpen(false)}
-              className="absolute top-5 right-5 w-9 h-9 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            <h3 className="text-2xl font-bold text-ner-black mb-1">{t.memoriesAddModalTitle}</h3>
-            <p className="text-xs text-ner-black/60 mb-6">
-              {t.memoriesVaultSubheading}
-            </p>
-
-            <form onSubmit={handleCreateMemory} className="space-y-4">
+        <div className="modal-overlay animate-fade-in">
+          <div className="modal-wrapper border-2 border-ner-black max-w-lg w-full relative">
+            <div className="modal-header flex items-start justify-between gap-4">
               <div>
-                <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                  {t.memoriesTitleLabel}
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder={t.memoriesTitlePlaceholder}
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  className="w-full h-12 px-4 rounded-xl bg-white border-2 border-ner-border text-sm font-medium focus:outline-none focus:border-ner-black"
-                />
+                <h3 className="text-2xl font-bold text-ner-black mb-1">{t.memoriesAddModalTitle}</h3>
+                <p className="text-xs text-ner-black/60">
+                  {t.memoriesVaultSubheading}
+                </p>
               </div>
+              <button
+                onClick={() => setIsNewMemoryModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60 hover:text-ner-black shadow-xs shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
-              <div>
-                <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                  {t.memoriesPersonPlaceLabel}
-                </label>
-                <input
-                  type="text"
-                  placeholder={t.memoriesPersonPlacePlaceholder}
-                  value={newPersonPlace}
-                  onChange={(e) => setNewPersonPlace(e.target.value)}
-                  className="w-full h-12 px-4 rounded-xl bg-white border-2 border-ner-border text-sm font-medium focus:outline-none focus:border-ner-black"
-                />
-              </div>
+            <form onSubmit={handleCreateMemory} className="flex flex-col flex-grow overflow-hidden">
+              <div className="modal-body space-y-4">
+                <div>
+                  <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
+                    {t.memoriesTitleLabel}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder={t.memoriesTitlePlaceholder}
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    className="w-full h-12 px-4 rounded-xl bg-white border-2 border-ner-border text-sm font-medium focus:outline-none focus:border-ner-black"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                  {t.memoriesCategoryLabel}
-                </label>
-                <select
-                  value={newCategory}
-                  onChange={(e) => setNewCategory(e.target.value as any)}
-                  className="w-full h-12 px-4 rounded-xl bg-white border-2 border-ner-border text-sm font-medium focus:outline-none focus:border-ner-black"
-                >
-                  <option value="family">{t.memoriesTabFamily}</option>
-                  <option value="place">{t.memoriesTabPhotos}</option>
-                  <option value="story">{t.memoriesTabStories}</option>
-                  <option value="song">{t.memoriesTabSongs}</option>
-                </select>
-              </div>
+                <div>
+                  <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
+                    {t.memoriesPersonPlaceLabel}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={t.memoriesPersonPlacePlaceholder}
+                    value={newPersonPlace}
+                    onChange={(e) => setNewPersonPlace(e.target.value)}
+                    className="w-full h-12 px-4 rounded-xl bg-white border-2 border-ner-border text-sm font-medium focus:outline-none focus:border-ner-black"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                  {t.memoriesImageLabel}
-                </label>
-                <input
-                  type="file"
-                  id="web-memory-file-input"
-                  accept="image/*"
-                  onChange={handleWebFileChange}
-                  className="hidden"
-                />
-                {newImageUrl ? (
-                  <div className="relative rounded-2xl overflow-hidden border-2 border-ner-border bg-ner-offwhite group">
-                    <img
-                      src={newImageUrl}
-                      alt="Memory preview"
-                      className="w-full h-40 object-cover"
-                    />
+                <div>
+                  <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
+                    {t.memoriesCategoryLabel}
+                  </label>
+                  <select
+                    value={newCategory}
+                    onChange={(e) => setNewCategory(e.target.value as any)}
+                    className="w-full h-12 px-4 rounded-xl bg-white border-2 border-ner-border text-sm font-medium focus:outline-none focus:border-ner-black"
+                  >
+                    <option value="family">{t.memoriesTabFamily}</option>
+                    <option value="place">{t.memoriesTabPhotos}</option>
+                    <option value="story">{t.memoriesTabStories}</option>
+                    <option value="song">{t.memoriesTabSongs}</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
+                    {t.memoriesImageLabel}
+                  </label>
+                  <input
+                    type="file"
+                    id="web-memory-file-input"
+                    accept="image/*"
+                    onChange={handleWebFileChange}
+                    className="hidden"
+                  />
+                  {newImageUrl ? (
+                    <div className="relative rounded-2xl overflow-hidden border-2 border-ner-border bg-ner-offwhite group">
+                      <img
+                        src={newImageUrl}
+                        alt="Memory preview"
+                        className="w-full h-40 object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setNewImageUrl('')}
+                        className="absolute top-2 right-2 p-1.5 rounded-full bg-ner-black/70 text-white hover:bg-ner-black transition-colors"
+                        title="Remove image"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
                     <button
                       type="button"
-                      onClick={() => setNewImageUrl('')}
-                      className="absolute top-2 right-2 p-1.5 rounded-full bg-ner-black/70 text-white hover:bg-ner-black transition-colors"
-                      title="Remove image"
+                      onClick={handleSelectImage}
+                      disabled={isSelectingImage}
+                      className="w-full h-20 rounded-xl border-2 border-dashed border-ner-border hover:border-ner-black/50 bg-ner-offwhite/50 flex flex-col items-center justify-center gap-1.5 text-ner-black/70 hover:text-ner-black transition-all"
                     >
-                      <X className="w-4 h-4" />
+                      <Upload className="w-5 h-5 text-ner-terracotta" />
+                      <span className="text-xs font-medium">
+                        {isSelectingImage ? 'Opening file chooser...' : 'Click to select photo from device'}
+                      </span>
                     </button>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleSelectImage}
-                    disabled={isSelectingImage}
-                    className="w-full h-20 rounded-xl border-2 border-dashed border-ner-border hover:border-ner-black/50 bg-ner-offwhite/50 flex flex-col items-center justify-center gap-1.5 text-ner-black/70 hover:text-ner-black transition-all"
-                  >
-                    <Upload className="w-5 h-5 text-ner-terracotta" />
-                    <span className="text-xs font-medium">
-                      {isSelectingImage ? 'Opening file chooser...' : 'Click to select photo from device'}
-                    </span>
-                  </button>
-                )}
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
+                    {t.memoriesStoryLabelText}
+                  </label>
+                  <textarea
+                    rows={3}
+                    placeholder={t.memoriesStoryPlaceholder}
+                    value={newStory}
+                    onChange={(e) => setNewStory(e.target.value)}
+                    className="w-full p-4 rounded-xl bg-white border-2 border-ner-border text-sm font-medium focus:outline-none focus:border-ner-black"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                  {t.memoriesStoryLabelText}
-                </label>
-                <textarea
-                  rows={3}
-                  placeholder={t.memoriesStoryPlaceholder}
-                  value={newStory}
-                  onChange={(e) => setNewStory(e.target.value)}
-                  className="w-full p-4 rounded-xl bg-white border-2 border-ner-border text-sm font-medium focus:outline-none focus:border-ner-black"
-                />
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-3">
+              <div className="modal-footer flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsNewMemoryModalOpen(false)}
-                  className="h-12 px-5 rounded-xl bg-white border border-ner-border font-mono text-xs uppercase"
+                  className="h-12 px-5 rounded-xl bg-white border border-ner-border font-mono text-xs uppercase hover:bg-ner-offwhite"
                 >
                   {t.cancel}
                 </button>
                 <button
                   type="submit"
-                  className="h-12 px-6 rounded-xl bg-ner-black text-white font-mono font-bold text-xs uppercase"
+                  className="h-12 px-6 rounded-xl bg-ner-black text-white font-mono font-bold text-xs uppercase hover:bg-ner-black/85"
                 >
                   {t.save}
                 </button>

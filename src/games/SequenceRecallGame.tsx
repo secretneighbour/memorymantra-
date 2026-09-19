@@ -225,25 +225,29 @@ export const SequenceRecallGame: React.FC = () => {
 
       {/* Finished Modal */}
       {gameState === 'finished' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ner-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-ner-offwhite border-2 border-ner-black rounded-3xl p-8 max-w-md w-full text-center shadow-2xl">
-            <div className="w-16 h-16 rounded-full bg-ner-sage/10 text-ner-sage flex items-center justify-center mx-auto mb-4 border border-ner-sage/30">
-              <Trophy className="w-8 h-8" />
+        <div className="modal-overlay animate-fade-in">
+          <div className="modal-wrapper border-2 border-ner-black max-w-md w-full text-center shadow-2xl">
+            <div className="modal-header">
+              <div className="w-16 h-16 rounded-full bg-ner-sage/10 text-ner-sage flex items-center justify-center mx-auto mb-2 border border-ner-sage/30">
+                <Trophy className="w-8 h-8" />
+              </div>
+
+              <h2 className="text-2xl font-bold text-ner-black">
+                Brilliant Memory!
+              </h2>
+              <p className="text-ner-black/70 text-xs sm:text-sm mt-1">
+                You successfully mastered all 3 levels of rhythmic sequence recall.
+              </p>
             </div>
 
-            <h2 className="text-3xl font-bold text-ner-black">
-              Brilliant Memory!
-            </h2>
-            <p className="text-ner-black/70 text-sm mt-2">
-              You successfully mastered all 3 levels of rhythmic sequence recall.
-            </p>
-
-            <div className="my-6 p-4 rounded-2xl bg-white border border-ner-border">
-              <span className="text-xs font-mono text-ner-black/40 uppercase tracking-widest block">Final Score</span>
-              <span className="text-4xl font-extrabold text-ner-terracotta">{score} pts</span>
+            <div className="modal-body">
+              <div className="my-2 p-4 rounded-2xl bg-white border border-ner-border">
+                <span className="text-xs font-mono text-ner-black/40 uppercase tracking-widest block">Final Score</span>
+                <span className="text-4xl font-extrabold text-ner-terracotta">{score} pts</span>
+              </div>
             </div>
 
-            <div className="flex gap-3">
+            <div className="modal-footer flex gap-3">
               <button
                 onClick={handleStart}
                 className="flex-1 py-3 px-4 rounded-xl border border-ner-border bg-white text-ner-black font-semibold text-sm hover:bg-black/5"

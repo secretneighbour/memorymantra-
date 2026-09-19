@@ -1068,65 +1068,67 @@ export const MemoryCompanionPage: React.FC = () => {
 
       {/* Add Reminder Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ner-black/60 backdrop-blur-xs animate-fade-in">
-          <div className="bg-ner-offwhite border-2 border-ner-black rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative">
-            <div className="flex items-center justify-between mb-6">
+        <div className="modal-overlay animate-fade-in">
+          <div className="modal-wrapper bg-ner-offwhite border-2 border-ner-black max-w-md w-full shadow-2xl relative">
+            <div className="modal-header flex items-center justify-between">
               <h3 className="text-xl font-bold text-ner-black">{t.remindersAddBtn}</h3>
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="p-1 rounded-full hover:bg-black/5"
+                className="w-8 h-8 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60 hover:text-ner-black shadow-xs"
               >
-                <X className="w-5 h-5 text-ner-black/60" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateReminder} className="space-y-4">
-              <div>
-                <label className="text-xs font-mono font-bold text-ner-black/70 uppercase block mb-1">
-                  {t.remindersNewTitle}
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="e.g. Evening Walk or Eye Drops"
-                  className="w-full px-4 py-3 rounded-xl bg-white border border-ner-border text-sm focus:outline-none focus:border-ner-black"
-                />
+            <form onSubmit={handleCreateReminder} className="flex flex-col flex-grow overflow-hidden">
+              <div className="modal-body space-y-4">
+                <div>
+                  <label className="text-xs font-mono font-bold text-ner-black/70 uppercase block mb-1">
+                    {t.remindersNewTitle}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    placeholder="e.g. Evening Walk or Eye Drops"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-ner-border text-sm focus:outline-none focus:border-ner-black"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-mono font-bold text-ner-black/70 uppercase block mb-1">
+                    {t.remindersTimeLabel}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newTime}
+                    onChange={(e) => setNewTime(e.target.value)}
+                    placeholder="e.g. 06:00 PM"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-ner-border text-sm focus:outline-none focus:border-ner-black"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-mono font-bold text-ner-black/70 uppercase block mb-1">
+                    {t.remindersDoseLabel}
+                  </label>
+                  <input
+                    type="text"
+                    value={newNote}
+                    onChange={(e) => setNewNote(e.target.value)}
+                    placeholder="e.g. Take with warm water"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-ner-border text-sm focus:outline-none focus:border-ner-black"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="text-xs font-mono font-bold text-ner-black/70 uppercase block mb-1">
-                  {t.remindersTimeLabel}
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={newTime}
-                  onChange={(e) => setNewTime(e.target.value)}
-                  placeholder="e.g. 06:00 PM"
-                  className="w-full px-4 py-3 rounded-xl bg-white border border-ner-border text-sm focus:outline-none focus:border-ner-black"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-mono font-bold text-ner-black/70 uppercase block mb-1">
-                  {t.remindersDoseLabel}
-                </label>
-                <input
-                  type="text"
-                  value={newNote}
-                  onChange={(e) => setNewNote(e.target.value)}
-                  placeholder="e.g. Take with warm water"
-                  className="w-full px-4 py-3 rounded-xl bg-white border border-ner-border text-sm focus:outline-none focus:border-ner-black"
-                />
-              </div>
-
-              <div className="pt-2 flex gap-3">
+              <div className="modal-footer flex gap-3">
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="flex-1 py-3 rounded-xl border border-ner-border bg-white text-ner-black font-semibold text-sm"
+                  className="flex-1 py-3 rounded-xl border border-ner-border bg-white text-ner-black font-semibold text-sm hover:bg-ner-offwhite"
                 >
                   {t.cancel}
                 </button>

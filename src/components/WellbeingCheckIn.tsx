@@ -155,20 +155,28 @@ export const WellbeingCheckIn: React.FC<WellbeingCheckInProps> = ({
     return (
       <div 
         id="wellbeing-login-modal"
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ner-black/60 backdrop-blur-sm animate-fade-in"
+        className="modal-overlay animate-fade-in"
       >
-        <div className="bg-ner-offwhite border-2 border-ner-black rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 dot-matrix-subtle opacity-30 pointer-events-none" />
+        <div className="modal-wrapper border-2 border-ner-black max-w-lg w-full relative">
+          {/* Modal Header */}
+          <div className="modal-header flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-ner-sage/10 text-ner-sage font-bold">
+                {t.wellbeingCheckInTitle}
+              </span>
+              <span className="text-[11px] text-ner-black/40 font-mono hidden sm:inline">{t.checkInModalPrompt}</span>
+            </div>
+            <button
+              onClick={handleDismissModal}
+              className="w-8 h-8 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/50 hover:text-ner-black transition-colors"
+              aria-label="Close Check-In"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
 
-          {/* Close / Skip button */}
-          <button
-            onClick={handleDismissModal}
-            className="absolute top-5 right-5 p-2 rounded-full hover:bg-black/5 text-ner-black/50 hover:text-ner-black transition-colors"
-            aria-label="Close Check-In"
-          >
-            <X className="w-5 h-5" />
-          </button>
-
+          {/* Modal Body */}
+          <div className="modal-body">
           {submittedResponse ? (
             /* Confirmation View */
             <div className="py-6 text-center space-y-4 animate-fade-in">
@@ -201,17 +209,10 @@ export const WellbeingCheckIn: React.FC<WellbeingCheckInProps> = ({
           ) : (
             /* Active Prompt View */
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-ner-sage/10 text-ner-sage font-bold">
-                  {t.wellbeingCheckInTitle}
-                </span>
-                <span className="text-[11px] text-ner-black/40 font-mono">{t.checkInModalPrompt}</span>
-              </div>
-
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-ner-black mb-1">
                 {t.wellbeingQuestion}
               </h2>
-              <p className="text-ner-black/60 text-xs sm:text-sm mb-5">
+              <p className="text-ner-black/60 text-xs sm:text-sm mb-4">
                 {t.encouragement}
               </p>
 
@@ -308,7 +309,7 @@ export const WellbeingCheckIn: React.FC<WellbeingCheckInProps> = ({
               )}
 
               {/* Submit & Skip Actions */}
-              <div className="flex items-center justify-between gap-3 pt-2">
+              <div className="modal-footer flex items-center justify-between gap-3 pt-2">
                 <button
                   type="button"
                   onClick={handleDismissModal}
@@ -328,6 +329,7 @@ export const WellbeingCheckIn: React.FC<WellbeingCheckInProps> = ({
               </div>
             </div>
           )}
+          </div>
 
           {/* Well Voice Assistant Modal */}
           <WellVoiceAssistant

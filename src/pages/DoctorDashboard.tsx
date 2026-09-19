@@ -317,10 +317,10 @@ NOTE: This report is generated from supportive cognitive exercise telemetry and 
 
       {/* Patient Detail Modal */}
       {selectedPatientModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ner-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-ner-offwhite border-2 border-ner-black rounded-3xl p-6 sm:p-8 max-w-4xl w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div className="modal-overlay animate-fade-in">
+          <div className="modal-wrapper border-2 border-ner-black max-w-4xl w-full relative">
             {/* Modal Header */}
-            <div className="flex items-start justify-between mb-6 pb-4 border-b border-ner-border">
+            <div className="modal-header flex items-start justify-between">
               <div className="flex items-center gap-4">
                 <img
                   src={selectedPatientModal.avatarUrl}
@@ -347,13 +347,15 @@ NOTE: This report is generated from supportive cognitive exercise telemetry and 
                 </button>
                 <button
                   onClick={() => setSelectedPatientModal(null)}
-                  className="p-1 rounded-full hover:bg-black/5"
+                  className="w-8 h-8 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60 hover:text-ner-black shadow-xs"
                 >
-                  <X className="w-6 h-6 text-ner-black/60" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
+            {/* Modal Body */}
+            <div className="modal-body space-y-6">
             {/* Timeframe Selector */}
             <div className="flex items-center justify-between gap-4 mb-6 bg-white p-3 rounded-2xl border border-ner-border">
               <div className="flex items-center gap-2">
@@ -513,8 +515,10 @@ NOTE: This report is generated from supportive cognitive exercise telemetry and 
               </div>
             </div>
 
-            {/* Contacts & Close */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            </div>
+
+            {/* Modal Footer: Contacts & Close */}
+            <div className="modal-footer flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-xs text-ner-black/60 font-mono">
                 Primary Contact: {selectedPatientModal.primaryCaregiver.name} ({selectedPatientModal.primaryCaregiver.phone})
               </div>

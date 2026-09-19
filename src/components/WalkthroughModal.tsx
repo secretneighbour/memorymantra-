@@ -117,14 +117,14 @@ export const WalkthroughModal: React.FC = () => {
 
   return (
     <div 
-      className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-ner-black/80 backdrop-blur-sm animate-fade-in"
+      className="modal-overlay animate-fade-in"
       role="dialog"
       aria-modal="true"
       aria-labelledby="walkthrough-modal-title"
     >
-      <div className="bg-ner-offwhite border-2 border-ner-black rounded-3xl p-6 sm:p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl relative flex flex-col justify-between min-h-[460px]">
-        {/* Top Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-ner-border/60">
+      <div className="modal-wrapper border-2 border-ner-black min-h-[460px]">
+        {/* Modal Header */}
+        <div className="modal-header flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-mono uppercase tracking-widest text-ner-black/60 font-bold">
               {current.badge}
@@ -148,8 +148,8 @@ export const WalkthroughModal: React.FC = () => {
           </div>
         </div>
 
-        {/* Content Body */}
-        <div className="my-auto py-6 text-center sm:text-left flex flex-col sm:flex-row items-center sm:items-start gap-6">
+        {/* Modal Body */}
+        <div className="modal-body my-auto py-6 text-center sm:text-left flex flex-col sm:flex-row items-center sm:items-start gap-6">
           <div className={`w-18 h-18 sm:w-20 sm:h-20 shrink-0 rounded-2xl flex items-center justify-center border-2 ${current.accentColor} shadow-inner`}>
             {current.icon}
           </div>
@@ -164,8 +164,8 @@ export const WalkthroughModal: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Actions & Dots */}
-        <div className="pt-6 border-t border-ner-border/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+        {/* Modal Footer */}
+        <div className="modal-footer flex flex-col sm:flex-row items-center justify-between gap-4">
           {/* Progress step dots */}
           <div className="flex items-center gap-1.5" aria-label={`Step ${currentStep + 1} of ${steps.length}`}>
             {steps.map((_, index) => (

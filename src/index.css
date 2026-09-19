@@ -950,6 +950,7 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
     padding-bottom: 70px !important;
   }
 
+  .modal-wrapper,
   .modal-container,
   .modal-contained-card {
     max-width: 68rem !important; /* 1088px on 8K canvas */
@@ -1002,125 +1003,142 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
 }
 
 /* ========================================================================= */
-/* MODAL SYSTEM: VIEWPORT-CONSTRAINED & SCROLLABLE WITH STICKY FOOTER        */
+/* UNIVERSAL MODAL SYSTEM ARCHITECTURE                                      */
+/* Hierarchy: .modal-overlay > .modal-wrapper > .modal-header + .modal-body + .modal-footer */
 /* ========================================================================= */
 
-.modal-overlay-backdrop,
-.modal-overlay {
+.modal-overlay,
+.modal-overlay-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 10000; /* Must sit above fixed navbar (z-9999) and Listen Aloud */
-  display: flex;
-  justify-content: center;
-  align-items: flex-start; /* Ensures modal starts below navbar without top cutoff */
-  padding-top: 100px; /* Safe space below 70px floating navbar */
-  padding-bottom: 40px;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  background-color: rgba(17, 17, 17, 0.75);
+  background: rgba(0, 0, 0, 0.65);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  overflow-y: auto; /* Allows overlay itself to scroll on very small screens */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000; /* Must sit above fixed navbar (z-9999) and Listen Aloud */
+  padding: 2rem 1rem;
+  overflow-y: auto; /* Allows the overlay itself to scroll if modal is taller than screen */
   box-sizing: border-box;
 }
 
+/* Universal Modal Wrapper (The White Box / Card) */
+.modal-wrapper,
 .modal-contained-card,
 .modal-container {
-  position: relative;
+  background: #ffffff;
+  border-radius: 20px;
   width: 100%;
-  max-width: 32rem; /* 512px */
-  max-height: calc(100vh - 140px); /* 100px top + 40px bottom padding clearance */
-  overflow-y: auto; /* Enables internal scrolling */
-  box-sizing: border-box;
+  max-width: 600px; /* Adjust per modal requirement (e.g. max-w-4xl for clinical records) */
+  max-height: calc(100vh - 4rem); /* Prevents overflowing the padding of the overlay */
   display: flex;
-  flex-direction: column;
-  background-color: #FAFAF9; /* clean off-white */
-  border-radius: 1.5rem; /* rounded-3xl */
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+  flex-direction: column; /* Stacks header, body, footer */
+  overflow: hidden; /* Clips the inner content so rounded corners work */
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  position: relative;
+  box-sizing: border-box;
 }
 
-.modal-sticky-header {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background-color: inherit;
-  border-bottom: 1px solid rgba(229, 231, 235, 0.9);
-  padding: 1.5rem 1.75rem 1.15rem 1.75rem;
-  flex-shrink: 0;
-}
-
-.modal-scrollable-body {
-  flex: 1 1 auto;
-  overflow-y: auto;
+/* Sticky Header & Footer */
+.modal-header,
+.modal-sticky-header,
+.modal-footer,
+.modal-sticky-footer {
+  flex-shrink: 0; /* Prevents them from squishing */
+  background: inherit; /* Keeps background consistent */
   padding: 1.25rem 1.75rem;
-  padding-right: 1.25rem;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.modal-header,
+.modal-sticky-header {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-footer,
+.modal-sticky-footer {
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Universal Scrollable Body */
+.modal-body,
+.modal-scrollable-body {
+  padding: 1.5rem 1.75rem;
+  overflow-y: auto; /* This is the magic property that adds scrolling */
+  flex-grow: 1; /* Takes up remaining space */
+  box-sizing: border-box;
   overscroll-behavior: contain;
-  scrollbar-width: thin;
+  scrollbar-width: thin; /* Firefox */
   scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
 }
 
-.modal-sticky-footer,
-.modal-footer {
-  position: sticky;
-  bottom: -1px; /* Cover any 1px gaps */
-  background-color: inherit; /* Match modal background */
-  padding-top: 1rem;
-  z-index: 10;
+/* Universal Floating Scrollbar (WebKit / Blink) */
+.modal-body::-webkit-scrollbar,
+.modal-scrollable-body::-webkit-scrollbar,
+.modal-wrapper::-webkit-scrollbar,
+.modal-container::-webkit-scrollbar {
+  width: 10px;
 }
 
-/* ========================================================================= */
-/* ADVANCED FLOATING & ANIMATED SCROLLBAR (WebKit / Blink)                   */
-/* ========================================================================= */
-
-.modal-container::-webkit-scrollbar,
-.modal-scrollable-body::-webkit-scrollbar {
-  width: 8px;
-}
-
-.modal-container::-webkit-scrollbar-track,
-.modal-scrollable-body::-webkit-scrollbar-track {
+.modal-body::-webkit-scrollbar-track,
+.modal-scrollable-body::-webkit-scrollbar-track,
+.modal-wrapper::-webkit-scrollbar-track,
+.modal-container::-webkit-scrollbar-track {
   background: transparent;
   margin: 10px 0;
 }
 
-.modal-container::-webkit-scrollbar-thumb,
-.modal-scrollable-body::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.15); /* Subtle grey */
+.modal-body::-webkit-scrollbar-thumb,
+.modal-scrollable-body::-webkit-scrollbar-thumb,
+.modal-wrapper::-webkit-scrollbar-thumb,
+.modal-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.15);
   border-radius: 10px;
-  border: 2px solid transparent;
+  border: 3px solid transparent;
   background-clip: content-box;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, border 0.3s ease;
 }
 
-.modal-container:hover::-webkit-scrollbar-thumb,
+.modal-body:hover::-webkit-scrollbar-thumb,
 .modal-scrollable-body:hover::-webkit-scrollbar-thumb,
-.modal-contained-card:hover .modal-scrollable-body::-webkit-scrollbar-thumb {
+.modal-wrapper:hover::-webkit-scrollbar-thumb,
+.modal-container:hover::-webkit-scrollbar-thumb,
+.modal-wrapper:hover .modal-body::-webkit-scrollbar-thumb {
   background-color: #e35034; /* Brand Orange/Red */
+  border: 1px solid transparent;
 }
 
-.modal-container::-webkit-scrollbar-thumb:active,
+.modal-body::-webkit-scrollbar-thumb:active,
 .modal-scrollable-body::-webkit-scrollbar-thumb:active {
   background-color: #c43b23;
   border: 0px solid transparent;
 }
 
 @media (max-width: 640px) {
-  .modal-contained-card {
-    max-height: 92vh;
+  .modal-overlay,
+  .modal-overlay-backdrop {
+    padding: 1rem 0.5rem;
+  }
+  .modal-wrapper,
+  .modal-contained-card,
+  .modal-container {
+    max-height: calc(100vh - 2rem);
     border-radius: 1.25rem;
   }
+  .modal-header,
   .modal-sticky-header {
-    padding: 1rem 1.25rem 0.85rem 1.25rem;
+    padding: 1rem 1.25rem;
   }
+  .modal-body,
   .modal-scrollable-body {
     padding: 1rem 1.25rem;
-    padding-right: 0.85rem;
   }
+  .modal-footer,
   .modal-sticky-footer {
-    padding: 0.75rem 1.25rem;
+    padding: 0.85rem 1.25rem;
   }
 }
 

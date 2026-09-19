@@ -303,50 +303,54 @@ export const MemoryMatchGame: React.FC = () => {
 
       {/* Completion Modal */}
       {isGameCompleted && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ner-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-ner-offwhite border-2 border-ner-black rounded-3xl p-8 max-w-md w-full text-center shadow-2xl relative overflow-hidden">
-            <div className="w-16 h-16 rounded-full bg-ner-sage/10 text-ner-sage flex items-center justify-center mx-auto mb-4 border border-ner-sage/30">
-              <Trophy className="w-8 h-8" />
-            </div>
-
-            <span className="text-xs font-mono uppercase tracking-widest text-ner-sage font-bold">
-              Cognitive Session Complete
-            </span>
-
-            <h2 className="text-3xl font-bold text-ner-black mt-1">
-              Excellent work, Ananya!
-            </h2>
-
-            <p className="text-ner-black/70 text-sm mt-2">
-              You exercised visual memory pathways with gentle precision.
-            </p>
-
-            {/* Score box */}
-            <div className="my-6 p-5 rounded-2xl bg-white border border-ner-border flex items-center justify-around">
-              <div>
-                <span className="text-[11px] uppercase tracking-wider text-ner-black/40 font-mono block">
-                  Accuracy Score
-                </span>
-                <span className="text-3xl font-extrabold text-ner-terracotta">
-                  {finalScore}%
-                </span>
+        <div className="modal-overlay animate-fade-in">
+          <div className="modal-wrapper border-2 border-ner-black max-w-md w-full text-center shadow-2xl relative overflow-hidden">
+            <div className="modal-header">
+              <div className="w-16 h-16 rounded-full bg-ner-sage/10 text-ner-sage flex items-center justify-center mx-auto mb-2 border border-ner-sage/30">
+                <Trophy className="w-8 h-8" />
               </div>
-              <div className="h-10 w-px bg-ner-border"></div>
-              <div>
-                <span className="text-[11px] uppercase tracking-wider text-ner-black/40 font-mono block">
-                  Total Time
-                </span>
-                <span className="text-2xl font-bold text-ner-black font-mono">
-                  {formatTime(timeSeconds)}
-                </span>
+
+              <span className="text-xs font-mono uppercase tracking-widest text-ner-sage font-bold">
+                Cognitive Session Complete
+              </span>
+
+              <h2 className="text-2xl font-bold text-ner-black mt-1">
+                Excellent work, Ananya!
+              </h2>
+
+              <p className="text-ner-black/70 text-xs sm:text-sm mt-1">
+                You exercised visual memory pathways with gentle precision.
+              </p>
+            </div>
+
+            <div className="modal-body">
+              {/* Score box */}
+              <div className="my-2 p-5 rounded-2xl bg-white border border-ner-border flex items-center justify-around">
+                <div>
+                  <span className="text-[11px] uppercase tracking-wider text-ner-black/40 font-mono block">
+                    Accuracy Score
+                  </span>
+                  <span className="text-3xl font-extrabold text-ner-terracotta">
+                    {finalScore}%
+                  </span>
+                </div>
+                <div className="h-10 w-px bg-ner-border"></div>
+                <div>
+                  <span className="text-[11px] uppercase tracking-wider text-ner-black/40 font-mono block">
+                    Total Time
+                  </span>
+                  <span className="text-2xl font-bold text-ner-black font-mono">
+                    {formatTime(timeSeconds)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-3 bg-ner-sage/10 rounded-xl text-xs font-semibold text-ner-sage border border-ner-sage/20 mt-3">
+                ✨ "Your next activity is ready."
               </div>
             </div>
 
-            <div className="p-3 bg-ner-sage/10 rounded-xl text-xs font-semibold text-ner-sage border border-ner-sage/20 mb-6">
-              ✨ "Your next activity is ready."
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="modal-footer flex flex-col sm:flex-row gap-3">
               <button
                 onClick={initializeGame}
                 className="flex-1 py-3.5 px-4 rounded-xl border border-ner-border bg-white text-ner-black font-semibold text-sm hover:bg-black/5 transition-colors"

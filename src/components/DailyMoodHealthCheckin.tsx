@@ -790,9 +790,9 @@ export const DailyMoodHealthCheckin: React.FC<DailyMoodHealthCheckinProps> = ({
 
       {/* History Modal */}
       {showHistoryModal && (
-        <div className="fixed inset-0 z-50 bg-ner-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-xl w-full max-h-[85vh] overflow-y-auto shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+        <div className="modal-overlay animate-fade-in">
+          <div className="modal-wrapper max-w-xl w-full border border-slate-200">
+            <div className="modal-header flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <Calendar className="w-6 h-6 text-ner-terracotta" />
                 <h3 className="text-xl font-bold text-ner-black">Past Health Check-Ins</h3>
@@ -805,48 +805,59 @@ export const DailyMoodHealthCheckin: React.FC<DailyMoodHealthCheckinProps> = ({
               </button>
             </div>
 
-            {pastHistory.length === 0 ? (
-              <p className="text-center py-8 text-slate-500 text-sm">No recorded check-ins yet.</p>
-            ) : (
-              <div className="space-y-3">
-                {pastHistory.map((item) => {
-                  const m = MOOD_OPTIONS.find((opt) => opt.type === item.mood) || MOOD_OPTIONS[1];
-                  return (
-                    <div
-                      key={item.id}
-                      className="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 flex flex-col gap-2"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xl">{m.emoji}</span>
-                          <span className="font-bold text-sm text-slate-900">{m.label}</span>
-                          <span className="text-xs text-slate-400 font-mono">• {item.dateStr}</span>
+            <div className="modal-body">
+              {pastHistory.length === 0 ? (
+                <p className="text-center py-8 text-slate-500 text-sm">No recorded check-ins yet.</p>
+              ) : (
+                <div className="space-y-3">
+                  {pastHistory.map((item) => {
+                    const m = MOOD_OPTIONS.find((opt) => opt.type === item.mood) || MOOD_OPTIONS[1];
+                    return (
+                      <div
+                        key={item.id}
+                        className="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 flex flex-col gap-2"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl">{m.emoji}</span>
+                            <span className="font-bold text-sm text-slate-900">{m.label}</span>
+                            <span className="text-xs text-slate-400 font-mono">• {item.dateStr}</span>
+                          </div>
+                          <span className="text-xs font-mono font-bold bg-white px-2.5 py-1 rounded-lg border border-slate-200 text-slate-700">
+                            Energy {item.energyLevel}/5
+                          </span>
                         </div>
-                        <span className="text-xs font-mono font-bold bg-white px-2.5 py-1 rounded-lg border border-slate-200 text-slate-700">
-                          Energy {item.energyLevel}/5
-                        </span>
-                      </div>
-                      <div className="text-xs text-slate-600 flex flex-wrap gap-2">
-                        <span>Comfort: <b>{item.painLevel}</b></span>
-                        <span>•</span>
-                        <span>Sleep: <b>{item.sleepQuality}</b></span>
-                        {item.symptoms && item.symptoms.length > 0 && (
-                          <>
-                            <span>•</span>
-                            <span>Tags: {item.symptoms.join(', ')}</span>
-                          </>
+                        <div className="text-xs text-slate-600 flex flex-wrap gap-2">
+                          <span>Comfort: <b>{item.painLevel}</b></span>
+                          <span>•</span>
+                          <span>Sleep: <b>{item.sleepQuality}</b></span>
+                          {item.symptoms && item.symptoms.length > 0 && (
+                            <>
+                              <span>•</span>
+                              <span>Tags: {item.symptoms.join(', ')}</span>
+                            </>
+                          )}
+                        </div>
+                        {item.note && (
+                          <p className="text-xs italic text-slate-500 bg-white p-2 rounded-lg border border-slate-100">
+                            "{item.note}"
+                          </p>
                         )}
                       </div>
-                      {item.note && (
-                        <p className="text-xs italic text-slate-500 bg-white p-2 rounded-lg border border-slate-100">
-                          "{item.note}"
-                        </p>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div className="modal-footer flex justify-end">
+              <button
+                onClick={() => setShowHistoryModal(false)}
+                className="px-5 py-2.5 rounded-xl bg-ner-black text-white font-mono text-xs font-bold uppercase"
+              >
+                Close History
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -717,110 +717,113 @@ export const ImportantPlacesMap: React.FC = () => {
       {/* MODAL 1: Add or Edit Important Place */}
       {isAddEditModalOpen && (
         <div className="modal-overlay animate-fade-in">
-          <div className="modal-container bg-ner-offwhite border-2 border-ner-black rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative">
-            <button
-              type="button"
-              onClick={() => setIsAddEditModalOpen(false)}
-              className="absolute top-5 right-5 w-8 h-8 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60 hover:text-ner-black z-20 shadow-xs"
-            >
-              <X className="w-4 h-4" />
-            </button>
+          <div className="modal-wrapper bg-ner-offwhite border-2 border-ner-black max-w-md w-full shadow-2xl relative">
+            <div className="modal-header flex items-center justify-between">
+              <h3 className="text-xl font-bold text-ner-black">
+                {editingPlaceId ? t.editPlaceBtn : t.addPlaceBtn}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsAddEditModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60 hover:text-ner-black shadow-xs"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
-            <h3 className="text-xl font-bold text-ner-black mb-4">
-              {editingPlaceId ? t.editPlaceBtn : t.addPlaceBtn}
-            </h3>
-
-            <form onSubmit={handleSavePlaceSubmit} className="space-y-3.5">
-              <div>
-                <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                  Place Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={placeName}
-                  onChange={e => setPlaceName(e.target.value)}
-                  placeholder="e.g. Minoti Devi Residence / Dispur Clinic"
-                  className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                  Category
-                </label>
-                <select
-                  value={placeCategory}
-                  onChange={e => setPlaceCategory(e.target.value as any)}
-                  className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none"
-                >
-                  <option value="home">{t.placeCategoryHome}</option>
-                  <option value="doctor">{t.placeCategoryDoctor}</option>
-                  <option value="hospital">{t.placeCategoryHospital}</option>
-                  <option value="family">{t.placeCategoryFamily}</option>
-                  <option value="caregiver">{t.placeCategoryCaregiver}</option>
-                  <option value="pharmacy">{t.placeCategoryPharmacy}</option>
-                  <option value="park">{t.placeCategoryPark}</option>
-                  <option value="other">{t.placeCategoryOther}</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                  Address
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={placeAddress}
-                  onChange={e => setPlaceAddress(e.target.value)}
-                  placeholder="e.g. Silpukhuri East, Guwahati, Assam"
-                  className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                  Landmark Cue (Familiar memory anchor)
-                </label>
-                <input
-                  type="text"
-                  value={placeLandmark}
-                  onChange={e => setPlaceLandmark(e.target.value)}
-                  placeholder="e.g. Near Silpukhuri Water Tank & Namghar"
-                  className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                  Contact Phone (Optional)
-                </label>
-                <input
-                  type="tel"
-                  value={placePhone}
-                  onChange={e => setPlacePhone(e.target.value)}
-                  placeholder="+91 98640 12345"
-                  className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none"
-                />
-              </div>
-
-              {role === 'caregiver' && (
-                <div className="flex items-center gap-2 pt-1">
-                  <input
-                    type="checkbox"
-                    id="isPrimaryCheckbox"
-                    checked={placeIsPrimary}
-                    onChange={e => setPlaceIsPrimary(e.target.checked)}
-                    className="w-4 h-4 rounded border-ner-border text-ner-black focus:ring-0"
-                  />
-                  <label htmlFor="isPrimaryCheckbox" className="text-xs text-ner-black font-medium cursor-pointer">
-                    Mark as Primary Home Residence
+            <form onSubmit={handleSavePlaceSubmit} className="flex flex-col flex-grow overflow-hidden">
+              <div className="modal-body space-y-3.5">
+                <div>
+                  <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
+                    Place Name
                   </label>
+                  <input
+                    type="text"
+                    required
+                    value={placeName}
+                    onChange={e => setPlaceName(e.target.value)}
+                    placeholder="e.g. Minoti Devi Residence / Dispur Clinic"
+                    className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none"
+                  />
                 </div>
-              )}
 
-              <div className="modal-footer pt-3 mt-4 border-t border-ner-border flex items-center gap-3">
+                <div>
+                  <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
+                    Category
+                  </label>
+                  <select
+                    value={placeCategory}
+                    onChange={e => setPlaceCategory(e.target.value as any)}
+                    className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none"
+                  >
+                    <option value="home">{t.placeCategoryHome}</option>
+                    <option value="doctor">{t.placeCategoryDoctor}</option>
+                    <option value="hospital">{t.placeCategoryHospital}</option>
+                    <option value="family">{t.placeCategoryFamily}</option>
+                    <option value="caregiver">{t.placeCategoryCaregiver}</option>
+                    <option value="pharmacy">{t.placeCategoryPharmacy}</option>
+                    <option value="park">{t.placeCategoryPark}</option>
+                    <option value="other">{t.placeCategoryOther}</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
+                    Address
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={placeAddress}
+                    onChange={e => setPlaceAddress(e.target.value)}
+                    placeholder="e.g. Silpukhuri East, Guwahati, Assam"
+                    className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
+                    Landmark Cue (Familiar memory anchor)
+                  </label>
+                  <input
+                    type="text"
+                    value={placeLandmark}
+                    onChange={e => setPlaceLandmark(e.target.value)}
+                    placeholder="e.g. Near Silpukhuri Water Tank & Namghar"
+                    className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
+                    Contact Phone (Optional)
+                  </label>
+                  <input
+                    type="tel"
+                    value={placePhone}
+                    onChange={e => setPlacePhone(e.target.value)}
+                    placeholder="+91 98640 12345"
+                    className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none"
+                  />
+                </div>
+
+                {role === 'caregiver' && (
+                  <div className="flex items-center gap-2 pt-1">
+                    <input
+                      type="checkbox"
+                      id="isPrimaryCheckbox"
+                      checked={placeIsPrimary}
+                      onChange={e => setPlaceIsPrimary(e.target.checked)}
+                      className="w-4 h-4 rounded border-ner-border text-ner-black focus:ring-0"
+                    />
+                    <label htmlFor="isPrimaryCheckbox" className="text-xs text-ner-black font-medium cursor-pointer">
+                      Mark as Primary Home Residence
+                    </label>
+                  </div>
+                )}
+              </div>
+
+              <div className="modal-footer flex items-center gap-3">
                 <button
                   type="button"
                   onClick={() => setIsAddEditModalOpen(false)}
@@ -843,23 +846,26 @@ export const ImportantPlacesMap: React.FC = () => {
       {/* MODAL 2: Map & Offline Settings Modal */}
       {isSettingsModalOpen && (
         <div className="modal-overlay animate-fade-in">
-          <div className="modal-container bg-ner-offwhite border-2 border-ner-black rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative">
-            <button
-              type="button"
-              onClick={() => setIsSettingsModalOpen(false)}
-              className="absolute top-5 right-5 w-8 h-8 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60 hover:text-ner-black z-20 shadow-xs"
-            >
-              <X className="w-4 h-4" />
-            </button>
+          <div className="modal-wrapper bg-ner-offwhite border-2 border-ner-black max-w-lg w-full shadow-2xl relative">
+            <div className="modal-header flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-xl font-bold text-ner-black mb-1">
+                  {t.mapSettingsTitle}
+                </h3>
+                <p className="text-xs text-ner-black/60">
+                  Configure online Google Maps vs offline open map datasets and data controls.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsSettingsModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60 hover:text-ner-black shrink-0 shadow-xs"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
-            <h3 className="text-xl font-bold text-ner-black mb-1">
-              {t.mapSettingsTitle}
-            </h3>
-            <p className="text-xs text-ner-black/60 mb-6">
-              Configure online Google Maps vs offline open map datasets and data controls.
-            </p>
-
-            <div className="space-y-4">
+            <div className="modal-body space-y-4">
               {/* Map Mode Selector */}
               <div>
                 <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-2">
@@ -944,7 +950,7 @@ export const ImportantPlacesMap: React.FC = () => {
               </div>
             </div>
 
-            <div className="modal-footer mt-6 pt-4 border-t border-ner-border flex justify-end">
+            <div className="modal-footer flex justify-end">
               <button
                 type="button"
                 onClick={() => setIsSettingsModalOpen(false)}
@@ -960,28 +966,31 @@ export const ImportantPlacesMap: React.FC = () => {
       {/* MODAL 3: Emergency Care Nearby Drawer */}
       {isEmergencyDrawerOpen && (
         <div className="modal-overlay animate-fade-in">
-          <div className="modal-container bg-ner-offwhite border-2 border-ner-black rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative">
-            <button
-              type="button"
-              onClick={() => setIsEmergencyDrawerOpen(false)}
-              className="absolute top-5 right-5 w-8 h-8 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60 hover:text-ner-black z-20 shadow-xs"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-xl bg-red-100 text-red-600 flex items-center justify-center">
-                <Cross className="w-5 h-5" />
+          <div className="modal-wrapper bg-ner-offwhite border-2 border-ner-black max-w-lg w-full shadow-2xl relative">
+            <div className="modal-header flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-red-100 text-red-600 flex items-center justify-center">
+                  <Cross className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-ner-black">
+                    {t.helpAndCareLocations}
+                  </h3>
+                  <p className="text-xs text-ner-black/70">
+                    Nearest emergency hospitals, clinics, and family assistance anchors.
+                  </p>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-ner-black">
-                {t.helpAndCareLocations}
-              </h3>
+              <button
+                type="button"
+                onClick={() => setIsEmergencyDrawerOpen(false)}
+                className="w-8 h-8 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60 hover:text-ner-black shadow-xs shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
-            <p className="text-xs text-ner-black/70 mb-4">
-              Nearest emergency hospitals, clinics, and family assistance anchors.
-            </p>
 
-            <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+            <div className="modal-body space-y-3">
               {importantPlaces.filter(p => p.category === 'hospital' || p.category === 'doctor').map(place => (
                 <div key={place.id} className="p-3.5 rounded-2xl bg-white border border-ner-border flex items-center justify-between gap-3">
                   <div className="min-w-0">
@@ -1001,7 +1010,7 @@ export const ImportantPlacesMap: React.FC = () => {
               ))}
             </div>
 
-            <div className="modal-footer mt-6 pt-4 border-t border-ner-border flex items-center justify-between gap-3">
+            <div className="modal-footer flex items-center justify-between gap-3">
               <button
                 type="button"
                 onClick={() => {
