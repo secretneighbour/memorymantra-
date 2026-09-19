@@ -222,7 +222,7 @@ export const Navbar: React.FC = () => {
             <Settings className="w-4 h-4" />
           </Link>
 
-          {/* Hamburger button (Visible on screens <= 1440px) */}
+          {/* Hamburger button (Visible on screens <= 1024px) */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="hamburger-icon navbar-hamburger-btn nav-btn w-[38px] h-[38px] rounded-full text-ner-black hover:bg-black/5 flex items-center justify-center shrink-0 border border-ner-border/80 bg-white"
