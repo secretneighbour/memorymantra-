@@ -17,29 +17,41 @@ Built with a high-contrast industrial aesthetic inspired by Nothing OS and Diete
    - [Windows Troubleshooting & Tips](#-windows-troubleshooting--tips)
 3. [Quick Start & Setup](#-quick-start--setup)
 4. [Environment Variables & API Keys](#-environment-variables--api-keys)
-5. [🧩 Comprehensive Modules Catalog](#-comprehensive-modules-catalog)
+5. [🚀 Major Architectural Changes & Refactorings Log](#-major-architectural-changes--refactorings-log)
+   - [1. Dynamic User State Binding & Removal of Hardcoded Dummy Names](#1-dynamic-user-state-binding--removal-of-hardcoded-dummy-names)
+   - [2. Backend Secure API Gateway & Proxy Architecture (`server.ts`)](#2-backend-secure-api-gateway--proxy-architecture-serverts)
+   - [3. Fixed-Pinned Responsive Header & Navigation System](#3-fixed-pinned-responsive-header--navigation-system)
+   - [4. Modal Layering & Stacking Context Fix (`z-index: 99999`)](#4-modal-layering--stacking-context-fix-z-index-99999)
+   - [5. Multilingual Audio Auditioning & Speech Engine Stabilization](#5-multilingual-audio-auditioning--speech-engine-stabilization)
+6. [🧩 Comprehensive Modules Catalog](#-comprehensive-modules-catalog)
    - [1. Core Pages & Dashboards](#1-core-pages--dashboards)
-   - [2. Simple UI Mode & Fluid Scalable Typography Engine](#2-simple-ui-mode--fluid-scalable-typography-engine)
-   - [3. First-Time Walkthrough & Onboarding Module](#3-first-time-walkthrough--onboarding-module)
-   - [4. Emergency Assistance & Safe SMS Simulation Module](#4-emergency-assistance--safe-sms-simulation-module)
-   - [5. Privacy-First Regional Map & Important Places Module](#5-privacy-first-regional-map--important-places-module)
-   - [6. Cognitive Training Games Hub (9 Clinical Games)](#6-cognitive-training-games-hub-9-clinical-games)
-   - [7. Memory Vault & Reminiscence Therapy Module](#7-memory-vault--reminiscence-therapy-module)
-   - [8. Daily Mood & Health Check-In Module](#8-daily-mood--health-check-in-module)
-   - [9. Interactive Articulated Living Cat Engine](#9-interactive-articulated-living-cat-engine)
-   - [10. Authentication & 3-Role User Security System](#10-authentication--3-role-user-security-system)
-   - [11. Caregiver Management & Telemetry Portal](#11-caregiver-management--telemetry-portal)
-   - [12. Doctor & Clinical Analytics Portal](#12-doctor--clinical-analytics-portal)
-   - [13. Accessibility & Speech Synthesis Engine](#13-accessibility--speech-synthesis-engine)
-   - [14. Unique Selling Proposition (USP) & 10-Slide Pitch Deck Module](#14-unique-selling-proposition-usp--10-slide-pitch-deck-module)
-   - [15. Multilingual Regional Inclusion Engine (8 Languages)](#15-multilingual-regional-inclusion-engine-8-languages)
-   - [16. State Management & Context Providers](#16-state-management--context-providers)
-   - [17. Desktop Native Integration (Electron Core)](#17-desktop-native-integration-electron-core)
-   - [18. Backend, Database & Service Layer](#18-backend-database--service-layer)
-6. [Folder Structure](#-folder-structure)
-7. [⚡ Complete Guide: How to Use & Build Electron](#-complete-guide-how-to-use--build-electron)
-8. [Available Scripts](#-available-scripts)
-9. [Tech Stack](#-tech-stack)
+   - [2. Dynamic User State & Central Identity Engine (`useCurrentUser`)](#2-dynamic-user-state--central-identity-engine-usecurrentuser)
+   - [3. Backend API Gateway & Proxy Server (`server.ts`)](#3-backend-api-gateway--proxy-server-serverts)
+   - [4. Fixed-Pinned Responsive Navigation Bar (`Navbar.tsx`)](#4-fixed-pinned-responsive-navigation-bar-navbartsx)
+   - [5. Interactive Scroll Storytelling & Feature Showcase](#5-interactive-scroll-storytelling--feature-showcase)
+   - [6. Simple UI Mode & Fluid Scalable Typography Engine](#6-simple-ui-mode--fluid-scalable-typography-engine)
+   - [7. First-Time Walkthrough & Onboarding Module](#7-first-time-walkthrough--onboarding-module)
+   - [8. Emergency Assistance & Safe SMS Simulation Module](#8-emergency-assistance--safe-sms-simulation-module)
+   - [9. Privacy-First Dual-Engine Regional Map (Online + Offline)](#9-privacy-first-dual-engine-regional-map-online--offline)
+   - [10. Cognitive Training Games Hub (9 Clinical Neuro-Stimulation Engines)](#10-cognitive-training-games-hub-9-clinical-neuro-stimulation-engines)
+   - [11. Memory Vault & Reminiscence Therapy System](#11-memory-vault--reminiscence-therapy-system)
+   - [12. AI Reminiscence Companion & Cognitive Recommendation Engine](#12-ai-reminiscence-companion--cognitive-recommendation-engine)
+   - [13. Daily Mood & Health Check-In Module](#13-daily-mood--health-check-in-module)
+   - [14. Interactive Articulated Living Cat Engine](#14-interactive-articulated-living-cat-engine)
+   - [15. Multi-Role Authentication & User Security System](#15-multi-role-authentication--user-security-system)
+   - [16. Caregiver Management & Telemetry Portal](#16-caregiver-management--telemetry-portal)
+   - [17. Doctor & Clinical Analytics Portal](#17-doctor--clinical-analytics-portal)
+   - [18. Well Voice Assistant & Speech Synthesis Engine](#18-well-voice-assistant--speech-synthesis-engine)
+   - [19. Unique Selling Proposition (USP) & 10-Slide Pitch Deck Engine](#19-unique-selling-proposition-usp--10-slide-pitch-deck-engine)
+   - [20. Multilingual Regional Inclusion Engine (8 Regional Languages)](#20-multilingual-regional-inclusion-engine-8-regional-languages)
+   - [21. State Management & Context Providers](#21-state-management--context-providers)
+   - [22. Desktop Native Integration (Electron 33 Core)](#22-desktop-native-integration-electron-33-core)
+   - [23. Backend, Database & Service Layer](#23-backend-database--service-layer)
+7. [Folder Structure](#-folder-structure)
+8. [⚡ Complete Guide: How to Use & Build Electron](#-complete-guide-how-to-use--build-electron)
+9. [Available Scripts](#-available-scripts)
+10. [Tech Stack](#-tech-stack)
+11. [License](#-license)
 
 ---
 
@@ -384,9 +396,98 @@ SmritiCare includes an automatic **Zero-Config Demo Mode**:
 
 ---
 
+## 🚀 Major Architectural Changes & Refactorings Log
+
+This section provides an executive summary and technical breakdown of recent major system refactorings, security audits, UI responsive fixes, and state management upgrades implemented across SmritiCare.
+
+---
+
+### 1. Dynamic User State Binding & Removal of Hardcoded Dummy Names
+* **Files Modified:** `src/context/AuthContext.tsx`, `src/context/RoleContext.tsx`, `src/data/patients.ts`, `src/data/activities.ts`, `src/data/memories.ts`, `src/utils/wellbeingUtils.ts`, `src/services/ai/memoryCompanion.ts`, `server.ts`, `src/components/RoleSwitcherModal.tsx`, `src/components/scroll/HeroScrollSection.tsx`, `src/components/scroll/StickyFeatureSection.tsx`, `src/components/scroll/MemoryWallSection.tsx`, `src/components/scroll/AICompanionScrollSection.tsx`, `src/pages/PatientDashboard.tsx`, `src/pages/MemoriesPage.tsx`, `src/pages/MemoryCompanionPage.tsx`, `src/pages/RoleSelectionPage.tsx`, `src/pages/SignupPage.tsx`, `src/pages/LoginPage.tsx`, `src/games/*.tsx`, and all 8 translation catalogs (`src/i18n/translations/*.ts`).
+* **The Problem:**
+  Previously, dummy names (*"Shri Biren Baruah"*, *"Ananya Baruah"*, *"Dr. Hemanta Phukan"*, *"Mukul Rawat"*, *"Lakshya Raj"*) were hardcoded across various UI elements, including hero session cards, role switcher modals, game victory dialogues, greeting banners, and regional localization files. This created an unprofessional presentation and broke personalization for newly registered users.
+* **Architecture & Solution:**
+  1. **Centralized User Hook (`useCurrentUser`)**: Created and exported the `CurrentUser` interface and `useCurrentUser()` hook from `src/context/AuthContext.tsx`.
+  2. **Reactive Fallback Mechanics**:
+     ```typescript
+     export interface CurrentUser {
+       name: string;
+       role: string;
+       email?: string;
+       avatarUrl?: string;
+       isAuthenticated: boolean;
+     }
+
+     export const useCurrentUser = () => {
+       const { user, isAuthenticated } = useAuth();
+       const currentUser: CurrentUser = useMemo(() => ({
+         name: isAuthenticated && user?.name ? user.name : 'Visitor',
+         role: isAuthenticated && user?.role ? user.role : 'Guest',
+         email: user?.email,
+         avatarUrl: user?.avatarUrl,
+         isAuthenticated,
+       }), [user, isAuthenticated]);
+
+       return { currentUser, displayName: currentUser.name, isAuthenticated };
+     };
+     ```
+  3. **Conditional Dynamic UI Binding**: When an unauthenticated visitor arrives, all greeting banners, cards, and audition dialogues display `"Visitor"`. Once the user registers or logs in, `AuthContext` updates, causing React to immediately re-render all instances of `{displayName}` with the user's actual registered name.
+  4. **Zero-UI-Change Future Integration**: Any future authentication provider (OAuth, Supabase, Firebase, or enterprise SAML) needs only to populate `user.name` in `AuthContext`; all UI components automatically consume and display it without changing a single line of component code.
+  5. **Multilingual Catalog Overhaul**: Updated `patientName: 'Visitor'`, `rolePatientPersona: 'Visitor (Patient)'`, `roleCaregiverPersona: 'Visitor (Caregiver)'`, and `doctorRolePersona: 'Visitor (Doctor)'` across all 8 supported Indian and regional languages (`en`, `as`, `bn`, `hi`, `mni`, `kha`, `lus`, `nag`).
+
+---
+
+### 2. Backend Secure API Gateway & Proxy Architecture (`server.ts`)
+* **Files Modified/Created:** `server.ts`, `src/services/ai/memoryCompanion.ts`, `.env.example`, `package.json`
+* **The Problem:**
+  Direct browser-to-cloud API invocations risked exposing private third-party credentials (`GEMINI_API_KEY`, speech engine keys) in client-side bundles, making them vulnerable to extraction and abuse.
+* **Architecture & Solution:**
+  1. **Node.js Express Server Gateway**: Built an Express backend gateway (`server.ts`) listening on port `3001` (bundled into `dist/server.cjs` via esbuild).
+  2. **Secure Proxy Endpoints**:
+     - `POST /api/companion`: Ingests conversation history, user identity, and patient reminders, and calls the Google Gemini AI model using server-side environment variables.
+     - `GET /api/places/nearby`: Proxies geographic landmark queries.
+     - `POST /api/speech-to-text`: Handles voice audio streams server-side.
+  3. **SessionStorage & In-Memory Caching**: Caches conversational responses and queries to prevent redundant external API hits, lower latency, and preserve offline operability.
+  4. **Strict Fallback Resiliency**: If external AI services time out or lose connectivity, the proxy seamlessly serves culturally grounded offline reassurance templates.
+
+---
+
+### 3. Fixed-Pinned Responsive Header & Navigation System
+* **Files Modified:** `src/components/Navbar.tsx`, `src/index.css`
+* **The Problem:**
+  On standard laptop displays ($1366 \times 768$ and $1440 \times 900$), all primary navigation links were previously collapsed behind a mobile hamburger drawer, leaving an empty void in the header. Subsequent horizontal scrolling attempts caused the `"SMRITICARE (R)"` logo to scroll out of view.
+* **Architecture & Solution:**
+  1. **Tripartite Structural Layout**:
+     - **Left Side (`.logo-wrapper`)**: Permanently pinned to the left with `flex-shrink: 0`, ensuring the brand identifier never scrolls or moves.
+     - **Center-Left (`.nav-links-container`)**: Independent horizontally-scrollable navigation links container with custom invisible scrollbars, allowing all 11+ navigation destinations to remain accessible on laptops without crowding.
+     - **Right Side (`.nav-actions`)**: Pinned action buttons (Role Switcher, Simple UI toggle, Quick SOS, User Profile).
+  2. **Responsive Breakpoint Adjustment**: Replaced premature desktop collapsing with a mobile-only breakpoint (`max-width: 1024px`), guaranteeing full navigation visibility on standard laptops.
+
+---
+
+### 4. Modal Layering & Stacking Context Fix (`z-index: 99999`)
+* **Files Modified:** `src/index.css`, `src/components/RoleSwitcherModal.tsx`, `src/pages/SettingsPage.tsx`
+* **The Problem:**
+  The sticky/floating navigation bar had a stacking index of `z-index: 9999`. Modals rendered underneath the navbar, causing modal headers and close triggers to be obscured.
+* **Architecture & Solution:**
+  1. **Elevated Stacking Order**: Updated `.modal-overlay` to `z-index: 99999` with `position: fixed; inset: 0;`.
+  2. **Top-Aligned Vertical Positioning**: Changed overlay flex alignment from `items-center` to `items-start` with top padding (`pt-20 pb-12`) and `overflow-y: auto`, preventing header clipping and ensuring full scrolling visibility on smaller viewports.
+
+---
+
+### 5. Multilingual Audio Auditioning & Speech Engine Stabilization
+* **Files Modified:** `src/components/scroll/AICompanionScrollSection.tsx`, `src/utils/speechEngine.ts`
+* **The Problem:**
+  Invoking voice audition triggers in the interactive AI companion scroll section caused runtime `handleAuditionVoice is not defined` errors and lacked native phrase greetings for regional dialects.
+* **Architecture & Solution:**
+  1. **Engine Pre-Warming (`primeSpeechEngine()`)**: Wakes up the Web Speech API on the initial user click to circumvent aggressive browser autoplay and audio context restrictions.
+  2. **Multilingual Voice Auditioning**: Added synchronized audio preview greetings in 7 regional languages (English, Assamese, Bengali, Hindi, Meitei/Manipuri, Khasi, and Bodo) dynamically bound to the active user's `displayName`.
+
+---
+
 ## 🧩 Comprehensive Modules Catalog
 
-SmritiCare is architected into 12 core functional module systems across presentation, game mechanics, clinical telemetry, accessibility, and native desktop integration:
+SmritiCare is structured into **23 comprehensive functional modules** covering client presentation, state management, cognitive game engines, AI therapy, clinical telemetry, regional inclusion, and native desktop integration:
 
 ---
 
@@ -395,277 +496,241 @@ SmritiCare is architected into 12 core functional module systems across presenta
 
 | Module / Page Name | File Path | Functional Purpose & Key Features |
 | :--- | :--- | :--- |
-| **Patient Dashboard** | `/src/pages/PatientDashboard.tsx` | Main command center for patients with dementia or MCI. Features **Simple UI Mode** toggle (5 distraction-free tactile cards: Today's Activity, Memory Companion, Daily Game, Reminders, and Help/SOS) alongside full telemetry, daily schedule, streak badges, and mood check-in. |
-| **Important Places & Map** | `/src/pages/PlacesPage.tsx` | Privacy-first regional orientation map (Assam & Kamrup Metro landmarks: Home, GMCH Hospital, Doctor Clinic, Pharmacy, Family, Park). Offline-safe vector canvas with 1-tap direct Call and Route actions, zero background GPS tracking. |
+| **Patient Dashboard** | `/src/pages/PatientDashboard.tsx` | Main command center for patients with dementia or MCI. Features **Simple UI Mode** toggle (5 distraction-free tactile cards: Today's Activity, Memory Companion, Daily Game, Reminders, and Help/SOS) alongside full telemetry, daily schedule, streak badges, dynamic `{displayName}` greeting, and mood check-in. |
+| **Important Places & Map** | `/src/pages/PlacesPage.tsx` | Privacy-first regional orientation map (Assam & Kamrup Metro landmarks: Home, GMCH Hospital, Doctor Clinic, Pharmacy, Family, Park). Dual online/offline vector canvas with 1-tap direct Call and Route actions, zero background GPS tracking. |
 | **Product Presentation Deck** | `/src/pages/PresentationPage.tsx` | In-app 10-slide interactive pitch deck detailing Smriti Care's executive vision, regional challenges, clinical architecture, cognitive game suite, AI companion, and clinical roadmap. Supports arrow navigation, thumbnail scrubber, speaker notes, and fullscreen. |
 | **Caregiver Dashboard** | `/src/pages/CaregiverDashboard.tsx` | Telemetry portal for family and formal caregivers. Tracks patient routine adherence, sleep quality, game performance, medication logs, and monitors caregiver burden risk scores. |
 | **Doctor / Clinician Portal** | `/src/pages/DoctorDashboard.tsx` | Specialized clinical dashboard displaying longitudinal cognitive trajectories, estimated MMSE/MoCA scores via Recharts, reaction time curves, and exportable medical summary evaluations. |
 | **Cognitive Games Hub** | `/src/pages/GamesHub.tsx` | Game catalog organized across 5 clinical cognitive domains (Memory, Attention, Executive Function, Language, Visual-Spatial). Displays difficulty filters and personal best scores. |
-| **Memory Vault** | `/src/pages/MemoriesPage.tsx` | Interactive photo album and reminiscence vault with voice note attachments, categorized timeline tags, loved ones association, and audio playback. |
-| **AI Memory Companion** | `/src/pages/MemoryCompanionPage.tsx` | Conversational reminiscence companion that generates warm, comforting conversational prompts based on stored family photos and patient memories. |
+| **Memory Vault** | `/src/pages/MemoriesPage.tsx` | Interactive photo album and reminiscence vault with voice note attachments, categorized timeline tags, loved ones association, audio playback, and dynamic `{displayName}` notification simulation. |
+| **AI Memory Companion** | `/src/pages/MemoryCompanionPage.tsx` | Conversational reminiscence companion that generates warm, comforting conversational prompts based on stored family photos, patient memories, and active caregiver profile. |
 | **Reminders & Routine Page** | `/src/pages/RemindersPage.tsx` | Daily schedule management interface for morning, afternoon, and evening medication, hydration goals, and doctor appointments with audio alarms. |
 | **Cognitive Progress Page** | `/src/pages/ProgressPage.tsx` | Patient and family progress overview with weekly activity heatmaps, cognitive domain radar charts, and milestone achievement badges. |
 | **Patient Profile Page** | `/src/pages/PatientProfilePage.tsx` | Medical history, emergency contacts, primary clinician contact, diagnosis stage, allergies, and caregiver circle management. |
 | **Landing & Orientation Page** | `/src/pages/LandingPage.tsx` | Public introduction page highlighting the **Personalized Memory-Assisted Cognitive Care (USP Section)** with 8 core pillars, 4-tier care ecosystem, clinical game methodology, accessibility features, and quick demo login access. |
-| **Authentication & Auth Pages** | `/src/pages/LoginPage.tsx`<br>`/src/pages/SignupPage.tsx`<br>`/src/pages/ForgotPasswordPage.tsx`<br>`/src/pages/ResetPasswordPage.tsx`<br>`/src/pages/EmailVerificationPage.tsx`<br>`/src/pages/AuthCallbackPage.tsx` | Complete authentication suite supporting email/password registration, password recovery, magic link verification, 3-tab role selector (Patient, Caregiver, Doctor), and 1-Click Demo Accounts. |
+| **Authentication & Auth Pages** | `/src/pages/LoginPage.tsx`<br>`/src/pages/SignupPage.tsx`<br>`/src/pages/ForgotPasswordPage.tsx`<br>`/src/pages/ResetPasswordPage.tsx`<br>`/src/pages/EmailVerificationPage.tsx`<br>`/src/pages/AuthCallbackPage.tsx` | Complete authentication suite supporting email/password registration, password recovery, magic link verification, 3-tab role selector (Patient, Caregiver, Doctor), dynamic Visitor identity binding, and 1-Click Demo Accounts. |
 | **Role Selection Portal** | `/src/pages/RoleSelectionPage.tsx` | Interactive switcher allowing instant role swapping between Patient, Caregiver, and Doctor for demonstration and multi-user environments. |
 | **Accessibility & Settings** | `/src/pages/SettingsPage.tsx` | Global accessibility preferences: Simple UI Mode toggle, 4-step fluid typography scaling (Small, Normal, Large, Extra Large) with live preview, Dyslexia font, High Contrast, and Replay Walkthrough. |
 
 ---
 
-### 2. Simple UI Mode & Fluid Scalable Typography Engine
+### 2. Dynamic User State & Central Identity Engine (`useCurrentUser`)
+* **Location:** `/src/context/AuthContext.tsx`
+* **Purpose:** Provides a centralized, reactive identity engine ensuring zero hardcoded dummy names across the application.
+* **Key Capabilities:**
+  - `useCurrentUser()` Hook: Dynamically computes `displayName` based on `isAuthenticated` and `user.name`.
+  - Deterministic Fallback: Automatically resolves to `"Visitor"` when unauthenticated.
+  - Zero-UI Coupling: Any new authentication backend connects to `AuthContext` with immediate, app-wide UI updates.
+
+---
+
+### 3. Backend API Gateway & Proxy Server (`server.ts`)
+* **Location:** `/server.ts` & `/dist/server.cjs`
+* **Purpose:** Protects sensitive third-party API keys (Google Gemini, Places, Speech-to-Text) from client-side bundle exposure.
+* **Key Capabilities:**
+  - Express API gateway running on port `3001` (or alongside desktop bundling).
+  - Secure `/api/companion` proxy endpoint executing Gemini queries server-side.
+  - In-memory response caching and offline fallback templates for zero-latency reassurance.
+
+---
+
+### 4. Fixed-Pinned Responsive Navigation Bar (`Navbar.tsx`)
+* **Location:** `/src/components/Navbar.tsx` & `/src/index.css`
+* **Purpose:** Traditional, feature-rich desktop navigation bar grouping brand and links on the left, and actions on the right.
+* **Key Capabilities:**
+  - Pinned `.logo-wrapper` permanently fixed on the far left.
+  - Horizontally-scrollable `.nav-links-container` with hidden scrollbars for dense laptops ($1366 \times 768$).
+  - Full desktop navigation visibility on all screens $\ge 1024\text{px}$.
+  - Seamless mobile drawer fallback for phones and tablets.
+
+---
+
+### 5. Interactive Scroll Storytelling & Feature Showcase
+* **Location:** `/src/components/scroll/*`
+* **Key Sub-modules:**
+  - `HeroScrollSection.tsx`: Cinematic hero section with active session card bound to `{displayName}`.
+  - `StickyFeatureSection.tsx`: Scroll-locked interactive feature canvas showcasing memory vault, clinical games, and AI companion.
+  - `MemoryWallSection.tsx`: Parallax floating memory cards with rich cultural storytelling.
+  - `AICompanionScrollSection.tsx`: Interactive voice auditioning in 7 languages and live simulated dialogue.
+  - `CaregiverScrollDashboard.tsx`: Live telemetry preview for family members.
+  - `InteractiveReminderSection.tsx`: Tactile routine timeline with audio chime previews.
+  - `RegionalAccessibilitySection.tsx`: Visual matrix of the 8 supported North-Eastern and Indian languages.
+  - `FinalCTASection.tsx`: Concluding call-to-action onboarding portal.
+
+---
+
+### 6. Simple UI Mode & Fluid Scalable Typography Engine
 * **Location:** `/src/context/AccessibilityContext.tsx`, `/src/pages/PatientDashboard.tsx`, `/src/index.css`
-* **Purpose:** Provides a zero-clutter, high-focus interface for elderly individuals experiencing cognitive fatigue or visual impairment.
+* **Purpose:** Zero-clutter, high-focus interface for elderly individuals experiencing cognitive fatigue or visual impairment.
 * **Key Capabilities:**
-  - **1-Tap Simple UI Mode:** Strips away secondary telemetry badges, graphs, and diagnostic charts. Transforms the Patient Dashboard into **5 large tactile cards**:
-    1. *Today's Activity*: Daily recommended cognitive task with large $\ge 56\text{px}$ primary action button.
-    2. *Smriti Memory Companion*: Warm, peaceful conversation launcher for reminiscence therapy.
-    3. *Recommended Cognitive Game*: Daily neuro-stimulation exercise.
-    4. *Today's Reminders*: Streamlined schedule with high-contrast `[ ✓ Done ]` and `[ ⏰ Later ]` buttons.
-    5. *Family & Help*: 1-tap direct caregiver phone dialer and emergency assistance trigger.
-  - **4-Step Scalable Typography:** Fluid sizing across **Small**, **Normal (Default)**, **Large (115%)**, and **Extra Large (130%)** with live preview in Settings. Scales headings, buttons, and inputs harmoniously without horizontal scroll or layout breaking.
-  - **Strategic Red Accent System:** Follows Dieter Rams / Nothing OS guidelines where red (`#D71921`) is reserved exclusively for critical alerts, emergency SOS, and urgent reminder states, paired with icons so color is never the sole information carrier.
-  - **Offline Persistence:** Settings persist instantly to `localStorage` (`neuro_simpleUIMode`, `neuro_text_size`).
+  - 1-Tap Simple UI Mode: Collapses complex dashboards into 5 large tactile cards ($\ge 56\text{px}$ touch targets).
+  - 4-Step Scalable Typography: Fluid rem scaling across Small, Normal, Large (115%), and Extra Large (130%).
+  - Strategic Dieter Rams Red Accent: Red (`#D71921`) reserved exclusively for critical SOS alerts.
 
 ---
 
-### 3. First-Time Walkthrough & Onboarding Module
+### 7. First-Time Walkthrough & Onboarding Module
 * **Location:** `/src/components/WalkthroughModal.tsx`
-* **Purpose:** An accessible, calm 7-step onboarding guide introducing seniors and family members to the platform.
-* **7 Guided Steps:**
-  1. *Welcome to Smriti Care*: Cognitive care companion introduction.
-  2. *Your Memories*: Memory Vault and oral history audio narratives.
-  3. *Keep Your Mind Active*: 9 clinical cognitive training games.
-  4. *Your Daily Journey*: Routine check-ins and daily milestone goals.
-  5. *Never Miss an Important Reminder*: Medication, hydration, and doctor visits.
-  6. *Stay Connected*: Family care circle and caregiver telemetry.
-  7. *Need Help?*: Emergency assistance and instant SMS dispatch.
-* **Key Features:**
-  - Full keyboard accessibility (Arrow keys, Escape to close).
-  - Clear **[Skip]**, **[Back]**, **[Next]**, and **[Get Started]** navigation.
-  - Automatic first-visit trigger persisted in `localStorage` (`smriti_walkthrough_completed`).
-  - Replayable anytime via the *"Replay Onboarding Guide"* button in Settings.
-  - 100% translated across all 8 regional languages.
+* **Purpose:** Accessible 7-step guided onboarding tour for seniors and family caregivers.
+* **Key Capabilities:**
+  - Full keyboard accessibility and high-contrast visuals.
+  - Persisted completion state in `localStorage` (`smriti_walkthrough_completed`).
+  - Replayable on demand via Settings.
 
 ---
 
-### 4. Emergency Assistance & Safe SMS Simulation Module
+### 8. Emergency Assistance & Safe SMS Simulation Module
 * **Location:** `/src/components/EmergencyHelpModal.tsx` & `/src/context/RoleContext.tsx`
-* **Purpose:** A safe, transparent lifeline for immediate family assistance without deceptive claims.
+* **Purpose:** Transparent, safe emergency lifeline for family contact without deceptive claims.
 * **Key Capabilities:**
-  - **Urgency Selection:** Patient chooses between *"I need gentle help"* (routine check-in) and *"Emergency Situation"* (urgent medical alert).
-  - **Trusted Contacts Directory:** Displays configured emergency contacts with Primary caregiver badges and one-tap direct phone dialer (`tel:...`).
-  - **Pre-Composed Message Preview:** Pre-formats comforting, clear messages:
-    - *Routine:* `"Smriti Care Alert: [Patient Name] requested gentle assistance/check-in. Please contact them when free."`
-    - *Emergency:* `"[URGENT] Smriti Care SOS Alert: [Patient Name] requires immediate assistance. Please call back immediately."`
-  - **Explicit Confirmation Step:** Prevents accidental triggers by requiring an intentional `[Confirm & Send SMS]` tap.
-  - **Native Mobile `sms:` Protocol Fallback:** Automatically generates native `sms:${phone}?body=...` action buttons allowing real SMS dispatch via the device's native messaging application on mobile devices.
-  - **Honest Simulation Layer:** Clearly identifies simulated mock dispatches with realistic status timelines (Sending $\rightarrow$ Delivered) and logs them into `localStorage` (`neuro_sms_logs`) and caregiver alert telemetry.
+  - Dual Urgency Selection: Routine check-in vs. urgent medical alert.
+  - Direct 1-tap phone dialer (`tel:...`) and native mobile SMS protocol fallback (`sms:...`).
+  - Transparent simulated dispatch logging to `localStorage` (`neuro_sms_logs`).
 
 ---
 
-### 5. Dual-Engine Regional Map & Important Places Module (Google Maps Online + OpenStreetMap Offline)
-* **Location:** `/src/components/ImportantPlacesMap.tsx`, `/src/components/GoogleMapOnline.tsx`, `/src/components/NorthEastOfflineMap.tsx`, `/src/data/northEastMapData.ts`, `/src/pages/PlacesPage.tsx`
-* **Purpose:** Geographic orientation and spatial memory anchors for familiar regional places with seamless online/offline continuity and zero privacy invasion.
-* **Architecture & Compliance:**
-  - **Online Mode (Google Maps Platform):** Interactive Google Maps with zoom/pan, category pins, and integrated Google Places search (hospital, pharmacy, clinic, address). Strictly abides by Google Platform Terms: zero scraping, no local tile caching, Place IDs stored only where permitted, and full Google attribution/logo preserved.
-  - **Offline Mode (OpenStreetMap / Natural Earth Vector Engine):** A completely separate, legally redistributable open vector map dataset covering the **8 North-Eastern States of India** (Assam, Arunachal Pradesh, Manipur, Meghalaya, Mizoram, Nagaland, Tripura, Sikkim). Renders state boundary polygons, the Brahmaputra and Barak river networks, national highways (NH 27, NH 37, GS Road), regional capital hubs, and all saved places with zero Google tile requests.
-  - **Graceful Online/Offline Switching:** Automatically transitions between Google Maps and the Offline Map based on network connectivity without jumping or losing saved places. Manual override available via Map Settings (Auto / Online / Offline).
+### 9. Privacy-First Dual-Engine Regional Map (Online + Offline)
+* **Location:** `/src/components/ImportantPlacesMap.tsx`, `/src/components/GoogleMapOnline.tsx`, `/src/components/NorthEastOfflineMap.tsx`, `/src/data/northEastMapData.ts`
+* **Purpose:** Geographic orientation and spatial memory anchors with seamless online/offline continuity.
 * **Key Capabilities:**
-  - **8 Essential Place Categories:** Home, Doctor Clinic, Hospital, Pharmacy, Family Residence, Caregiver, Familiar Park, and Other.
-  - **Role-Based Access Control:**
-    - *Patient:* View all important places and add personal anchors.
-    - *Caregiver:* Full management (add, edit, delete, mark primary, assign landmark memory cues).
-    - *Doctor:* Filtered clinical view restricted to medical and emergency anchors only.
-  - **Current Location Tracker:** Explicit user-permission geolocation without continuous background tracking.
-  - **Emergency Care Integration:** "I Need Help" quick drawer immediately displays nearest hospital/clinic, primary caregiver contact, and 1-tap SOS SMS dispatch.
-  - **Simple UI Mode:** Adapts into 4 large tactile buttons (Map, Important Places, Where Am I?, and SOS) with high contrast and oversized touch targets ($\ge 56\text{px}$).
-  - **Actual Dataset Size & Licensing:** Dynamically computes and displays the bundled offline map data size (~250 KB) with required OpenStreetMap ODbL attribution.
+  - Online Google Maps Platform with Google Places search and full attribution compliance.
+  - Offline OpenStreetMap/Natural Earth vector dataset covering 8 North-Eastern states (~250 KB bundled).
+  - 8 Essential Place Categories (Home, Clinic, Hospital, Pharmacy, Family, Park, etc.).
 
 ---
 
-### 6. Cognitive Training Games Hub (9 Clinical Games)
+### 10. Cognitive Training Games Hub (9 Clinical Neuro-Stimulation Engines)
 * **Location:** `/src/games/*` & `/src/pages/GamesHub.tsx`
-* **Clinically Designed Neuro-Stimulation Modules:**
+* **Key Clinical Game Engines:**
 
 | # | Game Module Name | File Location | Targeted Cognitive Domain & Therapeutic Mechanism |
 | :- | :--- | :--- | :--- |
-| 1 | **Memory Match** | `/src/games/MemoryMatchGame.tsx` | **Visual & Spatial Working Memory**: Card-pair matching with everyday items, fruits, and shapes with progressive grid sizes (2x2 up to 4x4). |
-| 2 | **Sequence Recall** | `/src/games/SequenceRecallGame.tsx` | **Short-Term Audio-Visual Memory**: Simon-style sequenced tone and light pattern repetition with tactile feedback. |
-| 3 | **Pattern Finder** | `/src/games/PatternFinderGame.tsx` | **Inductive Reasoning & Fluid Intelligence**: Identifies geometric patterns and predicts the missing element in a sequence. |
-| 4 | **Picture Recognition** | `/src/games/PictureRecognitionGame.tsx` | **Object Naming & Visual Agnosia Mitigation**: Identifies and names common household objects and tools to prevent language decline. |
-| 5 | **Routine Recall** | `/src/games/RoutineRecallGame.tsx` | **Executive Function & Instrumental Activities of Daily Living (IADL)**: Reorders daily sequential tasks (e.g., waking up, brushing teeth, taking medication, eating breakfast). |
-| 6 | **Emotion Recognition** | `/src/games/EmotionRecognitionGame.tsx` | **Socio-Emotional Acuity & Empathy**: Identifies facial emotional expressions (happy, calm, sad, surprised, concerned) to maintain social connection. |
-| 7 | **Word Connect** | `/src/games/WordConnectGame.tsx` | **Semantic Memory & Verbal Fluency**: Groups related vocabulary words by semantic category (e.g., fruits, kitchen utensils, weather, garden tools). |
-| 8 | **Market Memory** | `/src/games/MarketMemoryGame.tsx` | **Functional Everyday Memory Simulator**: Memorizes a shopping grocery list and collects the items in a virtual pantry under cognitive load. |
-| 9 | **Name & Face Recall** | `/src/games/NameFaceRecallGame.tsx` | **Prosopagnosia Mitigation & Facial Recognition**: Associates family members, caregivers, and friends with their correct names and relationship roles. |
+| 1 | **Memory Match** | `/src/games/MemoryMatchGame.tsx` | **Visual & Spatial Working Memory**: Progressive card-pair matching with dynamic `{displayName}` victory evaluation. |
+| 2 | **Sequence Recall** | `/src/games/SequenceRecallGame.tsx` | **Short-Term Audio-Visual Memory**: Sequenced tone and light pattern repetition with tactile feedback. |
+| 3 | **Pattern Finder** | `/src/games/PatternFinderGame.tsx` | **Inductive Reasoning & Fluid Intelligence**: Geometric sequence reasoning with dynamic completion feedback. |
+| 4 | **Picture Recognition** | `/src/games/PictureRecognitionGame.tsx` | **Object Naming & Visual Agnosia Mitigation**: Household object naming to prevent language decline. |
+| 5 | **Routine Recall** | `/src/games/RoutineRecallGame.tsx` | **Executive Function & IADL Skills**: Reorders daily sequential tasks with personalized user recognition. |
+| 6 | **Emotion Recognition** | `/src/games/EmotionRecognitionGame.tsx` | **Socio-Emotional Acuity**: Facial expression identification maintaining emotional connection. |
+| 7 | **Word Connect** | `/src/games/WordConnectGame.tsx` | **Semantic Memory & Verbal Fluency**: Semantic category vocabulary grouping. |
+| 8 | **Market Memory** | `/src/games/MarketMemoryGame.tsx` | **Functional Everyday Memory Simulator**: Culturally grounded grocery market shopping under cognitive load. |
+| 9 | **Name & Face Recall** | `/src/games/NameFaceRecallGame.tsx` | **Prosopagnosia Mitigation**: Associates family circle members with personalized names and roles. |
 
 ---
 
-### 7. Memory Vault & Reminiscence Therapy Module
-* **Location:** `/src/pages/MemoriesPage.tsx`, `/src/pages/MemoryCompanionPage.tsx`, `/src/components/MemoryUploadModal.tsx`
-* **Features:**
-  - **Digital Memory Albums:** Structured storage for family photographs, vintage milestones, vacation memories, and life achievements.
-  - **Audio Reminiscence Storytelling:** Voice note recording and playback for each memory item.
-  - **Person & Location Tagging:** Associative metadata linking photos to specific family members (children, grandchildren, spouses) and locations.
-  - **AI Reminiscence Companion:** Conversational partner encouraging gentle reflection on memories with empathetic questions and guided prompts.
-  - **Native Desktop Storage:** When running in Electron, photos are stored directly in the local file system (`%APPDATA%/Smriti Care/smriti-memories`).
-
----
-
-### 8. Daily Mood & Health Check-In Module
-* **Location:** `/src/components/DailyMoodHealthCheckin.tsx` & `/src/utils/wellbeingUtils.ts`
-* **Purpose:** A structured, elderly-friendly daily check-in that captures psychological state, physical comfort, and routine telemetry in under 30 seconds.
-* **Key Features:**
-  - **Tactile Mood Selector:** 6 expressive visual states (*Great/Energized, Good/Peaceful, Okay/Steady, Tired/Sleepy, Worried/Tense, Unwell/Discomfort*).
-  - **Energy Level Gauge:** 5-step battery level selector (1 to 5).
-  - **Physical Pain & Comfort Rating:** One-tap selection for *No Pain (Comfortable)*, *Mild Ache*, or *Moderate Pain*.
-  - **Sleep Quality Evaluation:** Fast evaluation of last night's rest (*Restful, Okay, Restless*).
-  - **Daily Habits Check-Off:** Quick toggles for hydration (water), meals taken, morning medication, and gentle stretches/walks.
-  - **Symptom Tags & Notes:** One-tap symptom tags (*Headache, Joint Pain, Dizziness, Fatigue, Peaceful Mind, Refreshed*) and free-form note field.
-  - **Persistence & Telemetry Sync:** Saves locally to `localStorage` and optionally synchronizes to Supabase `daily_health_checkins` table and `RoleContext`.
-  - **Historical Review Modal:** Allows patients and caregivers to browse historical check-in trends and notes over time.
-
----
-
-### 9. Interactive Articulated Living Cat Engine
-* **Location:** `/src/components/InteractiveCat.tsx`
-* **Purpose:** A living quadruped creature living on the login ledge to reduce user anxiety and provide joyful, non-intrusive tactile interaction.
-* **Sub-systems & Capabilities:**
-  - **Autonomous Behavior Engine:** Spontaneously cycles through states (`sleeping`, `waking`, `stretching`, `sitting`, `looking_around`, `scratching`, `yawning`, `idle`, `walking`) with randomized dwell intervals.
-  - **Dynamic Quadruped Gait Physics:** 4-limb kinematic stride generator with individual limb phase offsets (`frontLeft`, `frontRight`, `hindLeft`, `hindRight`), body pitch tilt, and vertical breathing/walking bob.
-  - **Interactive User Gestures:**
-    - *Pointer Dragging:* Pick up and drag the cat across the ledge with a natural gravity-based drop and settle bounce.
-    - *Stroke & Petting:* Continuous cursor strokes trigger purring vibration and squinting eyes.
-    - *Startle & Escape:* High-speed cursor movement triggers a flinch, 180° turn, escape trot, and look-back sequence.
-  - **Authentication Security Integration:**
-    - Paw Coverage (`hiding_eyes`): Covers eyes with paws whenever the user focuses on or types into the password input field.
-    - Sneak Peek (`peeking`): Peeks between paws when the "Show Password" eye toggle is activated.
-    - Confetti Celebration: Leaps up with celebratory particle bursts when login is successful.
-  - **5-Tier State Priority Hierarchy:** `AUTH_FEEDBACK` (Level 5) > `DIRECT_USER` (Level 4) > `REACTIVE` (Level 3) > `ATTENTION` (Level 2) > `AUTONOMOUS` (Level 1).
-
----
-
-### 10. Authentication & 3-Role User Security System
-* **Location:** `/src/pages/LoginPage.tsx`, `/src/pages/SignupPage.tsx`, `/src/context/AuthContext.tsx`, `/src/services/supabaseAuthService.ts`
-* **Features:**
-  - **3-Role Sign-in Switcher:** Visual tab selector on the login page enabling users to declare their intended operational mode:
-    1. 🟢 **Patient**: Direct access to Simple UI Mode, daily activities, memories, and voice companion.
-    2. 🔵 **Caregiver**: Direct access to adherence dashboards, routine scheduler, and Zarit burden monitor.
-    3. 🟣 **Doctor / Clinician**: Direct access to clinical telemetry, cognitive domain radar, and diagnostic notes.
-  - **Supabase Auth Client:** Secure JWT session handling, token refresh, and user metadata management.
-  - **Email Verification Workflow:** Automatic confirmation flow with resend verification link triggers.
-  - **1-Click Instant Demo Accounts:** Instant one-click authentication presets for Patient (`patient@smriticare.org`), Caregiver (`caregiver@smriticare.org`), and Doctor (`doctor@smriticare.org`).
-  - **Password Privacy Integration:** Synchronized state events dispatching to the Interactive Cat.
-
----
-
-### 11. Caregiver Management & Telemetry Portal
-* **Location:** `/src/pages/CaregiverDashboard.tsx`, `/src/pages/PatientProfilePage.tsx`
-* **Features:**
-  - **Patient Adherence Telemetry:** Live tracking of daily medication intake, hydration status, and cognitive game completion rates.
-  - **Zarit Caregiver Burden Monitoring:** Periodic assessment and proactive rest/respite alerts to prevent caregiver burnout.
-  - **Remote Routine Scheduler:** Add, edit, or adjust patient daily routines, medication dosages, and hydration reminders remotely.
-  - **Direct Clinician Messaging:** Share observational notes and health updates directly with the patient's neurologist or geriatrician.
-
----
-
-### 12. Doctor & Clinical Analytics Portal
-* **Location:** `/src/pages/DoctorDashboard.tsx`
-* **Features:**
-  - **Longitudinal Trend Curves:** Visualizes MMSE/MoCA trajectory estimates using Recharts over 30-day, 90-day, and 1-year time windows.
-  - **Cognitive Domain Radar Breakdown:** Quantifies performance across Memory, Executive Function, Attention, Language, and Visual-Spatial domains.
-  - **Telemetry Export:** Generates clinical summary evaluations suitable for medical chart integration.
-  - **Medication & Treatment Notes:** Allows prescribing clinicians to log clinical observations and adjust cognitive therapy recommendations.
-
----
-
-### 13. Accessibility & Speech Synthesis Engine (Well Voice & Speech Engine)
-* **Location:** `/src/context/AccessibilityContext.tsx`, `/src/utils/speechEngine.ts`, `/src/components/WellVoiceAssistant.tsx`, `/src/components/VoiceDictationButton.tsx`, `/src/hooks/useSpeechRecognition.ts`, `/src/components/TTSButton.tsx`, `/src/pages/SettingsPage.tsx`
-* **Features:**
-  - **Well Voice Guided Assistant (`WellVoiceAssistant.tsx`):** A conversational voice assistant that walks elderly patients through their check-in flow (Mood → Energy Level → Physical Comfort → Spoken Note). It speaks prompts naturally in the patient's chosen language, listens to their spoken reply via Speech Recognition, and automatically parses sentiment and metrics.
-  - **Voice Dictation Button (`VoiceDictationButton.tsx`):** A reusable microphone dictation control with live ripple animations and feedback, integrated into notes, health check-in, and AI companion inputs.
-  - **Cross-Language Speech Recognition (`useSpeechRecognition.ts`):** Client-side speech-to-text supporting multi-language BCP-47 mapping across English (`en-US`), Hindi (`hi-IN`), Bengali (`bn-IN`), Assamese (`as-IN`), and regional dialects.
-  - **Harmonic Audio Chimes (`speechEngine.ts`):** Web Audio API dual-harmonic sine synthesis (528 Hz Love Frequency + 396 Hz Solfeggio tone) providing relaxing acoustic confirmation before and after voice interactions.
-  - **Web Speech Text-to-Speech (TTS):** 1-tap read-aloud button (`TTSButton.tsx`) for dashboard cards, game instructions, memories, and daily routines with neural/natural voice scoring.
-  - **Dyslexia Font Mode:** Toggles OpenDyslexic font across the entire interface for improved character distinction.
-  - **Visual Contrast Profiles:** High-contrast light and dark industrial themes meeting WCAG 2.1 AAA accessibility standards.
-  - **Text Scaling Engine:** Dynamically modifies root rem sizing between Normal (100%), Large (115%), and Extra Large (130%).
-  - **Reduced Motion:** Disables decorative animations and transitions for users prone to vestibular discomfort.
-
----
-
-### 14. Unique Selling Proposition (USP) & 10-Slide Pitch Deck Module
-* **Location:** `/src/components/USPSection.tsx` & `/src/pages/PresentationPage.tsx`
-* **Purpose:** Clearly communicates Smriti Care's clinical, regional, and human differentiators to families, healthcare investors, and medical evaluators.
+### 11. Memory Vault & Reminiscence Therapy System
+* **Location:** `/src/pages/MemoriesPage.tsx`, `/src/components/MemoryUploadModal.tsx`, `/src/data/memories.ts`
 * **Key Capabilities:**
-  - **Personalized Memory-Assisted Cognitive Care (USP Section):**
-    - 8 foundational pillars: Multi-Modal Stimulation, Cultural Familiarity, Tri-Partite Care Ecosystem, Privacy By Design, Zero-Clutter Architecture, Dignity-First Voice Companion, Clinical Telemetry, and Offline Resiliency.
-    - 4-Tier Care Ecosystem breakdown (Patient $\leftrightarrow$ Caregiver $\leftrightarrow$ Doctor $\leftrightarrow$ Community).
-    - Clinical Game Methodology mapping cognitive domains to dementia intervention benchmarks.
-  - **10-Slide Presentation Pitch Deck (`PresentationPage.tsx`):**
-    - Slide 1: Executive Title & Vision (*"Cognitive Care, Made Human"*)
-    - Slide 2: The Silent Crisis in India & North-East India (Diagnostic delay, stigma, lack of regional tools)
-    - Slide 3: The Solution: Smriti Care Ecosystem
-    - Slide 4: Clinical Methodology & Cognitive Domains
-    - Slide 5: The 9-Game Neuro-Stimulation Suite
-    - Slide 6: Dignity-First AI Memory Companion
-    - Slide 7: Tri-Partite Telemetry & Caregiver Burden Defense
-    - Slide 8: Accessibility & Regional Inclusion (8 North-East & Indian languages)
-    - Slide 9: Technology Stack & Offline Resiliency
-    - Slide 10: Clinical Roadmap & Impact Vision
-    - Full presentation controls: Next/Previous keyboard shortcuts, thumbnail scrubber, slide timer, speaker notes toggle, and fullscreen mode.
+  - Digital photo albums with voice note attachments and relationship tagging.
+  - Electron native filesystem persistence (`%APPDATA%/Smriti Care/smriti-memories/`).
+  - Interactive reminiscence therapy mode with memory reflection questions.
 
 ---
 
-### 15. Multilingual Regional Inclusion Engine (8 Languages)
+### 12. AI Reminiscence Companion & Cognitive Recommendation Engine
+* **Location:** `/src/services/ai/*` & `/src/pages/MemoryCompanionPage.tsx`
+* **Key Capabilities:**
+  - `memoryCompanion.ts`: Generates personalized, compassionate conversational prompts via secure server proxy.
+  - `recommendationEngine.ts`: Suggests the optimal next cognitive activity based on user game scores and fatigue.
+  - `adaptiveEngine.ts`: Dynamically scales game difficulty parameters based on real-time accuracy and reaction time.
+  - `caregiverSummary.ts`: Summarizes daily patient activity into actionable caregiver insights.
+
+---
+
+### 13. Daily Mood & Health Check-In Module
+* **Location:** `/src/components/DailyMoodHealthCheckin.tsx`, `/src/components/WellbeingCheckIn.tsx`, `/src/utils/wellbeingUtils.ts`
+* **Key Capabilities:**
+  - Tactile 6-mood selector, 5-level energy gauge, pain rating, and sleep quality assessment.
+  - Consecutive low mood tracking with automatic caregiver alerts (`evaluateConsecutiveNegativeResponses`).
+  - Historical review modal with longitudinal wellbeing trends.
+
+---
+
+### 14. Interactive Articulated Living Cat Engine
+* **Location:** `/src/components/InteractiveCat.tsx`
+* **Key Capabilities:**
+  - 4-limb kinematic stride generator with individual limb phase offsets and breathing bob.
+  - Autonomous state cycling (sleeping, stretching, sitting, walking, yawning).
+  - Password privacy integration: covers eyes when typing password; peeks when revealed.
+
+---
+
+### 15. Multi-Role Authentication & User Security System
+* **Location:** `/src/pages/LoginPage.tsx`, `/src/pages/SignupPage.tsx`, `/src/context/AuthContext.tsx`, `/src/services/authService.ts`
+* **Key Capabilities:**
+  - 3-Role operational modes: Patient, Caregiver, and Doctor.
+  - Supabase Auth integration with secure JWT session handling and password reset workflows.
+  - Instant 1-Click Demo Accounts for rapid testing.
+
+---
+
+### 16. Caregiver Management & Telemetry Portal
+* **Location:** `/src/pages/CaregiverDashboard.tsx`, `/src/pages/PatientProfilePage.tsx`
+* **Key Capabilities:**
+  - Real-time patient routine adherence, hydration tracking, and cognitive game completion metrics.
+  - Zarit Caregiver Burden index evaluation and proactive respite alerts.
+  - Remote schedule management for medication and appointment alerts.
+
+---
+
+### 17. Doctor & Clinical Analytics Portal
+* **Location:** `/src/pages/DoctorDashboard.tsx`
+* **Key Capabilities:**
+  - Longitudinal MMSE/MoCA trajectory visualizations via Recharts.
+  - 5-domain cognitive radar analytics (Memory, Executive, Attention, Language, Visual-Spatial).
+  - Clinical note logging and exportable telemetry summaries.
+
+---
+
+### 18. Well Voice Assistant & Speech Synthesis Engine
+* **Location:** `/src/components/WellVoiceAssistant.tsx`, `/src/components/VoiceDictationButton.tsx`, `/src/utils/speechEngine.ts`, `/src/hooks/useSpeechRecognition.ts`, `/src/components/TTSButton.tsx`
+* **Key Capabilities:**
+  - Conversational voice-guided daily check-in with automatic sentiment extraction.
+  - Dual-harmonic Web Audio API sine synthesis (528 Hz + 396 Hz) for calming interaction cues.
+  - Multi-language Text-to-Speech (`TTSButton`) and speech dictation across regional dialects.
+
+---
+
+### 19. Unique Selling Proposition (USP) & 10-Slide Pitch Deck Engine
+* **Location:** `/src/components/scroll/USPSection.tsx`, `/src/pages/PresentationPage.tsx`
+* **Key Capabilities:**
+  - 8 foundational pillars of memory-assisted cognitive care.
+  - In-app 10-slide presentation deck with keyboard controls, timer, speaker notes, and fullscreen.
+
+---
+
+### 20. Multilingual Regional Inclusion Engine (8 Regional Languages)
 * **Location:** `/src/i18n/translations/*`, `/src/context/AccessibilityContext.tsx`
-* **Purpose:** Unlocks digital cognitive care for seniors across diverse linguistic communities in North-East and pan-India who have historically been excluded by English-only software.
-* **Supported Languages (Native Scripts & Full Dictionaries):**
-  1. 🇬🇧 **English (`en`)**: International default with complete accessibility phrasing.
-  2. 🇮🇳 **অসমীয়া / Assamese (`as`)**: Native script for Assam and Brahmaputra valley.
-  3. 🇮🇳 **বাংলা / Bengali (`bn`)**: Native script for West Bengal, Tripura, and Barak valley.
-  4. 🇮🇳 **हिन्दी / Hindi (`hi`)**: Devanagari script for pan-Indian accessibility.
-  5. 🇮🇳 **মৈতৈলোন্ / Meitei / Manipuri (`mni`)**: Bengali-Manipuri script for Manipur communities.
-  6. 🇮🇳 **Ka Ktien Khasi (`kha`)**: Standard Latin orthography for Meghalaya Khasi communities.
-  7. 🇮🇳 **Mizo ṭawng (`lus`)**: Standard Lushai Latin orthography for Mizoram.
-  8. 🇮🇳 **Nagamese Creole (`nag`)**: Latin orthography for Nagaland inter-tribal lingua franca.
-* **Completeness:** Over 120 standardized translation keys per language covering navigation, Simple UI cards, games, memory vault, reminders, emergency SOS, health check-in, and onboarding guide.
+* **Key Capabilities:**
+  - Native scripts & full dictionaries for: English (`en`), Assamese (`as`), Bengali (`bn`), Hindi (`hi`), Manipuri (`mni`), Khasi (`kha`), Mizo (`lus`), and Nagamese (`nag`).
+  - 120+ standardized translation keys per language covering all UI components, games, and emergency dialogs.
+  - Standardized `"Visitor"` persona bindings across all 8 translation catalogs.
 
 ---
 
-### 16. State Management & Context Providers
-*All centralized React contexts located in `/src/context/`:*
-
-| Context Name | File Path | Responsibilities & Stored State |
-| :--- | :--- | :--- |
-| **`AuthContext`** | `/src/context/AuthContext.tsx` | Supabase auth user, session state, login/signup/logout actions, password reset dispatcher, and demo user fallback. |
-| **`RoleContext`** | `/src/context/RoleContext.tsx` | Active role (`patient` \| `caregiver` \| `doctor`), active patient profile, medication reminders list, memory vault records, daily check-in history, game scores, and routine check-offs. |
-| **`AccessibilityContext`** | `/src/context/AccessibilityContext.tsx` | High contrast mode, dyslexia font toggle, reduced motion preference, Simple UI Mode toggle, text size scaling (`normal`, `large`, `xlarge`), speech synthesis rate, language code selection, and localized translation keys. |
+### 21. State Management & Context Providers
+* **Location:** `/src/context/*`
+* **Key Providers:**
+  - `AuthContext.tsx`: User identity, session tokens, login/signup/logout, and `useCurrentUser()`.
+  - `RoleContext.tsx`: Active role, patient profile, medication reminders, memory records, and game scores.
+  - `AccessibilityContext.tsx`: Fluid typography, high contrast, dyslexia font, Simple UI Mode, and i18n translations.
 
 ---
 
-### 17. Desktop Native Integration (Electron Core)
-*All native integration files located in `/electron/`:*
-
-| Module Name | File Path | Desktop Capabilities & Security |
-| :--- | :--- | :--- |
-| **Electron Main Process** | `/electron/main.ts` | Initializes native Windows window (1440x900), configures CSP headers, manages window controls (minimize/maximize/close), handles local file URLs, and configures native application menus. |
-| **Electron Preload Bridge** | `/electron/preload.ts` | Context-isolated bridge exposing `window.electronAPI` safely to the renderer (file dialogs, persistent photo storage in `%APPDATA%`, native shell links). |
-| **Desktop Type Declarations** | `/src/types/electron.d.ts` | Full TypeScript definitions for `window.electronAPI` and Electron IPC events. |
+### 22. Desktop Native Integration (Electron 33 Core)
+* **Location:** `/electron/main.ts`, `/electron/preload.ts`, `/src/types/electron.d.ts`
+* **Key Capabilities:**
+  - Dedicated native Windows desktop application with window control IPC channels.
+  - Secure context isolation bridge (`window.electronAPI`).
+  - Local filesystem photo persistence in `%APPDATA%/Smriti Care/smriti-memories/`.
 
 ---
 
-### 18. Backend, Database & Service Layer
-*Located in `/src/services/`, `/src/lib/`, `/src/utils/`, and `/supabase/`:*
-
-| Module / Layer | File Path | Responsibilities |
-| :--- | :--- | :--- |
-| **Supabase Client Initializer** | `/src/lib/supabaseClient.ts` | Configures Supabase client with graceful offline detection and local demo fallback. |
-| **Auth Service** | `/src/services/supabaseAuthService.ts` | Abstracted authentication service for user sign-in, sign-up, password recovery, and email verification. |
-| **Wellbeing & Telemetry Utils** | `/src/utils/wellbeingUtils.ts` | Scoring algorithms for well-being assessments, mood calculations, and adherence statistics. |
-| **Activity Definitions** | `/src/data/activities.ts` | Structured cognitive activities, therapy task metadata, and daily journey steps. |
-| **Database Migrations** | `/supabase/migrations/*.sql` | PostgreSQL schema definitions for tables (`daily_health_checkins`, `game_scores`, `patient_profiles`, `reminders`, `memories`) and Row-Level Security (RLS) policies. |
+### 23. Backend, Database & Service Layer
+* **Location:** `/server.ts`, `/src/services/*`, `/src/lib/*`, `/supabase/migrations/*`
+* **Key Capabilities:**
+  - Express API gateway (`server.ts`) proxying external AI and speech services.
+  - Supabase client initializer with offline detection.
+  - PostgreSQL schema definitions for check-ins, telemetry, reminders, and Row-Level Security (RLS) policies.
 
 ---
 
