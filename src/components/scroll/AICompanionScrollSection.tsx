@@ -162,7 +162,7 @@ export const AICompanionScrollSection: React.FC = () => {
     }
   }, [scrollYProgress, activeTab]);
 
-  const handleAuditionGreeting = () => {
+  const handleAuditionVoice = () => {
     primeSpeechEngine();
     const greetings: Record<string, string> = {
       en: `Hello ${activePatient.name}. I am Smriti, your caring memory companion.`,
@@ -180,6 +180,8 @@ export const AICompanionScrollSection: React.FC = () => {
       onEnd: () => setSpeakingMsgId(null),
     });
   };
+
+  const handleAuditionGreeting = handleAuditionVoice;
 
   const handleSendMessage = async (textToSend?: string) => {
     const query = (textToSend || inputQuery).trim();
