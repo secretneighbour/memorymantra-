@@ -846,15 +846,16 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
   /* 4K Modal System */
   .modal-overlay,
   .modal-overlay-backdrop {
+    align-items: flex-start !important;
     padding-top: 130px !important;
     padding-bottom: 50px !important;
   }
 
+  .modal-wrapper,
   .modal-container,
   .modal-contained-card {
     max-width: 48rem !important; /* 768px for balanced 4K readability */
     max-height: calc(100vh - 190px) !important;
-    padding: 2.25rem 2.5rem !important;
     border-radius: 2rem !important;
   }
 
@@ -946,6 +947,7 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
   /* 8K Modal System */
   .modal-overlay,
   .modal-overlay-backdrop {
+    align-items: flex-start !important;
     padding-top: 170px !important;
     padding-bottom: 70px !important;
   }
@@ -955,7 +957,6 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
   .modal-contained-card {
     max-width: 68rem !important; /* 1088px on 8K canvas */
     max-height: calc(100vh - 260px) !important;
-    padding: 3.25rem 3.75rem !important;
     border-radius: 2.75rem !important;
     box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.45) !important;
   }
@@ -1014,12 +1015,15 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
   background: rgba(0, 0, 0, 0.65);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  z-index: 99999; /* Higher than the navbar's 9999 and AI drawers */
   display: flex;
   justify-content: center;
-  align-items: center;
-  z-index: 10000; /* Must sit above fixed navbar (z-9999) and Listen Aloud */
-  padding: 2rem 1rem;
-  overflow-y: auto; /* Allows the overlay itself to scroll if modal is taller than screen */
+  align-items: flex-start; /* CRITICAL: Aligns to top instead of center */
+  padding-top: 110px; /* Pushes modal below floating navbar (top gap + height + buffer) */
+  padding-bottom: 40px;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  overflow-y: auto; /* Allows overlay to scroll if viewport is very short */
   box-sizing: border-box;
 }
 
@@ -1028,14 +1032,14 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
 .modal-contained-card,
 .modal-container {
   background: #ffffff;
-  border-radius: 20px;
+  border-radius: 16px;
   width: 100%;
   max-width: 600px; /* Adjust per modal requirement (e.g. max-w-4xl for clinical records) */
-  max-height: calc(100vh - 4rem); /* Prevents overflowing the padding of the overlay */
+  max-height: calc(100vh - 150px); /* 100vh minus top (110px) and bottom (40px) padding */
   display: flex;
   flex-direction: column; /* Stacks header, body, footer */
-  overflow: hidden; /* Clips the inner content so rounded corners work */
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  overflow: hidden; /* Clips the inner content so rounded corners & internal scroll work */
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(0, 0, 0, 0.08);
   position: relative;
   box-sizing: border-box;
@@ -1066,7 +1070,7 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
 /* Universal Scrollable Body */
 .modal-body,
 .modal-scrollable-body {
-  padding: 1.5rem 1.75rem;
+  padding: 2rem;
   overflow-y: auto; /* This is the magic property that adds scrolling */
   flex-grow: 1; /* Takes up remaining space */
   box-sizing: border-box;
@@ -1120,13 +1124,17 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
 @media (max-width: 640px) {
   .modal-overlay,
   .modal-overlay-backdrop {
-    padding: 1rem 0.5rem;
+    padding-top: 85px;
+    padding-bottom: 25px;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    align-items: flex-start;
   }
   .modal-wrapper,
   .modal-contained-card,
   .modal-container {
-    max-height: calc(100vh - 2rem);
-    border-radius: 1.25rem;
+    max-height: calc(100vh - 110px);
+    border-radius: 14px;
   }
   .modal-header,
   .modal-sticky-header {
@@ -1134,7 +1142,7 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
   }
   .modal-body,
   .modal-scrollable-body {
-    padding: 1rem 1.25rem;
+    padding: 1.25rem;
   }
   .modal-footer,
   .modal-sticky-footer {
