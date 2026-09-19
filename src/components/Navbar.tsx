@@ -65,8 +65,8 @@ export const Navbar: React.FC = () => {
   return (
     <>
       <header className="navbar">
-        {/* Left: Logo wrapper (SMRITICARE (R)) */}
-        <div className="navbar-left shrink-0">
+        {/* Left Side: Logo + Navigation Links */}
+        <div className="nav-left navbar-left">
           <Link 
             to="/"
             className="flex items-center gap-2.5 group focus:outline-none shrink-0"
@@ -94,29 +94,27 @@ export const Navbar: React.FC = () => {
               </span>
             </div>
           </Link>
-        </div>
 
-        {/* Center: Navigation Links (Visible on screens > 1600px) */}
-        <div className="navbar-center">
-          <nav className="nav-links">
+          <ul className="nav-links">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path || 
                 (link.path !== '/' && location.pathname.startsWith(link.path));
               return (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`nav-link ${isActive ? 'active' : ''} ${link.isSecondary ? 'hidden 2xl:inline-flex' : 'inline-flex'}`}
-                >
-                  {link.label}
-                </Link>
+                <li key={link.path}>
+                  <Link
+                    to={link.path}
+                    className={`nav-link ${isActive ? 'active' : ''}`}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
               );
             })}
-          </nav>
+          </ul>
         </div>
 
-        {/* Right: Action Buttons (PATIENT, AI Demo, SIGN IN, English, Gear) & Hamburger */}
-        <div className="navbar-right action-buttons-wrapper">
+        {/* Right Side: Action Buttons (PATIENT, AI Demo, SIGN IN, English, Settings) & Hamburger */}
+        <div className="nav-right navbar-right action-buttons-wrapper">
           {/* Role Pill Switcher */}
           <button
             onClick={() => setIsRoleModalOpen(true)}
@@ -224,10 +222,10 @@ export const Navbar: React.FC = () => {
             <Settings className="w-4 h-4" />
           </Link>
 
-          {/* Hamburger button (Visible on screens <= 1600px) */}
+          {/* Hamburger button (Visible on screens <= 1440px) */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="navbar-hamburger-btn nav-btn w-[38px] h-[38px] rounded-full text-ner-black hover:bg-black/5 flex items-center justify-center shrink-0 border border-ner-border/80 bg-white"
+            className="hamburger-icon navbar-hamburger-btn nav-btn w-[38px] h-[38px] rounded-full text-ner-black hover:bg-black/5 flex items-center justify-center shrink-0 border border-ner-border/80 bg-white"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

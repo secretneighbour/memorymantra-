@@ -386,15 +386,17 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
 /* ========================================================================= */
 /* STEP 2: 3-SECTION FLOATING NAVBAR ARCHITECTURE                            */
 /* ========================================================================= */
+/* 2-CONTAINER FLOATING NAVBAR ARCHITECTURE (Logo+Links Left, Actions Right) */
+/* ========================================================================= */
 .navbar {
     position: fixed;
     top: 1rem;
     left: 50%;
     transform: translateX(-50%);
     width: 95%;
-    max-width: 1400px;
+    max-width: 1600px;
     height: 70px; /* Fixed height prevents vertical squishing */
-    padding: 0 1.5rem;
+    padding: 0.75rem 2rem;
     z-index: 9999;
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(12px);
@@ -404,64 +406,84 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
     border: 1px solid rgba(255, 255, 255, 0.65);
     box-sizing: border-box;
     
-    /* 3-Column Flex Layout */
+    /* 2-Section Flex Layout */
     display: flex;
-    justify-content: space-between; /* Pushes sections apart */
+    justify-content: space-between; /* Pushes .nav-left and .nav-right to opposite ends */
     align-items: center;
-    gap: 1rem; /* Adds breathing room between the three main sections */
+    gap: 1.5rem;
     flex-wrap: nowrap;
 }
 
-/* Prevent the logo and buttons from shrinking */
-.logo-wrapper, 
-.action-buttons-wrapper {
-    flex-shrink: 0; 
-    white-space: nowrap; /* Stops text from wrapping to a second line */
-}
-
-/* Prevent nav links from shrinking and overlapping */
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    white-space: nowrap; 
-    flex-shrink: 1; /* Allow it to shrink slightly before triggering the hamburger */
-}
-
-/* Three distinct section wrappers */
+/* Left Side: Logo + Navigation Links */
+.nav-left,
 .navbar-left {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 2.5rem; /* Space between the logo and the start of the links */
+    flex-shrink: 0;
+}
+
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
     flex-shrink: 0;
     white-space: nowrap;
 }
 
-.navbar-center {
+/* Navigation Links List */
+.nav-links {
     display: flex;
     align-items: center;
-    justify-content: center;
-    flex: 1 1 auto;
-    min-width: 0;
+    gap: 1.5rem; /* Space between each link */
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
 }
 
-.navbar-right {
+.nav-links a,
+.nav-link {
+    text-decoration: none;
+    white-space: nowrap; /* Prevents links from breaking into two lines */
+    color: #333;
+    font-weight: 500;
+    font-size: 0.85rem;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover,
+.nav-link:hover {
+    color: #e35034; /* Brand Orange */
+}
+
+.nav-links a.active,
+.nav-link.active {
+    color: #e35034;
+    font-weight: 600;
+}
+
+/* Right Side: Action Buttons */
+.nav-right,
+.navbar-right,
+.action-buttons-wrapper {
     display: flex;
     align-items: center;
     gap: 1rem;
+    white-space: nowrap;
     flex-shrink: 0;
     justify-content: flex-end;
-    white-space: nowrap;
 }
 
 /* Backward compatibility aliases */
-.navbar-col-left { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; white-space: nowrap; }
-.navbar-col-center { display: flex; align-items: center; justify-content: center; flex: 1 1 auto; min-width: 0; }
+.navbar-col-left { display: flex; align-items: center; gap: 2.5rem; flex-shrink: 0; white-space: nowrap; }
 .navbar-col-right { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; justify-content: flex-end; white-space: nowrap; }
+.navbar-center, .navbar-col-center { display: none; }
 
 /* Ensure NO position: absolute or negative margins on navbar items */
+.nav-left,
+.nav-right,
 .navbar-left,
-.navbar-center,
 .navbar-right,
 .logo-wrapper,
 .action-buttons-wrapper,
@@ -617,6 +639,7 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
   gap: 1.5rem;
 }
 
+.hamburger-icon,
 .navbar-hamburger-btn {
   display: none;
 }
@@ -685,15 +708,13 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
 /* MANDATORY RESOLUTION BREAKPOINT MEDIA QUERIES                            */
 /* ========================================================================= */
 
-/* Breakpoint 1: Laptops, OS-Scaled Displays & Tablets (<= 1600px) */
-/* Trigger hamburger menu early to prevent overcrowding on laptops and 125% Windows scaling */
-@media (max-width: 1600px) {
-  .navbar-center,
-  .navbar-col-center,
-  .navbar-desktop-menu,
+/* Breakpoint 1: Laptops, OS-Scaled Displays & Tablets (<= 1440px) */
+/* On screens <= 1440px: Hide .nav-links and show hamburger menu */
+@media (max-width: 1440px) {
   .nav-links {
     display: none !important;
   }
+  .hamburger-icon,
   .navbar-hamburger-btn {
     display: flex !important;
   }
@@ -702,14 +723,12 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
   }
 }
 
-/* Desktop Navigation Links Restoration (> 1600px) */
-@media (min-width: 1601px) {
-  .navbar-center,
-  .navbar-col-center,
-  .navbar-desktop-menu,
+/* Desktop Navigation Links Restoration (> 1440px) */
+@media (min-width: 1441px) {
   .nav-links {
     display: flex !important;
   }
+  .hamburger-icon,
   .navbar-hamburger-btn {
     display: none !important;
   }
