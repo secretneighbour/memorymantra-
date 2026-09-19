@@ -66,10 +66,10 @@ export const Navbar: React.FC = () => {
     <>
       <header className="navbar">
         {/* Left: Logo wrapper (SMRITICARE (R)) */}
-        <div className="navbar-left">
+        <div className="navbar-left shrink-0">
           <Link 
             to="/"
-            className="flex items-center gap-2.5 group focus:outline-none"
+            className="flex items-center gap-2.5 group focus:outline-none shrink-0"
           >
             <div className="w-8 h-8 rounded-full bg-ner-black text-white flex items-center justify-center p-1.5 shadow-xs group-hover:bg-ner-terracotta transition-colors shrink-0">
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -96,7 +96,7 @@ export const Navbar: React.FC = () => {
           </Link>
         </div>
 
-        {/* Center: Navigation Links (Visible on screens > 1440px) */}
+        {/* Center: Navigation Links (Visible on screens > 1600px) */}
         <div className="navbar-center">
           <nav className="nav-links">
             {navLinks.map((link) => {
@@ -116,7 +116,7 @@ export const Navbar: React.FC = () => {
         </div>
 
         {/* Right: Action Buttons (PATIENT, AI Demo, SIGN IN, English, Gear) & Hamburger */}
-        <div className="navbar-right">
+        <div className="navbar-right action-buttons-wrapper">
           {/* Role Pill Switcher */}
           <button
             onClick={() => setIsRoleModalOpen(true)}
@@ -224,7 +224,7 @@ export const Navbar: React.FC = () => {
             <Settings className="w-4 h-4" />
           </Link>
 
-          {/* Hamburger button (Visible on screens <= 1440px) */}
+          {/* Hamburger button (Visible on screens <= 1600px) */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="navbar-hamburger-btn nav-btn w-[38px] h-[38px] rounded-full text-ner-black hover:bg-black/5 flex items-center justify-center shrink-0 border border-ner-border/80 bg-white"

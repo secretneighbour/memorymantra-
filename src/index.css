@@ -378,6 +378,7 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
   max-width: 1600px;
   margin: 0 auto;
   padding: 0 2rem;
+  padding-top: 140px; /* Safe buffer zone below floating navbar */
   padding-bottom: 10rem; /* Crucial: 10rem empty space ensures floating button never covers text */
 }
 
@@ -407,6 +408,24 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
     display: flex;
     justify-content: space-between; /* Pushes sections apart */
     align-items: center;
+    gap: 1rem; /* Adds breathing room between the three main sections */
+    flex-wrap: nowrap;
+}
+
+/* Prevent the logo and buttons from shrinking */
+.logo-wrapper, 
+.action-buttons-wrapper {
+    flex-shrink: 0; 
+    white-space: nowrap; /* Stops text from wrapping to a second line */
+}
+
+/* Prevent nav links from shrinking and overlapping */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    white-space: nowrap; 
+    flex-shrink: 1; /* Allow it to shrink slightly before triggering the hamburger */
 }
 
 /* Three distinct section wrappers */
@@ -415,6 +434,7 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
     align-items: center;
     gap: 1rem;
     flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .navbar-center {
@@ -431,18 +451,20 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
     gap: 1rem;
     flex-shrink: 0;
     justify-content: flex-end;
+    white-space: nowrap;
 }
 
 /* Backward compatibility aliases */
-.navbar-col-left { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
+.navbar-col-left { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; white-space: nowrap; }
 .navbar-col-center { display: flex; align-items: center; justify-content: center; flex: 1 1 auto; min-width: 0; }
-.navbar-col-right { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; justify-content: flex-end; }
+.navbar-col-right { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; justify-content: flex-end; white-space: nowrap; }
 
 /* Ensure NO position: absolute or negative margins on navbar items */
 .navbar-left,
 .navbar-center,
 .navbar-right,
 .logo-wrapper,
+.action-buttons-wrapper,
 .nav-links,
 .nav-link,
 .nav-btn,
@@ -455,7 +477,7 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
 /* STEP 3: FIX THE CONTENT OVERLAP                                           */
 /* ========================================================================= */
 .main-content-wrapper {
-    padding-top: 120px; /* Pushes content below the floating navbar */
+    padding-top: 140px; /* Safe buffer zone below the floating navbar */
     padding-bottom: 150px; /* Prevents the floating 'Listen Aloud' button from covering text at the bottom */
     width: 100%;
     display: flex;
@@ -564,6 +586,12 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
     align-items: baseline;
     gap: 4px;
     flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.action-buttons-wrapper {
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .logo-r-symbol {
@@ -578,6 +606,8 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
     display: flex;
     align-items: center;
     gap: 1.5rem; /* Adds equal spacing between all links */
+    white-space: nowrap;
+    flex-shrink: 1;
     flex-wrap: nowrap;
 }
 
@@ -596,7 +626,8 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
 }
 
 /* 3. Hero + Chat/Status Cards Grid */
-.hero-top-grid {
+.hero-top-grid,
+.hero-section {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 2rem;
@@ -654,10 +685,9 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
 /* MANDATORY RESOLUTION BREAKPOINT MEDIA QUERIES                            */
 /* ========================================================================= */
 
-/* Breakpoint 1: Laptops & Tablets (<= 1440px) */
-/* You MUST hide the center links (.nav-links) using display: none; and replace */
-/* them with a single "Hamburger" icon (☰) next to the Right action buttons.    */
-@media (max-width: 1440px) {
+/* Breakpoint 1: Laptops, OS-Scaled Displays & Tablets (<= 1600px) */
+/* Trigger hamburger menu early to prevent overcrowding on laptops and 125% Windows scaling */
+@media (max-width: 1600px) {
   .navbar-center,
   .navbar-col-center,
   .navbar-desktop-menu,
@@ -669,6 +699,40 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
   }
   .navbar-mobile-drawer {
     display: block !important;
+  }
+}
+
+/* Desktop Navigation Links Restoration (> 1600px) */
+@media (min-width: 1601px) {
+  .navbar-center,
+  .navbar-col-center,
+  .navbar-desktop-menu,
+  .nav-links {
+    display: flex !important;
+  }
+  .navbar-hamburger-btn {
+    display: none !important;
+  }
+}
+
+/* Hero Section Grid Stacking (<= 1200px) */
+@media (max-width: 1200px) {
+  .hero-section {
+    grid-template-columns: 1fr !important; /* Stack vertically on smaller screens */
+    text-align: center;
+    gap: 2rem !important;
+  }
+  .hero-top-grid,
+  .hero-layout-grid {
+    grid-template-columns: 1fr !important;
+    text-align: center;
+    gap: 2rem !important;
+  }
+  .hero-section .space-y-4,
+  .hero-top-grid .space-y-4 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 }
 
@@ -697,7 +761,7 @@ html[data-simple-ui="true"] .dot-matrix-canvas {
 
   .main-content-flow-wrapper,
   .main-content-wrapper {
-    padding-top: 90px !important;
+    padding-top: 140px !important;
     padding-bottom: 8rem !important;
   }
 

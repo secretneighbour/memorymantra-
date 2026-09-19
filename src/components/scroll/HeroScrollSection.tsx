@@ -140,7 +140,7 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
               }
         }
       >
-        <div className="hero-top-grid">
+        <div className="hero-section hero-top-grid">
           
           {/* Left Column: Responsive clamp() Typography & Actions */}
           <div className="space-y-4 sm:space-y-6">
