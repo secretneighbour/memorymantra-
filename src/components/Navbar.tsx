@@ -65,8 +65,8 @@ export const Navbar: React.FC = () => {
   return (
     <>
       <header className="navbar">
-        {/* Left Side: Logo + Navigation Links */}
-        <div className="nav-left navbar-left">
+        {/* Left Side: Logo (Fixed & Pinned) */}
+        <div className="logo-wrapper">
           <Link 
             to="/"
             className="flex items-center gap-2.5 group focus:outline-none shrink-0"
@@ -85,7 +85,7 @@ export const Navbar: React.FC = () => {
               </svg>
             </div>
 
-            <div className="logo-wrapper">
+            <div className="flex items-center gap-1.5 shrink-0">
               <span className="font-mono text-xs sm:text-sm font-bold tracking-widest text-ner-black uppercase group-hover:text-ner-terracotta transition-colors">
                 {t.appName.toUpperCase()}
               </span>
@@ -94,26 +94,26 @@ export const Navbar: React.FC = () => {
               </span>
             </div>
           </Link>
-
-          <ul className="nav-links">
-            {navLinks.map((link) => {
-              const isActive = location.pathname === link.path || 
-                (link.path !== '/' && location.pathname.startsWith(link.path));
-              return (
-                <li key={link.path}>
-                  <Link
-                    to={link.path}
-                    className={`nav-link ${isActive ? 'active' : ''}`}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
         </div>
 
-        {/* Right Side: Action Buttons (PATIENT, AI Demo, SIGN IN, English, Settings) & Hamburger */}
+        {/* Center-Left: Navigation Links (Scrollable if screen is narrow, Logo remains fixed) */}
+        <div className="nav-links-container">
+          {navLinks.map((link) => {
+            const isActive = location.pathname === link.path || 
+              (link.path !== '/' && location.pathname.startsWith(link.path));
+            return (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`nav-link ${isActive ? 'active' : ''}`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Right Side: Action Buttons (Fixed) & Hamburger */}
         <div className="nav-right navbar-right action-buttons-wrapper">
           {/* Role Pill Switcher */}
           <button
