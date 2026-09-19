@@ -4,22 +4,92 @@ import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 
-// Lazy Gemini client helper
-let aiClient: GoogleGenAI | null = null;
-function getGeminiClient(): GoogleGenAI | null {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return null;
-  if (!aiClient) {
-    aiClient = new GoogleGenAI({
-      apiKey,
-      httpOptions: {
-        headers: {
-          "User-Agent": "aistudio-build",
+// Multi-Key Rotation Manager for Gemini & Cloud Services
+const geminiKeys: string[] = [
+  process.env.GEMINI_API_KEY,
+  process.env.GEMINI_API_KEY_FALLBACK,
+].filter((k): k is string => Boolean(k && k.trim().length > 0));
+
+let activeKeyIndex = 0;
+const clientCache = new Map<string, GoogleGenAI>();
+
+function getGeminiClient(): { client: GoogleGenAI; keyIndex: number } | null {
+  if (geminiKeys.length === 0) return null;
+  const currentKey = geminiKeys[activeKeyIndex % geminiKeys.length];
+  if (!clientCache.has(currentKey)) {
+    clientCache.set(
+      currentKey,
+      new GoogleGenAI({
+        apiKey: currentKey,
+        httpOptions: {
+          headers: {
+            "User-Agent": "smriticare-backend-secure",
+          },
         },
-      },
+      })
+    );
+  }
+  return {
+    client: clientCache.get(currentKey)!,
+    keyIndex: activeKeyIndex % geminiKeys.length,
+  };
+}
+
+function rotateGeminiKey(): boolean {
+  if (geminiKeys.length <= 1) return false;
+  activeKeyIndex = (activeKeyIndex + 1) % geminiKeys.length;
+  console.warn(`[Security & Billing] Failover: Rotated to Gemini API key index ${activeKeyIndex}`);
+  return true;
+}
+
+// In-Memory Response Cache for AI Companion (15-minute TTL to reduce redundant billing)
+interface CacheEntry {
+  data: any;
+  expiresAt: number;
+}
+const aiResponseCache = new Map<string, CacheEntry>();
+const CACHE_TTL_MS = 15 * 60 * 1000;
+
+// Periodic cleanup of stale cache entries
+setInterval(() => {
+  const now = Date.now();
+  for (const [k, v] of aiResponseCache.entries()) {
+    if (v.expiresAt < now) {
+      aiResponseCache.delete(k);
+    }
+  }
+}, 10 * 60 * 1000);
+
+// Sliding-Window Rate Limiter for /api/ai endpoints (30 requests/min per IP)
+interface RateRecord {
+  count: number;
+  resetTime: number;
+}
+const rateLimitMap = new Map<string, RateRecord>();
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const MAX_REQUESTS_PER_WINDOW = 30;
+
+function aiRateLimiter(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const ip = req.ip || req.socket.remoteAddress || "unknown";
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+
+  if (!record || now > record.resetTime) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+    return next();
+  }
+
+  if (record.count >= MAX_REQUESTS_PER_WINDOW) {
+    const retryAfter = Math.ceil((record.resetTime - now) / 1000);
+    res.setHeader("Retry-After", retryAfter.toString());
+    return res.status(429).json({
+      error: "Too many AI requests. Please slow down to prevent quota abuse.",
+      retryAfterSeconds: retryAfter,
     });
   }
-  return aiClient;
+
+  record.count += 1;
+  next();
 }
 
 async function startServer() {
@@ -48,15 +118,82 @@ async function startServer() {
 
   app.use(express.json({ limit: "10mb" }));
 
+  // Apply AI rate limiter to all /api/ai endpoints
+  app.use("/api/ai", aiRateLimiter);
+
   // 1. Health check
   app.get("/api/health", (_req, res) => {
-    const hasKey = Boolean(process.env.GEMINI_API_KEY);
     res.json({
       status: "ok",
-      hasApiKey: hasKey,
+      hasPrimaryKey: Boolean(process.env.GEMINI_API_KEY),
+      hasFallbackKey: Boolean(process.env.GEMINI_API_KEY_FALLBACK),
+      keyRotationPoolSize: geminiKeys.length,
+      activeKeyIndex,
       model: "gemini-3.8-flash",
       time: new Date().toISOString(),
     });
+  });
+
+  // Google Maps Proxy (Geocoding - Keeps Google Maps server keys hidden from browser)
+  app.get("/api/maps/geocode", async (req, res) => {
+    try {
+      const address = req.query.address as string;
+      if (!address) {
+        return res.status(400).json({ error: "Address parameter required." });
+      }
+
+      const serverKey = process.env.GOOGLE_MAPS_SERVER_KEY || process.env.VITE_GOOGLE_MAPS_API_KEY;
+      if (!serverKey) {
+        return res.status(503).json({ error: "Google Maps Server Key not configured." });
+      }
+
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+        address
+      )}&key=${encodeURIComponent(serverKey)}`;
+      
+      const response = await fetch(url);
+      const data = await response.json();
+      return res.json(data);
+    } catch (err: any) {
+      return res.status(500).json({ error: err?.message || "Geocoding proxy failed" });
+    }
+  });
+
+  // Google Maps Proxy (Places Text Search with in-memory caching to save billing)
+  const placesCache = new Map<string, { data: any; expiresAt: number }>();
+  app.get("/api/maps/places", async (req, res) => {
+    try {
+      const query = ((req.query.query as string) || "").trim();
+      if (!query) {
+        return res.status(400).json({ error: "Query parameter required." });
+      }
+
+      const cached = placesCache.get(query.toLowerCase());
+      if (cached && cached.expiresAt > Date.now()) {
+        return res.json({ ...cached.data, cached: true });
+      }
+
+      const serverKey = process.env.GOOGLE_MAPS_SERVER_KEY || process.env.VITE_GOOGLE_MAPS_API_KEY;
+      if (!serverKey) {
+        return res.status(503).json({ error: "Google Maps Server Key not configured." });
+      }
+
+      const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(
+        query
+      )}&key=${encodeURIComponent(serverKey)}`;
+      
+      const response = await fetch(url);
+      const data = await response.json();
+
+      placesCache.set(query.toLowerCase(), {
+        data,
+        expiresAt: Date.now() + 60 * 60 * 1000, // 1 hour cache
+      });
+
+      return res.json(data);
+    } catch (err: any) {
+      return res.status(500).json({ error: err?.message || "Places proxy failed" });
+    }
   });
 
   // 2. AI Companion Endpoint
@@ -74,7 +211,20 @@ async function startServer() {
         return res.status(400).json({ error: "Message is required." });
       }
 
-      const client = getGeminiClient();
+      // Check in-memory server cache to eliminate redundant billing on identical queries
+      const normalizedQuery = message.trim().toLowerCase();
+      const cacheKey = `${language}:${mode}:${normalizedQuery}`;
+      const cached = aiResponseCache.get(cacheKey);
+      if (cached && cached.expiresAt > Date.now()) {
+        return res.json({
+          ...cached.data,
+          cached: true,
+          provider: `${cached.data.provider} (cached)`,
+        });
+      }
+
+      const clientObj = getGeminiClient();
+      const client = clientObj?.client;
 
       // Language naming guide
       const langNames: Record<string, string> = {
@@ -195,7 +345,10 @@ JSON Output Schema:
 
         for (const modelName of candidateModels) {
           try {
-            const response = await client.models.generateContent({
+            const activeClient = getGeminiClient()?.client;
+            if (!activeClient) break;
+
+            const response = await activeClient.models.generateContent({
               model: modelName,
               contents,
               config: {
@@ -222,6 +375,16 @@ JSON Output Schema:
               break;
             }
           } catch (modelErr: any) {
+            console.warn(`[AI Engine] Model ${modelName} warning:`, modelErr?.message || modelErr);
+            const isRateLimit =
+              modelErr?.status === 429 ||
+              String(modelErr?.message || "").includes("429") ||
+              String(modelErr?.message || "").includes("RESOURCE_EXHAUSTED") ||
+              String(modelErr?.message || "").includes("quota");
+
+            if (isRateLimit && rotateGeminiKey()) {
+              console.log("[AI Engine] Rotated to secondary Gemini key after 429 quota alert.");
+            }
             // Brief pause before trying fallback model
             await new Promise((r) => setTimeout(r, 150));
           }
@@ -260,14 +423,22 @@ JSON Output Schema:
             }
           }
 
-          return res.json({
+          const responsePayload = {
             reply: generatedReply,
             provider: successfulModel,
             language: langLabel,
             actionRoute,
             actionLabel,
             suggestedReplies,
+          };
+
+          // Cache response in memory to avoid duplicate billing on repeated prompts
+          aiResponseCache.set(cacheKey, {
+            data: responsePayload,
+            expiresAt: Date.now() + CACHE_TTL_MS,
           });
+
+          return res.json(responsePayload);
         }
       }
 
@@ -368,11 +539,22 @@ JSON Output Schema:
     }
   });
 
+  // In-memory cache for care insights (30-minute TTL)
+  const careInsightsCache = new Map<string, CacheEntry>();
+
   // 3. AI Caregiver & Clinical Insights Synthesizer Endpoint
   app.post("/api/ai/care-insights", async (req, res) => {
     try {
       const { patient, reminders = [], checkIns = [] } = req.body;
-      const client = getGeminiClient();
+      const patientId = patient?.id || patient?.name || "default";
+      const insightsKey = `${patientId}:${reminders.filter((r: any) => r.completed).length}:${checkIns.length}`;
+      
+      const cached = careInsightsCache.get(insightsKey);
+      if (cached && cached.expiresAt > Date.now()) {
+        return res.json({ ...cached.data, cached: true });
+      }
+
+      const client = getGeminiClient()?.client;
 
       if (!client) {
         return res.json({
@@ -409,11 +591,16 @@ Provide a concise 2-sentence clinical assessment of cognitive stability and 2 ac
 
       if (response.text) {
         const parsed = JSON.parse(response.text);
-        return res.json({
+        const result = {
           status: "success",
           provider: "gemini-3.8-flash",
           ...parsed,
+        };
+        careInsightsCache.set(insightsKey, {
+          data: result,
+          expiresAt: Date.now() + 30 * 60 * 1000,
         });
+        return res.json(result);
       }
     } catch (err: any) {
       console.warn("AI Care insights endpoint fallback:", err?.message || err);

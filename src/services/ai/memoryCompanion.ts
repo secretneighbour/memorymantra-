@@ -29,6 +29,58 @@ export interface CompanionResponse {
 }
 
 const STORAGE_KEY = 'smriti_companion_chat_history_v2';
+const CLIENT_CACHE_KEY_PREFIX = 'smriti_ai_cache_';
+const CLIENT_CACHE_MAX_AGE_MS = 10 * 60 * 1000; // 10 minutes cache to avoid redundant API billing
+
+interface ClientCacheEntry {
+  response: CompanionResponse;
+  timestamp: number;
+}
+const inMemoryQueryCache = new Map<string, ClientCacheEntry>();
+
+function getClientCachedResponse(key: string): CompanionResponse | null {
+  const now = Date.now();
+  // 1. Check in-memory Map
+  const mem = inMemoryQueryCache.get(key);
+  if (mem && now - mem.timestamp < CLIENT_CACHE_MAX_AGE_MS) {
+    return mem.response;
+  }
+
+  // 2. Check browser sessionStorage
+  if (typeof window !== 'undefined' && window.sessionStorage) {
+    try {
+      const raw = window.sessionStorage.getItem(CLIENT_CACHE_KEY_PREFIX + key);
+      if (raw) {
+        const parsed: ClientCacheEntry = JSON.parse(raw);
+        if (now - parsed.timestamp < CLIENT_CACHE_MAX_AGE_MS) {
+          inMemoryQueryCache.set(key, parsed);
+          return parsed.response;
+        } else {
+          window.sessionStorage.removeItem(CLIENT_CACHE_KEY_PREFIX + key);
+        }
+      }
+    } catch {
+      // Storage unavailable or quota exceeded
+    }
+  }
+  return null;
+}
+
+function setClientCachedResponse(key: string, response: CompanionResponse): void {
+  const entry: ClientCacheEntry = {
+    response,
+    timestamp: Date.now(),
+  };
+  inMemoryQueryCache.set(key, entry);
+
+  if (typeof window !== 'undefined' && window.sessionStorage) {
+    try {
+      window.sessionStorage.setItem(CLIENT_CACHE_KEY_PREFIX + key, JSON.stringify(entry));
+    } catch {
+      // Ignore sessionStorage errors
+    }
+  }
+}
 
 export class MemoryCompanionService {
   /**
@@ -86,6 +138,15 @@ export class MemoryCompanionService {
     history?: { role: 'user' | 'assistant'; text: string }[];
     mode?: 'companion' | 'memory_recall' | 'calm' | 'routine';
   }): Promise<CompanionResponse> {
+    const normalizedKey = `${params.language || 'en'}_${params.mode || 'companion'}_${params.message.trim().toLowerCase()}`;
+    const cached = getClientCachedResponse(normalizedKey);
+    if (cached) {
+      return {
+        ...cached,
+        provider: `${cached.provider || 'gemini-3.8-flash'} (cached)`,
+      };
+    }
+
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 9000);
@@ -122,13 +183,15 @@ export class MemoryCompanionService {
 
       const data = await response.json();
       if (data.reply) {
-        return {
+        const result: CompanionResponse = {
           text: data.reply,
           provider: data.provider || 'gemini-3.8-flash',
           actionRoute: data.actionRoute,
           actionLabel: data.actionLabel,
           suggestedReplies: Array.isArray(data.suggestedReplies) ? data.suggestedReplies : undefined,
         };
+        setClientCachedResponse(normalizedKey, result);
+        return result;
       }
     } catch (err) {
       console.warn('Direct AI companion API fallback engaged:', err);

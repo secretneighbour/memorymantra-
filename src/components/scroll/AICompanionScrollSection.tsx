@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { NERLanguage } from '../../types';
 import { TTSButton } from '../TTSButton';
+import { MemoryCompanionService } from '../../services/ai/memoryCompanion';
 
 interface DemoMessage {
   id: string;
@@ -116,6 +117,7 @@ export const AICompanionScrollSection: React.FC = () => {
   const [isPlayingFullDialogue, setIsPlayingFullDialogue] = useState(false);
 
   const fullDialogueTimerRef = useRef<any>(null);
+  const lastSendTimeRef = useRef<number>(0);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -129,6 +131,7 @@ export const AICompanionScrollSection: React.FC = () => {
     startListening,
     stopListening,
     resetTranscript,
+    isSupported: isSpeechSupported,
   } = useSpeechRecognition({
     language: selectedLang,
     onResult: (text, isFinal) => {
@@ -159,14 +162,13 @@ export const AICompanionScrollSection: React.FC = () => {
     }
   }, [scrollYProgress, activeTab]);
 
-  const handleAuditionVoice = () => {
+  const handleAuditionGreeting = () => {
     primeSpeechEngine();
-    playCalmingChime();
     const greetings: Record<string, string> = {
-      en: `Hello! I am Smriti, your personal cognitive companion. I am here with you to celebrate cherished memories, guide peaceful routines, and keep your mind active.`,
-      as: `নমস্কাৰ! মই স্মৃতি, আপোনাৰ মৰমৰ স্মৃতি সংগী। আপোনাৰ লগত সুখৰ সময় অতিবাহিত কৰিবলৈ মই সদায় সাজু আছোঁ।`,
-      bn: `নমস্কার! আমি স্মৃতি, আপনার যত্নশীল স্মৃতি সঙ্গী। আপনার সুন্দর স্মৃতি ও প্রতিদিনের কাজে আমি সর্বদা আপনার সাথে আছি।`,
-      hi: `नमस्ते! मैं स्मृति हूँ, आपकी अपनी देखभाल संगिनी। आपके साथ सुखद यादें साझा करने और दिनचर्या में सहायता के लिए मैं उपस्थित हूँ।`,
+      en: `Hello ${activePatient.name}. I am Smriti, your caring memory companion.`,
+      as: `নমস্কাৰ ${activePatient.name}। মই স্মৃতি, আপোনাৰ মৰমৰ সংগী।`,
+      bn: `নমস্কার ${activePatient.name}। আমি স্মৃতি, আপনার স্মৃতি সঙ্গী।`,
+      hi: `नमस्ते ${activePatient.name} जी। मैं स्मृति हूँ, आपकी अपनी देखभाल साथी।`,
       mni: `খুরুমজরি! ঐহাক স্মৃতিনি, নহাক্কী নুংশিরবা মেমোরী কম্প্যানিয়ননি।`,
       kha: `Khublei! Nga dei ka Smriti, ka paralok ban kynmaw ia ki jingkynmaw ba thiang jong phi.`,
       bodo: `खुलुमबाय! आं स्मृती, नोंथांनि मोजां मोन्नाय गोसोखांथि लोगो।`,
@@ -182,6 +184,11 @@ export const AICompanionScrollSection: React.FC = () => {
   const handleSendMessage = async (textToSend?: string) => {
     const query = (textToSend || inputQuery).trim();
     if (!query || isLoading) return;
+
+    // 500ms debounce guard to prevent duplicate calls and rapid clicks
+    const now = Date.now();
+    if (now - lastSendTimeRef.current < 500) return;
+    lastSendTimeRef.current = now;
 
     primeSpeechEngine();
 
@@ -208,31 +215,21 @@ export const AICompanionScrollSection: React.FC = () => {
     try {
       // Build conversation history from current messages
       const historyPayload = messages.slice(-4).map((m) => ({
-        role: m.sender === 'user' ? 'user' : 'assistant',
+        role: (m.sender === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
         text: m.text,
       }));
 
-      const res = await fetch('/api/ai/companion', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: query,
-          history: historyPayload,
-          language: selectedLang,
-          patientContext: {
-            name: activePatient.name,
-            location: activePatient.location || 'Guwahati, Assam',
-            reminders: reminders,
-          },
-        }),
+      // Unified call to MemoryCompanionService (uses sessionStorage cache + server proxy)
+      const companionResult = await MemoryCompanionService.queryAICompanion({
+        message: query,
+        patient: activePatient,
+        reminders: reminders,
+        language: selectedLang,
+        history: historyPayload,
+        mode: 'companion',
       });
 
-      if (!res.ok) {
-        throw new Error(`Server returned ${res.status}`);
-      }
-
-      const data = await res.json();
-      const aiReply = data.reply || `I am right here with you, ${activePatient.name}. Everything is safe and serene.`;
+      const aiReply = companionResult.text || `I am right here with you, ${activePatient.name}. Everything is safe and serene.`;
 
       const aiMsgId = `ai-${Date.now()}`;
       const aiMsg: DemoMessage = {
@@ -241,7 +238,7 @@ export const AICompanionScrollSection: React.FC = () => {
         role: 'SMRITI COMPANION',
         text: aiReply,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        provider: data.provider || 'gemini-3.8-flash',
+        provider: companionResult.provider || 'gemini-3.8-flash',
       };
 
       setMessages((prev) => [...prev, aiMsg]);
