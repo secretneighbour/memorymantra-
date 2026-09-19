@@ -817,6 +817,149 @@ export interface TranslationDictionary {
   memoriesPersonPlacePlaceholder: string;
   memoriesStoryLabelText: string;
   memoriesStoryPlaceholder: string;
+
+  // Simple UI Mode
+  simpleUIMode: string;
+  simpleUIDesc: string;
+  simpleUIOn: string;
+  simpleUIOff: string;
+  simpleUITag: string;
+  simpleUIPriorityTitle: string;
+  simpleUIMyDay: string;
+  simpleUIPlayGame: string;
+  simpleUIChatSmriti: string;
+  simpleUIReminders: string;
+  simpleUIFamilyHelp: string;
+
+  // Text Size
+  textSizeSmall: string;
+  textSizeNormal: string;
+  textSizeLarge: string;
+  textSizeExtraLarge: string;
+  textSizeRecommendation: string;
+
+  // Walkthrough / Onboarding
+  walkthroughTitle: string;
+  walkthroughSubtitle: string;
+  walkthroughStep1Title: string;
+  walkthroughStep1Desc: string;
+  walkthroughStep2Title: string;
+  walkthroughStep2Desc: string;
+  walkthroughStep3Title: string;
+  walkthroughStep3Desc: string;
+  walkthroughStep4Title: string;
+  walkthroughStep4Desc: string;
+  walkthroughStep5Title: string;
+  walkthroughStep5Desc: string;
+  walkthroughStep6Title: string;
+  walkthroughStep6Desc: string;
+  walkthroughStep7Title: string;
+  walkthroughStep7Desc: string;
+  walkthroughSkip: string;
+  walkthroughGetStarted: string;
+  walkthroughReplayBtn: string;
+
+  // Emergency SMS & Contacts
+  emergencySMS: string;
+  emergencySMSDesc: string;
+  emergencyChooseOption: string;
+  emergencyNeedHelp: string;
+  emergencyCritical: string;
+  emergencyTrustedContacts: string;
+  sendEmergencySMS: string;
+  confirmEmergencySMSTitle: string;
+  confirmEmergencySMSDesc: string;
+  confirmSendBtn: string;
+  cancelSendBtn: string;
+  smsStatusSending: string;
+  smsStatusSent: string;
+  smsStatusSimulated: string;
+  smsNativeTrigger: string;
+  addEmergencyContactBtn: string;
+
+  // Important Places & Map
+  placesTitle: string;
+  placesSubtitle: string;
+  placesPrivacyNotice: string;
+  placeCategoryHome: string;
+  placeCategoryDoctor: string;
+  placeCategoryHospital: string;
+  placeCategoryFamily: string;
+  placeCategoryCaregiver: string;
+  placeCategoryPharmacy: string;
+  placeCategoryPark: string;
+  placeCategoryOther: string;
+  placeDirectionsBtn: string;
+  placeCallBtn: string;
+  addPlaceBtn: string;
+  editPlaceBtn: string;
+  deletePlaceBtn: string;
+  saveBtn: string;
+  cancelBtn: string;
+
+  // Online & Offline Map Platform
+  map: string;
+  offlineMap: string;
+  onlineMap: string;
+  mapModeAuto: string;
+  mapModeOnline: string;
+  mapModeOffline: string;
+  currentLocation: string;
+  locationPermission: string;
+  locationPermissionAllow: string;
+  locationPermissionDenied: string;
+  locationPermissionPrompt: string;
+  locationUnavailable: string;
+  statusOnline: string;
+  statusOffline: string;
+  searchPlacesPlaceholder: string;
+  searchBtn: string;
+  connectionUnavailable: string;
+  offlineSearchUnavailable: string;
+  usingSavedOfflineMapData: string;
+  connectionUnavailableShowingOffline: string;
+  mapLoading: string;
+  mapError: string;
+  googleMapsLoading: string;
+  googleMapsUnavailable: string;
+  offlineMapLoading: string;
+  offlineMapUnavailable: string;
+  locationPermissionDeniedDesc: string;
+  noSavedPlaces: string;
+  noOfflineMapData: string;
+  mapApiConfigMissing: string;
+  offlineDataRegion: string;
+  offlineDataStatus: string;
+  offlineDataCoverage: string;
+  offlineDataSize: string;
+  mapSettingsTitle: string;
+  privacyLocationNotice: string;
+  helpAndCareLocations: string;
+  saveToImportantPlaces: string;
+
+  // Sign-In & Roles
+  loginRolePatient: string;
+  loginRoleCaregiver: string;
+  loginRoleDoctor: string;
+  loginRoleDescPatient: string;
+  loginRoleDescCaregiver: string;
+  loginRoleDescDoctor: string;
+  loginEmailRequired: string;
+  loginPasswordRequired: string;
+  loginPasswordMinLength: string;
+
+  // USP & Presentation
+  uspBadge: string;
+  uspHeading: string;
+  uspSubheading: string;
+  uspStatement: string;
+  uspDisclaimer: string;
+  presentationNav: string;
+  presentationTitle: string;
+  presentationSubtitle: string;
+  slidePrev: string;
+  slideNext: string;
+  slideOf: string;
 }
 
 export type LanguageCode = NERLanguage;

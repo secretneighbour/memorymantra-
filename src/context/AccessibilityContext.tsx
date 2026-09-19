@@ -8,6 +8,8 @@ export type TranslationFunction = ((key: TranslationKey, params?: Record<string,
 interface AccessibilityContextType {
   textSize: TextSize;
   setTextSize: (size: TextSize) => void;
+  simpleUIMode: boolean;
+  setSimpleUIMode: (enabled: boolean) => void;
   motion: MotionPreference;
   setMotion: (pref: MotionPreference) => void;
   contrast: ContrastMode;
@@ -36,6 +38,9 @@ const AccessibilityContext = createContext<AccessibilityContextType | undefined>
 export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [textSize, setTextSizeState] = useState<TextSize>(() => {
     return (localStorage.getItem('neuro_textSize') as TextSize) || 'normal';
+  });
+  const [simpleUIMode, setSimpleUIModeState] = useState<boolean>(() => {
+    return localStorage.getItem('neuro_simpleUIMode') === 'true';
   });
   const [motion, setMotionState] = useState<MotionPreference>(() => {
     return (localStorage.getItem('neuro_motion') as MotionPreference) || 'full';
@@ -69,6 +74,11 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   const setTextSize = (size: TextSize) => {
     setTextSizeState(size);
     localStorage.setItem('neuro_textSize', size);
+  };
+
+  const setSimpleUIMode = (enabled: boolean) => {
+    setSimpleUIModeState(enabled);
+    localStorage.setItem('neuro_simpleUIMode', String(enabled));
   };
 
   const setMotion = (pref: MotionPreference) => {
@@ -108,7 +118,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, [speechRate]);
 
-  // Sync DOM classes for font scaling and high contrast
+  // Sync DOM classes for font scaling, high contrast, and simple UI mode
   useEffect(() => {
     const root = document.documentElement;
 
@@ -128,7 +138,16 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Font size root attribute
     root.setAttribute('data-text-size', textSize);
-  }, [contrast, motion, textSize]);
+
+    // Simple UI Mode
+    if (simpleUIMode) {
+      root.classList.add('simple-ui-active');
+      root.setAttribute('data-simple-ui', 'true');
+    } else {
+      root.classList.remove('simple-ui-active');
+      root.removeAttribute('data-simple-ui');
+    }
+  }, [contrast, motion, textSize, simpleUIMode]);
 
   // Unified Multi-Language Speech Synthesis Helper
   const speakText = (
@@ -206,6 +225,8 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
       value={{
         textSize,
         setTextSize,
+        simpleUIMode,
+        setSimpleUIMode,
         motion,
         setMotion,
         contrast,

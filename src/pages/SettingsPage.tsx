@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAccessibility } from '../context/AccessibilityContext';
+import { useRole } from '../context/RoleContext';
 import { TextSize, NERLanguage } from '../types';
 import { 
   Type, 
@@ -14,12 +15,19 @@ import {
   RotateCcw,
   Disc,
   Music,
-  Radio
+  Radio,
+  Sliders,
+  HeartHandshake,
+  Phone,
+  Send,
+  Compass
 } from 'lucide-react';
 import { nerLanguages, translations } from '../data/translations';
 
 export const SettingsPage: React.FC = () => {
   const {
+    simpleUIMode,
+    setSimpleUIMode,
     textSize,
     setTextSize,
     motion,
@@ -41,6 +49,12 @@ export const SettingsPage: React.FC = () => {
     playAudioAsset
   } = useAccessibility();
 
+  const {
+    setIsWalkthroughOpen,
+    emergencyContacts,
+    setIsHelpModalOpen
+  } = useRole();
+
   const [testLang, setTestLang] = useState<NERLanguage>(language);
   const [activeAssetKey, setActiveAssetKey] = useState<string | null>(null);
 
@@ -59,6 +73,7 @@ export const SettingsPage: React.FC = () => {
   };
 
   const handleResetDefaults = () => {
+    setSimpleUIMode(false);
     setTextSize('normal');
     setMotion('full');
     setContrast('standard');
@@ -96,7 +111,34 @@ export const SettingsPage: React.FC = () => {
 
       <div className="space-y-6">
         {/* ========================================================================= */}
-        {/* TEXT SIZE                                                                 */}
+        {/* SIMPLE UI MODE (Elderly Minimalist High-Focus Mode)                       */}
+        {/* ========================================================================= */}
+        <div className="frost-card rounded-3xl p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-3 mb-1.5">
+                <Sliders className="w-5 h-5 text-ner-sage" />
+                <h2 className="text-xl font-bold text-ner-black">{t.simpleUIMode}</h2>
+              </div>
+              <p className="text-xs sm:text-sm text-ner-black/70 max-w-xl leading-relaxed">
+                {t.simpleUIDesc}
+              </p>
+            </div>
+            <button
+              onClick={() => setSimpleUIMode(!simpleUIMode)}
+              className={`px-5 py-3 rounded-2xl font-mono text-xs font-bold uppercase tracking-wider transition-all shrink-0 active:scale-95 shadow-sm min-h-[48px] ${
+                simpleUIMode
+                  ? 'bg-ner-sage text-white'
+                  : 'bg-ner-black text-white hover:bg-ner-black/80'
+              }`}
+            >
+              <span>{simpleUIMode ? `✓ ${t.simpleUIOn}` : t.simpleUIOff}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* TEXT SIZE (4 Steps: Small, Normal, Large, Extra-Large)                    */}
         {/* ========================================================================= */}
         <div className="frost-card rounded-3xl p-6 sm:p-8">
           <div className="flex items-center gap-3 mb-2">
@@ -107,8 +149,9 @@ export const SettingsPage: React.FC = () => {
             {t.fontSizeDesc}
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
+              { id: 'small', label: t.textSizeSmall, note: 'Compact layout' },
               { id: 'normal', label: t.fontSizeNormal, note: t.fontSizeNormalNote },
               { id: 'large', label: t.fontSizeLarge, note: t.fontSizeLargeNote },
               { id: 'extra-large', label: t.fontSizeExtraLarge, note: t.fontSizeExtraLargeNote },
@@ -116,19 +159,29 @@ export const SettingsPage: React.FC = () => {
               <button
                 key={opt.id}
                 onClick={() => setTextSize(opt.id as TextSize)}
-                className={`p-5 rounded-2xl border-2 text-left transition-all ${
+                className={`p-4 sm:p-5 rounded-2xl border-2 text-left transition-all ${
                   textSize === opt.id
                     ? 'border-ner-black bg-white shadow-md ring-2 ring-ner-black/10'
                     : 'border-ner-border bg-white/60 hover:border-ner-black/40'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-base text-ner-black">{opt.label}</span>
+                  <span className="font-bold text-sm sm:text-base text-ner-black">{opt.label}</span>
                   {textSize === opt.id && <Check className="w-4 h-4 text-ner-terracotta" />}
                 </div>
-                <p className="text-xs text-ner-black/60 mt-1">{opt.note}</p>
+                <p className="text-[11px] text-ner-black/60 mt-1">{opt.note}</p>
               </button>
             ))}
+          </div>
+
+          {/* Live Text Size Preview Card */}
+          <div className="mt-5 p-4 rounded-2xl bg-white border border-ner-border">
+            <span className="text-[10px] font-mono uppercase text-ner-black/50 font-bold block mb-1">
+              Live Scalable Typography Preview • [{textSize.toUpperCase()}]
+            </span>
+            <p className="text-sm sm:text-base font-medium text-ner-black">
+              "Smriti Care: Keeping memories alive with calm, accessible typography."
+            </p>
           </div>
         </div>
 
@@ -462,6 +515,66 @@ export const SettingsPage: React.FC = () => {
                 528Hz Harmonic Chime
               </button>
             </div>
+          </div>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* WALKTHROUGH ONBOARDING REPLAY                                             */}
+        {/* ========================================================================= */}
+        <div className="frost-card rounded-3xl p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-3 mb-1.5">
+                <Compass className="w-5 h-5 text-ner-terracotta" />
+                <h2 className="text-xl font-bold text-ner-black">{t.walkthroughTitle}</h2>
+              </div>
+              <p className="text-xs sm:text-sm text-ner-black/70 max-w-xl leading-relaxed">
+                {t.walkthroughSubtitle}
+              </p>
+            </div>
+            <button
+              onClick={() => setIsWalkthroughOpen(true)}
+              className="px-5 py-3 rounded-2xl bg-white border-2 border-ner-border hover:border-ner-black text-ner-black font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 active:scale-95 shrink-0 shadow-xs min-h-[48px]"
+            >
+              <Sparkles className="w-4 h-4 text-ner-terracotta" />
+              <span>{t.walkthroughReplayBtn}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* EMERGENCY CONTACTS & SMS TEST                                             */}
+        {/* ========================================================================= */}
+        <div className="frost-card rounded-3xl p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+            <div>
+              <div className="flex items-center gap-3 mb-1.5">
+                <HeartHandshake className="w-5 h-5 text-red-600" />
+                <h2 className="text-xl font-bold text-ner-black">{t.emergencySMS}</h2>
+              </div>
+              <p className="text-xs sm:text-sm text-ner-black/70 max-w-xl leading-relaxed">
+                {t.emergencySMSDesc}
+              </p>
+            </div>
+            <button
+              onClick={() => setIsHelpModalOpen(true)}
+              className="px-4 py-2.5 rounded-xl bg-red-600 text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-sm hover:bg-red-700 active:scale-95 shrink-0 min-h-[44px]"
+            >
+              <Phone className="w-3.5 h-3.5" />
+              <span>Test Emergency Flow</span>
+            </button>
+          </div>
+
+          <div className="space-y-2 pt-2">
+            {emergencyContacts.map(c => (
+              <div key={c.id} className="p-3.5 rounded-2xl bg-white border border-ner-border flex items-center justify-between text-xs">
+                <div>
+                  <span className="font-bold text-ner-black">{c.name}</span>
+                  <span className="text-ner-black/60 ml-2">({c.relation})</span>
+                </div>
+                <span className="font-mono text-ner-black/70">{c.phone}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

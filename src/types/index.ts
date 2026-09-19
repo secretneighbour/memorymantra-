@@ -1,6 +1,6 @@
 export type UserRole = 'patient' | 'caregiver' | 'doctor';
 
-export type TextSize = 'normal' | 'large' | 'extra-large';
+export type TextSize = 'small' | 'normal' | 'large' | 'extra-large';
 export type MotionPreference = 'full' | 'reduced';
 export type ContrastMode = 'standard' | 'high';
 
@@ -166,5 +166,54 @@ export interface WellbeingCheckIn {
   mood: WellbeingMood;
   note?: string;
   timestamp: string;
+}
+
+export type ImportantPlaceCategory = 
+  | 'home' 
+  | 'doctor' 
+  | 'hospital' 
+  | 'pharmacy' 
+  | 'family' 
+  | 'caregiver' 
+  | 'park' 
+  | 'other';
+
+export interface ImportantPlace {
+  id: string;
+  name: string;
+  category: ImportantPlaceCategory;
+  address: string;
+  phone?: string;
+  contactName?: string;
+  notes?: string;
+  coordinates?: { lat: number; lng: number };
+  landmark?: string;
+  isPrimary?: boolean;
+  googlePlaceId?: string; // Permitted storage under Google Maps Platform terms
+  createdByRole?: UserRole;
+}
+
+export type MapMode = 'auto' | 'online' | 'offline';
+export type LocationPermissionState = 'prompt' | 'granted' | 'denied' | 'unavailable';
+
+
+export interface EmergencyContact {
+  id: string;
+  name: string;
+  relation: string;
+  phone: string;
+  isPrimary: boolean;
+  smsNotificationEnabled: boolean;
+}
+
+export interface EmergencySmsLog {
+  id: string;
+  contactId: string;
+  contactName: string;
+  phoneNumber: string;
+  message: string;
+  status: 'sent' | 'delivered' | 'failed' | 'simulated';
+  timestamp: string;
+  confirmedByUser: boolean;
 }
 

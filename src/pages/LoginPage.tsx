@@ -64,7 +64,7 @@ export const LoginPage: React.FC = () => {
 
     const trimmedEmail = email.trim();
     if (!trimmedEmail) {
-      setEmailError('Please enter your email address.');
+      setEmailError(t.loginEmailRequired);
       isValid = false;
     } else {
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -75,10 +75,10 @@ export const LoginPage: React.FC = () => {
     }
 
     if (!password) {
-      setPasswordError('Please enter your password.');
+      setPasswordError(t.loginPasswordRequired);
       isValid = false;
     } else if (password.length < 6) {
-      setPasswordError('Password must be at least 6 characters.');
+      setPasswordError(t.loginPasswordMinLength);
       isValid = false;
     }
 
@@ -238,35 +238,38 @@ export const LoginPage: React.FC = () => {
             />
           </div>
 
-          {/* Quick Demo Credentials Pill Selector */}
-          <div className="mb-5 p-3 rounded-2xl bg-ner-offwhite/80 border border-ner-border/80">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-ner-black/50 font-bold block mb-2 text-center">
-              Quick 1-Click Demo Accounts
+          {/* 3-Role Quick Selector */}
+          <div className="mb-5 p-2 rounded-2xl bg-ner-offwhite border-2 border-ner-border">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-ner-black/60 font-bold block mb-1.5 text-center">
+              Select Role Profile
             </span>
-            <div className="grid grid-cols-3 gap-1.5">
+            <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => handleSelectDemo('patient')}
-                className="px-2 py-1.5 rounded-xl bg-white hover:bg-ner-black hover:text-white border border-ner-border text-[11px] font-mono font-bold transition-all text-ner-black shadow-xs active:scale-95 text-center truncate"
-                title="Fill Elderly Patient Account"
+                className="py-2.5 px-2 rounded-xl bg-white hover:bg-ner-black hover:text-white border border-ner-border text-xs font-mono font-bold transition-all text-ner-black shadow-xs active:scale-95 text-center flex flex-col items-center gap-1 min-h-[52px]"
+                title={t.loginRoleDescPatient}
               >
-                👵 Patient
+                <span className="text-base">👵</span>
+                <span className="truncate max-w-full">{t.loginRolePatient}</span>
               </button>
               <button
                 type="button"
                 onClick={() => handleSelectDemo('caregiver')}
-                className="px-2 py-1.5 rounded-xl bg-white hover:bg-ner-black hover:text-white border border-ner-border text-[11px] font-mono font-bold transition-all text-ner-black shadow-xs active:scale-95 text-center truncate"
-                title="Fill Family Caregiver Account"
+                className="py-2.5 px-2 rounded-xl bg-white hover:bg-ner-black hover:text-white border border-ner-border text-xs font-mono font-bold transition-all text-ner-black shadow-xs active:scale-95 text-center flex flex-col items-center gap-1 min-h-[52px]"
+                title={t.loginRoleDescCaregiver}
               >
-                👨‍👩‍👧 Caregiver
+                <span className="text-base">👨‍👩‍👧</span>
+                <span className="truncate max-w-full">{t.loginRoleCaregiver}</span>
               </button>
               <button
                 type="button"
                 onClick={() => handleSelectDemo('doctor')}
-                className="px-2 py-1.5 rounded-xl bg-white hover:bg-ner-black hover:text-white border border-ner-border text-[11px] font-mono font-bold transition-all text-ner-black shadow-xs active:scale-95 text-center truncate"
-                title="Fill Clinician Account"
+                className="py-2.5 px-2 rounded-xl bg-white hover:bg-ner-black hover:text-white border border-ner-border text-xs font-mono font-bold transition-all text-ner-black shadow-xs active:scale-95 text-center flex flex-col items-center gap-1 min-h-[52px]"
+                title={t.loginRoleDescDoctor}
               >
-                🩺 Doctor
+                <span className="text-base">🩺</span>
+                <span className="truncate max-w-full">{t.loginRoleDoctor}</span>
               </button>
             </div>
           </div>

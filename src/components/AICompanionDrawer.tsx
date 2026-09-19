@@ -229,11 +229,11 @@ export const AICompanionDrawer: React.FC = () => {
           stopSpeaking();
           setIsAICompanionOpen(false);
         }}
-        className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 transition-opacity animate-fade-in"
+        className="fixed inset-0 bg-black/40 backdrop-blur-xs z-[10000] transition-opacity animate-fade-in"
         aria-hidden="true"
       />
 
-      <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-ner-offwhite border-l border-ner-black/20 shadow-2xl flex flex-col animate-slide-left pt-[env(safe-area-inset-top,0px)]">
+      <div className="fixed inset-y-0 right-0 z-[10000] w-full max-w-md bg-ner-offwhite border-l border-ner-black/20 shadow-2xl flex flex-col animate-slide-left pt-[env(safe-area-inset-top,0px)]">
         {/* Header */}
         <div className="p-3.5 sm:p-4 border-b border-ner-border bg-white flex items-center justify-between">
           <div className="flex items-center gap-2.5">

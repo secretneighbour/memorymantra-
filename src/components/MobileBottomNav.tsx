@@ -9,7 +9,8 @@ import {
   Sparkles, 
   Bot,
   Brain,
-  Users
+  Users,
+  MapPin
 } from 'lucide-react';
 
 export const MobileBottomNav: React.FC = () => {
@@ -19,11 +20,11 @@ export const MobileBottomNav: React.FC = () => {
 
   // Highlight active role path
   const carePath = role === 'caregiver' ? '/caregiver' : role === 'doctor' ? '/doctor' : '/patient';
-  const careLabel = role === 'caregiver' ? 'Caregiver' : role === 'doctor' ? 'Clinical' : 'Daily Care';
+  const careLabel = role === 'caregiver' ? t.roleCaregiver : role === 'doctor' ? t.doctorRoleTitle : t.navCare;
 
   const navItems = [
     {
-      label: 'Home',
+      label: t.navHome,
       path: '/',
       icon: Home,
     },
@@ -33,14 +34,14 @@ export const MobileBottomNav: React.FC = () => {
       icon: role === 'patient' ? HeartHandshake : role === 'caregiver' ? Users : Brain,
     },
     {
-      label: 'Games',
+      label: t.navGames,
       path: '/games',
       icon: Gamepad2,
     },
     {
-      label: 'Memories',
-      path: '/memory',
-      icon: Sparkles,
+      label: 'Places',
+      path: '/places',
+      icon: MapPin,
     },
   ];
 

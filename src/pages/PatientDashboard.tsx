@@ -30,9 +30,11 @@ export const PatientDashboard: React.FC = () => {
   const { 
     activePatient, 
     reminders, 
-    setReminderStatus 
+    setReminderStatus,
+    setIsHelpModalOpen,
+    setIsAICompanionOpen
   } = useRole();
-  const { t } = useAccessibility();
+  const { t, simpleUIMode, setSimpleUIMode } = useAccessibility();
 
   const [relaxModalOpen, setRelaxModalOpen] = useState(false);
   const [wellVoiceOpen, setWellVoiceOpen] = useState(false);
@@ -67,16 +69,41 @@ export const PatientDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pt-24 sm:pt-28 pb-20 px-4 sm:px-8 max-w-5xl mx-auto animate-fade-in selection:bg-ner-terracotta selection:text-white">
+    <div className="min-h-screen pt-20 sm:pt-28 pb-24 sm:pb-20 px-3 sm:px-8 max-w-5xl mx-auto animate-fade-in selection:bg-ner-terracotta selection:text-white">
       {/* Login Prompt Modal for Daily Well-Being */}
       <WellbeingCheckIn mode="modal" autoPromptOnLogin={true} />
-      
+
+      {/* Simple UI Mode Quick Toggle Ribbon */}
+      <div className="flex items-center justify-between p-3.5 mb-5 rounded-2xl bg-white border border-ner-border shadow-xs">
+        <div className="flex items-center gap-2.5">
+          <span className={`w-2.5 h-2.5 rounded-full ${simpleUIMode ? 'bg-ner-sage animate-pulse' : 'bg-ner-black/40'}`} />
+          <span className="text-xs font-mono font-bold uppercase tracking-wider text-ner-black">
+            {t.simpleUIMode}
+          </span>
+          <span className="text-[11px] text-ner-black/60 hidden sm:inline">
+            — {t.simpleUIDesc}
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={() => setSimpleUIMode(!simpleUIMode)}
+          className={`px-3.5 py-1.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 active:scale-95 ${
+            simpleUIMode
+              ? 'bg-ner-black text-white shadow-sm'
+              : 'bg-ner-offwhite text-ner-black/70 hover:text-ner-black border border-ner-border'
+          }`}
+          aria-pressed={simpleUIMode}
+        >
+          <span>{simpleUIMode ? `✓ ${t.simpleUIOn}` : t.simpleUIOff}</span>
+        </button>
+      </div>
+
       {/* ========================================================================= */}
       {/* 1. TOP GREETING MONOLITH (Tactile, Peaceful, High-Contrast)               */}
       {/* ========================================================================= */}
-      <div className="frost-white-intense rounded-3xl p-6 sm:p-12 mb-6 border border-ner-border/90 shadow-xl relative overflow-hidden">
+      <div className="frost-white-intense rounded-3xl p-5 sm:p-10 mb-6 border border-ner-border/90 shadow-xl relative overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             <div className="flex items-center gap-2.5">
               {greeting.icon}
               <span className="font-mono text-xs uppercase tracking-widest text-ner-black/50 font-bold">
@@ -84,11 +111,11 @@ export const PatientDashboard: React.FC = () => {
               </span>
             </div>
 
-            <h1 className="text-3xl sm:text-6xl font-bold tracking-tight text-ner-black">
+            <h1 className="text-2xl sm:text-5xl font-bold tracking-tight text-ner-black">
               {greeting.text}, <span className="text-ner-terracotta">{t.patientName}.</span>
             </h1>
 
-            <p className="text-base sm:text-2xl text-ner-black/75 font-light leading-relaxed max-w-2xl">
+            <p className="text-sm sm:text-xl text-ner-black/75 font-light leading-relaxed max-w-2xl">
               {t.encouragement}
             </p>
           </div>
@@ -99,7 +126,7 @@ export const PatientDashboard: React.FC = () => {
               <button
                 id="start-well-voice-hero-btn"
                 onClick={() => setWellVoiceOpen(true)}
-                className="px-4 py-3 rounded-2xl bg-ner-terracotta text-white hover:bg-ner-terracotta/90 text-sm font-mono font-bold flex items-center gap-2 shadow-md active:scale-95 transition"
+                className="px-4 py-3 rounded-2xl bg-ner-terracotta text-white hover:bg-ner-terracotta/90 text-sm font-mono font-bold flex items-center gap-2 shadow-md active:scale-95 transition min-h-[48px]"
                 title="Open interactive Well Voice assistant"
               >
                 <Volume2 className="w-4 h-4 animate-pulse" />
@@ -117,83 +144,287 @@ export const PatientDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Vitality Monolith Badges */}
-        <div className="mt-10 pt-6 border-t border-ner-border/80 flex flex-wrap items-center justify-between gap-6">
-          <div className="flex flex-wrap items-center gap-6 sm:gap-10">
-            {/* Streak */}
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shadow-inner">
-                <Flame className="w-6 h-6 fill-current" />
+        {/* Vitality Badges (Hidden in Simple UI Mode to reduce cognitive clutter) */}
+        {!simpleUIMode && (
+          <div className="mt-8 pt-6 border-t border-ner-border/80 flex flex-wrap items-center justify-between gap-6">
+            <div className="flex flex-wrap items-center gap-6 sm:gap-10">
+              {/* Streak */}
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shadow-inner">
+                  <Flame className="w-5 h-5 fill-current" />
+                </div>
+                <div>
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-ner-black/50 block">{t.habitStreak}</span>
+                  <span className="font-bold text-lg sm:text-xl text-ner-black font-mono">
+                    {activePatient.stats.streakDays} {t.days}
+                  </span>
+                </div>
               </div>
-              <div>
-                <span className="text-[11px] font-mono uppercase tracking-wider text-ner-black/50 block">{t.habitStreak}</span>
-                <span className="font-bold text-xl sm:text-2xl text-ner-black font-mono">
-                  {activePatient.stats.streakDays} {t.days}
-                </span>
+
+              {/* Score */}
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-emerald-100 text-ner-sage flex items-center justify-center shadow-inner">
+                  <Trophy className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-ner-black/50 block">{t.cognitiveVitality}</span>
+                  <span className="font-bold text-lg sm:text-xl text-ner-black font-mono">
+                    {activePatient.stats.weeklyScore}%
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Score */}
+            <span className="text-xs font-mono font-bold text-ner-sage px-3.5 py-1.5 rounded-full bg-emerald-50 border border-ner-sage/20">
+              {t.consistencyImproved}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* ========================================================================= */}
+      {/* SIMPLE UI MODE (5 ESSENTIAL TACTILE SECTIONS)                             */}
+      {/* ========================================================================= */}
+      {simpleUIMode ? (
+        <div className="space-y-6 my-6 animate-fade-in">
+          {/* Card 1: Today's Activity */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-ner-black shadow-lg space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-ner-sage flex items-center justify-center shadow-inner">
-                <Trophy className="w-6 h-6" />
+              <div className="w-12 h-12 rounded-2xl bg-ner-terracotta/15 text-ner-terracotta flex items-center justify-center">
+                <Play className="w-6 h-6 fill-current" />
               </div>
               <div>
-                <span className="text-[11px] font-mono uppercase tracking-wider text-ner-black/50 block">{t.cognitiveVitality}</span>
-                <span className="font-bold text-xl sm:text-2xl text-ner-black font-mono">
-                  {activePatient.stats.weeklyScore}%
+                <span className="text-xs font-mono font-bold text-ner-terracotta uppercase tracking-wider block">
+                  1 // {t.simpleUIMyDay}
                 </span>
+                <h3 className="text-2xl sm:text-3xl font-bold text-ner-black">
+                  {nextIncomplete.title}
+                </h3>
               </div>
+            </div>
+            <p className="text-sm sm:text-base text-ner-black/75 leading-relaxed">
+              {nextIncomplete.description}
+            </p>
+            <button
+              onClick={() => navigate(nextIncomplete.route)}
+              className="w-full py-4 rounded-2xl bg-ner-black hover:bg-ner-black/90 text-white font-mono text-sm sm:text-base font-bold uppercase tracking-wider flex items-center justify-center gap-3 shadow-md active:scale-98 min-h-[56px]"
+            >
+              <Play className="w-5 h-5 fill-current text-ner-terracotta" />
+              <span>{t.startActivity}</span>
+            </button>
+          </div>
+
+          {/* Card 2: Smriti Memory Companion */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-ner-border hover:border-ner-black shadow-sm space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-ner-calmBlue/15 text-ner-calmBlue flex items-center justify-center">
+                <Volume2 className="w-6 h-6" />
+              </div>
+              <div>
+                <span className="text-xs font-mono font-bold text-ner-calmBlue uppercase tracking-wider block">
+                  2 // {t.simpleUIChatSmriti}
+                </span>
+                <h3 className="text-xl sm:text-2xl font-bold text-ner-black">
+                  {t.memoryCompanion}
+                </h3>
+              </div>
+            </div>
+            <p className="text-sm text-ner-black/75">
+              Talk and reminisce peacefully about family, childhood memories, and daily routines.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                onClick={() => setIsAICompanionOpen(true)}
+                className="py-4 px-4 rounded-2xl bg-ner-calmBlue text-white hover:bg-ner-calmBlue/90 font-mono text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 active:scale-98 min-h-[52px]"
+              >
+                <span>Launch Companion Chat</span>
+              </button>
+              <Link
+                to="/memories"
+                className="py-4 px-4 rounded-2xl bg-ner-offwhite hover:bg-ner-black hover:text-white border border-ner-border text-ner-black font-mono text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 active:scale-98 min-h-[52px]"
+              >
+                <span>{t.myMemories}</span>
+              </Link>
             </div>
           </div>
 
-          <span className="text-xs font-mono font-bold text-ner-sage px-3.5 py-1.5 rounded-full bg-emerald-50 border border-ner-sage/20">
-            {t.consistencyImproved}
-          </span>
+          {/* Card 3: Cognitive Game */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-ner-border hover:border-ner-black shadow-sm space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-ner-sage/15 text-ner-sage flex items-center justify-center">
+                <Trophy className="w-6 h-6" />
+              </div>
+              <div>
+                <span className="text-xs font-mono font-bold text-ner-sage uppercase tracking-wider block">
+                  3 // {t.simpleUIPlayGame}
+                </span>
+                <h3 className="text-xl sm:text-2xl font-bold text-ner-black">
+                  {t.game1Title}
+                </h3>
+              </div>
+            </div>
+            <p className="text-sm text-ner-black/75">
+              Gentle visual matching exercise to stimulate active working memory and pattern recall.
+            </p>
+            <Link
+              to="/games/memory"
+              className="w-full py-4 rounded-2xl bg-ner-sage text-white hover:bg-ner-sage/90 font-mono text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm active:scale-98 min-h-[54px]"
+            >
+              <span>{t.btnPlayNow}</span>
+            </Link>
+          </div>
+
+          {/* Card 4: Today's Reminders */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-ner-border shadow-sm space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                  <Bell className="w-6 h-6" />
+                </div>
+                <div>
+                  <span className="text-xs font-mono font-bold text-amber-700 uppercase tracking-wider block">
+                    4 // {t.simpleUIReminders}
+                  </span>
+                  <h3 className="text-xl sm:text-2xl font-bold text-ner-black">
+                    {t.remindersTitle}
+                  </h3>
+                </div>
+              </div>
+            </div>
+
+            {snoozeFeedback && (
+              <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-mono font-bold flex items-center gap-2 animate-fade-in">
+                <Clock3 className="w-4 h-4" />
+                <span>{snoozeFeedback}</span>
+              </div>
+            )}
+
+            <div className="space-y-3 pt-2">
+              {reminders.slice(0, 3).map((item) => (
+                <div
+                  key={item.id}
+                  className={`p-4 sm:p-5 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                    item.completed ? 'bg-ner-offwhite/50 border-ner-border/40 opacity-70' : 'bg-white border-ner-border'
+                  }`}
+                >
+                  <div>
+                    <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-ner-offwhite border border-ner-border text-ner-black inline-block mb-1">
+                      {item.time}
+                    </span>
+                    <h4 className={`text-base font-bold ${item.completed ? 'line-through text-ner-black/50' : 'text-ner-black'}`}>
+                      {item.title}
+                    </h4>
+                    {item.doseOrNote && (
+                      <p className="text-xs text-ner-black/60 mt-0.5">{item.doseOrNote}</p>
+                    )}
+                  </div>
+
+                  {!item.completed ? (
+                    <div className="flex items-center gap-2 pt-2 sm:pt-0">
+                      <button
+                        onClick={() => handleReminderDone(item.id)}
+                        className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-ner-sage text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-sm active:scale-95 min-h-[44px]"
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>{t.activitiesCompleted}</span>
+                      </button>
+                      <button
+                        onClick={() => handleReminderSnooze(item.id, item.title)}
+                        className="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl bg-ner-offwhite border border-ner-border text-ner-black font-mono text-xs font-bold uppercase tracking-wider active:scale-95 min-h-[44px]"
+                      >
+                        <span>{t.remindMeLater}</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="text-xs font-mono font-bold text-ner-sage uppercase flex items-center gap-1">
+                      <CheckCircle2 className="w-4 h-4" />
+                      {t.activitiesCompleted}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Card 5: Family & Emergency Help */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-ner-black shadow-lg space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center">
+                <AlertCircle className="w-6 h-6" />
+              </div>
+              <div>
+                <span className="text-xs font-mono font-bold text-red-600 uppercase tracking-wider block">
+                  5 // {t.simpleUIFamilyHelp}
+                </span>
+                <h3 className="text-xl sm:text-2xl font-bold text-ner-black">
+                  {t.familyCircle} & Quick Assistance
+                </h3>
+              </div>
+            </div>
+            <p className="text-sm text-ner-black/75">
+              Call your primary caregiver or open emergency assistance.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <a
+                href={`tel:${activePatient.primaryCaregiver.phone}`}
+                className="py-4 px-4 rounded-2xl bg-ner-black text-white hover:bg-ner-black/90 font-mono text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 active:scale-98 min-h-[52px]"
+              >
+                <span>Call {activePatient.primaryCaregiver.name}</span>
+              </a>
+              <button
+                onClick={() => setIsHelpModalOpen(true)}
+                className="py-4 px-4 rounded-2xl bg-red-600 text-white hover:bg-red-700 font-mono text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-md active:scale-98 min-h-[52px]"
+              >
+                <AlertCircle className="w-4 h-4" />
+                <span>{t.emergencyNeedHelp} / SOS</span>
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      ) : (
+        /* FULL DETAILED DASHBOARD VIEW */
+        <>
+          {/* ========================================================================= */}
+          {/* 2. BIG PRIMARY NAVIGATION PILL BUTTONS                                   */}
+          {/* ========================================================================= */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8">
+            <button
+              onClick={() => navigate(nextIncomplete.route)}
+              className="p-4 sm:p-5 rounded-2xl bg-ner-black text-white hover:bg-ner-black/90 font-mono text-xs uppercase tracking-wider flex flex-col items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-center min-h-[90px]"
+            >
+              <Play className="w-5 h-5 sm:w-6 sm:h-6 text-ner-terracotta fill-ner-terracotta" />
+              <span className="font-bold truncate max-w-full">{t.startTodayJourney}</span>
+            </button>
 
-      {/* ========================================================================= */}
-      {/* 2. BIG PRIMARY NAVIGATION PILL BUTTONS                                   */}
-      {/* ========================================================================= */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-4 mb-8">
-        <button
-          onClick={() => navigate(nextIncomplete.route)}
-          className="p-5 rounded-2xl bg-ner-black text-white hover:bg-ner-black/90 font-mono text-xs uppercase tracking-wider flex flex-col items-center justify-center gap-2 shadow-lg active:scale-95 transition-all text-center"
-        >
-          <Play className="w-6 h-6 text-ner-terracotta fill-ner-terracotta" />
-          <span className="font-bold">{t.startTodayJourney}</span>
-        </button>
+            <Link
+              to="/memories"
+              className="p-4 sm:p-5 rounded-2xl bg-white border-2 border-ner-border hover:border-ner-black text-ner-black font-mono text-xs uppercase tracking-wider flex flex-col items-center justify-center gap-2 shadow-sm active:scale-95 transition-all text-center min-h-[90px]"
+            >
+              <Image className="w-5 h-5 sm:w-6 sm:h-6 text-ner-terracotta" />
+              <span className="font-bold truncate max-w-full">{t.myMemories}</span>
+            </Link>
 
-        <Link
-          to="/memories"
-          className="p-5 rounded-2xl bg-white border-2 border-ner-border hover:border-ner-black text-ner-black font-mono text-xs uppercase tracking-wider flex flex-col items-center justify-center gap-2 shadow-sm active:scale-95 transition-all text-center"
-        >
-          <Image className="w-6 h-6 text-ner-terracotta" />
-          <span className="font-bold">{t.myMemories}</span>
-        </Link>
+            <Link
+              to="/reminders"
+              className="p-4 sm:p-5 rounded-2xl bg-white border-2 border-ner-border hover:border-ner-black text-ner-black font-mono text-xs uppercase tracking-wider flex flex-col items-center justify-center gap-2 shadow-sm active:scale-95 transition-all text-center min-h-[90px]"
+            >
+              <Bell className="w-5 h-5 sm:w-6 sm:h-6 text-ner-sage" />
+              <span className="font-bold truncate max-w-full">{t.reminders}</span>
+            </Link>
 
-        <Link
-          to="/reminders"
-          className="p-5 rounded-2xl bg-white border-2 border-ner-border hover:border-ner-black text-ner-black font-mono text-xs uppercase tracking-wider flex flex-col items-center justify-center gap-2 shadow-sm active:scale-95 transition-all text-center"
-        >
-          <Bell className="w-6 h-6 text-ner-sage" />
-          <span className="font-bold">{t.reminders}</span>
-        </Link>
+            <Link
+              to="/caregiver"
+              className="p-4 sm:p-5 rounded-2xl bg-white border-2 border-ner-border hover:border-ner-black text-ner-black font-mono text-xs uppercase tracking-wider flex flex-col items-center justify-center gap-2 shadow-sm active:scale-95 transition-all text-center min-h-[90px]"
+            >
+              <Users className="w-5 h-5 sm:w-6 sm:h-6 text-rose-500" />
+              <span className="font-bold truncate max-w-full">{t.familyCircle}</span>
+            </Link>
+          </div>
 
-        <Link
-          to="/caregiver"
-          className="p-5 rounded-2xl bg-white border-2 border-ner-border hover:border-ner-black text-ner-black font-mono text-xs uppercase tracking-wider flex flex-col items-center justify-center gap-2 shadow-sm active:scale-95 transition-all text-center"
-        >
-          <Users className="w-6 h-6 text-rose-500" />
-          <span className="font-bold">{t.familyCircle}</span>
-        </Link>
-      </div>
-
-      {/* ========================================================================= */}
-      {/* 3. DAILY MOOD AND HEALTH CHECK-IN                                         */}
-      {/* ========================================================================= */}
-      <DailyMoodHealthCheckin />
+          {/* ========================================================================= */}
+          {/* 3. DAILY MOOD AND HEALTH CHECK-IN                                         */}
+          {/* ========================================================================= */}
+          <DailyMoodHealthCheckin />
 
       {/* ========================================================================= */}
       {/* 4. TODAY'S DAILY COGNITIVE GOALS PROGRESS RING                            */}
@@ -481,6 +712,8 @@ export const PatientDashboard: React.FC = () => {
           ))}
         </div>
       </div>
+    </>
+  )}
 
       {/* Guided Breathing Modal */}
       {relaxModalOpen && (

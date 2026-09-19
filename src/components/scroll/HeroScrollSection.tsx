@@ -63,7 +63,7 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen min-h-svh flex flex-col justify-between pt-24 sm:pt-28 pb-8 px-4 sm:px-8 border-b border-ner-border/40 overflow-hidden select-none"
+      className="relative flex flex-col justify-between py-8 sm:py-12 border-b border-ner-border/40 overflow-hidden select-none"
     >
       {/* Dynamic Background Abstract Neural & Memory Network Graphic */}
       <motion.div
@@ -109,7 +109,7 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
       </motion.div>
 
       {/* Top Header Row in Viewport: System Telemetry Strip */}
-      <div className="max-w-7xl mx-auto w-full flex items-center justify-between z-10 relative">
+      <div className="global-site-wrapper flex items-center justify-between z-10 relative">
         <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full frost-white-intense text-xs font-mono font-bold text-ner-black shadow-sm">
           <span className="w-2 h-2 rounded-full bg-ner-terracotta animate-pulse" />
           <span>SMRITI CARE // 2026.09</span>
@@ -129,7 +129,7 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
 
       {/* Center: Monolithic Editorial Typography & Action Hub */}
       <motion.div
-        className="max-w-7xl mx-auto w-full my-auto py-8 sm:py-12 z-10 relative"
+        className="global-site-wrapper w-full my-auto py-8 sm:py-12 z-10 relative"
         style={
           isReduced
             ? {}
@@ -140,10 +140,10 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
               }
         }
       >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div className="hero-top-grid">
           
-          {/* Left 8 Columns: Pure Nothing-inspired Typographic Power */}
-          <div className="lg:col-span-8 space-y-4 sm:space-y-6">
+          {/* Left Column: Responsive clamp() Typography & Actions */}
+          <div className="space-y-4 sm:space-y-6">
             
             {/* Super Header Tag */}
             <div className="flex items-center gap-3">
@@ -156,21 +156,21 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
               </span>
             </div>
 
-            {/* Wordmark & Main Tagline */}
+            {/* Wordmark & Main Tagline with fluid clamp() scaling */}
             <div>
-              <h2 className="font-mono text-sm sm:text-base font-bold tracking-widest text-ner-black/60 uppercase mb-2">
+              <h2 className="font-mono text-xs sm:text-sm font-bold tracking-widest text-ner-black/60 uppercase mb-2">
                 {t.appName.toUpperCase()}
               </h2>
-              <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-ner-black leading-[0.92] uppercase">
-                {t.heroTitleLine1} <br />
-                {t.heroTitleLine2} <br />
-                <span className="text-ner-terracotta">{t.heroTitleLine3}</span>
+              <h1 className="hero-heading-fluid font-bold tracking-tight text-ner-black uppercase">
+                {t.heroTitleLine1} <br className="hidden sm:inline" />
+                {t.heroTitleLine2} <br className="hidden sm:inline" />
+                <span className="text-ner-terracotta inline-block">{t.heroTitleLine3}</span>
               </h1>
             </div>
 
-            {/* Supporting Text with scroll fade */}
+            {/* Supporting Text */}
             <motion.p
-              className="text-base sm:text-xl text-ner-black/75 font-light max-w-xl leading-relaxed pt-1"
+              className="text-sm sm:text-base md:text-lg text-ner-black/75 font-light max-w-2xl leading-relaxed pt-1"
               style={isReduced ? {} : { opacity: taglineOpacity }}
             >
               {t.heroDescription}
@@ -194,6 +194,7 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
                 <span className="w-2 h-2 rounded-full bg-ner-sage animate-pulse" />
               </button>
 
+              {/* Inline TTS Voice Trigger */}
               <div className="flex justify-center sm:justify-start">
                 <TTSButton
                   text={t.ttsHeroIntro}
@@ -204,84 +205,88 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
             </div>
           </div>
 
-          {/* Right 4 Columns: Minimalist Hardware / Telemetry Widgets */}
-          <div className="lg:col-span-4 flex flex-col gap-3.5 max-w-sm mx-auto w-full">
-            
-            {/* Widget 1: Digital Care Status Node */}
-            <div className="frost-white-intense rounded-3xl p-5 border border-ner-border/90 shadow-lg hover:border-ner-black/40 transition-colors">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-ner-black/50 font-bold flex items-center gap-1.5">
-                  <Activity className="w-3.5 h-3.5 text-ner-terracotta" />
-                  {t.widgetTelemetryTitle}
-                </span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-300">
-                  {t.active.toUpperCase()}
-                </span>
-              </div>
-              <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-ner-black text-white flex items-center justify-center font-mono text-sm font-bold shadow-sm shrink-0">
-                  NER
-                </div>
-                <div>
-                  <h3 className="font-bold text-sm text-ner-black">{t.infra1Title}</h3>
-                  <p className="text-xs text-ner-black/60">{t.widgetTelemetrySubtitle}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Widget 2: Patient Session Telemetry */}
-            <div className="frost-white-intense rounded-3xl p-5 border border-ner-border/90 shadow-lg hover:border-ner-black/40 transition-colors">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-ner-black/50 font-bold flex items-center gap-1.5">
-                  <Heart className="w-3.5 h-3.5 text-ner-terracotta" />
-                  {t.widgetSessionTitle}
-                </span>
-                <span className="text-xs font-bold text-ner-terracotta font-mono">
-                  {activePatient.stats.completedToday}/{activePatient.stats.totalToday} {t.done}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-bold text-sm text-ner-black">{t.patientName}</h4>
-                  <p className="text-xs text-ner-black/60 mt-0.5">{activePatient.stats.streakDays} {t.streak}</p>
-                </div>
-                <button
-                  onClick={() => navigate('/patient')}
-                  className="w-10 h-10 rounded-full bg-ner-black text-white flex items-center justify-center hover:bg-ner-terracotta transition-colors shadow-sm"
-                  title={t.navCare}
-                >
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Widget 3: AI Companion Quick Launcher */}
-            <button
-              onClick={() => setIsAICompanionOpen(true)}
-              className="p-4 rounded-3xl bg-ner-black text-white flex items-center justify-between gap-3 text-left hover:bg-ner-black/85 transition-all shadow-md group"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-ner-terracotta">
-                  <Sparkles className="w-4 h-4" />
-                </div>
-                <div>
-                  <span className="text-[10px] font-mono text-ner-terracotta font-bold uppercase tracking-wider block">
-                    {t.heroBottomTitle}
+          {/* Right Column: Chat & Status Cards */}
+          <div className="w-full">
+            <div className="flex flex-col gap-3.5 w-full max-w-lg mx-auto lg:ml-auto">
+              
+              {/* Card 1: 8 STATES MONITORED / Digital Care Status Node */}
+              <div className="frost-white-intense rounded-3xl p-4 sm:p-5 border border-ner-border/90 shadow-lg hover:border-ner-black/40 transition-colors">
+                <div className="flex items-center justify-between mb-2.5">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-ner-black/50 font-bold flex items-center gap-1.5">
+                    <Activity className="w-3.5 h-3.5 text-ner-terracotta" />
+                    {t.widgetTelemetryTitle}
                   </span>
-                  <span className="text-xs font-bold text-white">{t.heroBottomBtn}</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-300">
+                    {t.active.toUpperCase()}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-2xl bg-ner-black text-white flex items-center justify-center font-mono text-sm font-bold shadow-sm shrink-0">
+                    NER
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-sm text-ner-black truncate">{t.infra1Title}</h3>
+                    <p className="text-xs text-ner-black/60 truncate">{t.widgetTelemetrySubtitle}</p>
+                  </div>
                 </div>
               </div>
-              <span className="text-xs font-mono font-bold text-white/60 group-hover:text-white transition-colors">
-                →
-              </span>
-            </button>
+
+              {/* Card 2: ACTIVE SESSION / Patient Session Telemetry */}
+              <div className="frost-white-intense rounded-3xl p-4 sm:p-5 border border-ner-border/90 shadow-lg hover:border-ner-black/40 transition-colors">
+                <div className="flex items-center justify-between mb-2.5">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-ner-black/50 font-bold flex items-center gap-1.5">
+                    <Heart className="w-3.5 h-3.5 text-ner-terracotta" />
+                    {t.widgetSessionTitle}
+                  </span>
+                  <span className="text-xs font-bold text-ner-terracotta font-mono">
+                    {activePatient.stats.completedToday}/{activePatient.stats.totalToday} {t.done}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <h4 className="font-bold text-sm text-ner-black truncate">{t.patientName}</h4>
+                    <p className="text-xs text-ner-black/60 mt-0.5">{activePatient.stats.streakDays} {t.streak}</p>
+                  </div>
+                  <button
+                    onClick={() => navigate('/patient')}
+                    className="w-9 h-9 rounded-full bg-ner-black text-white flex items-center justify-center hover:bg-ner-terracotta transition-colors shadow-sm shrink-0"
+                    title={t.navCare}
+                    aria-label={t.navCare}
+                  >
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Card 3: AI Companion Quick Launcher */}
+              <button
+                onClick={() => setIsAICompanionOpen(true)}
+                className="p-4 sm:p-5 rounded-3xl bg-ner-black text-white flex items-center justify-between gap-3 text-left hover:bg-ner-black/85 transition-all shadow-md group w-full"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-ner-terracotta shrink-0">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-mono text-ner-terracotta font-bold uppercase tracking-wider block">
+                      {t.heroBottomTitle}
+                    </span>
+                    <span className="text-xs font-bold text-white truncate block">{t.heroBottomBtn}</span>
+                  </div>
+                </div>
+                <span className="text-sm font-mono font-bold text-white/60 group-hover:text-white transition-colors shrink-0">
+                  →
+                </span>
+              </button>
+
+            </div>
           </div>
         </div>
       </motion.div>
 
       {/* Bottom Scroll Cue Indicator */}
       <motion.div
-        className="max-w-7xl mx-auto w-full flex items-center justify-between z-10 pt-4"
+        className="global-site-wrapper flex items-center justify-between z-10 pt-4"
         style={
           isReduced
             ? {}

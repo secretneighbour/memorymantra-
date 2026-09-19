@@ -31,6 +31,10 @@ import { CaregiverDashboard } from './pages/CaregiverDashboard';
 import { PatientProfilePage } from './pages/PatientProfilePage';
 import { DoctorDashboard } from './pages/DoctorDashboard';
 import { SettingsPage } from './pages/SettingsPage';
+import { PlacesPage } from './pages/PlacesPage';
+import { PresentationPage } from './pages/PresentationPage';
+import { WalkthroughModal } from './components/WalkthroughModal';
+import { EmergencyHelpModal } from './components/EmergencyHelpModal';
 
 // Games
 import { MemoryMatchGame } from './games/MemoryMatchGame';
@@ -79,12 +83,15 @@ export const App: React.FC = () => {
               <AICompanionDrawer />
               <OfflineBanner />
               <PageNarrator />
+              <WalkthroughModal />
+              <EmergencyHelpModal />
 
               <main className="flex-grow z-10 pb-20 md:pb-0">
                 <Routes>
                   {/* Landing & Role Selection */}
                   <Route path="/" element={<LandingPage />} />
                   <Route path="/role-selection" element={<RoleSelectionPage />} />
+                  <Route path="/presentation" element={<PresentationPage />} />
 
                   {/* Authentication Routes */}
                   <Route path="/login" element={<LoginPage />} />
@@ -115,6 +122,7 @@ export const App: React.FC = () => {
                   <Route path="/memory-companion" element={<MemoryCompanionPage />} />
                   <Route path="/reminders" element={<RemindersPage />} />
                   <Route path="/progress" element={<ProgressPage />} />
+                  <Route path="/places" element={<PlacesPage />} />
 
                   {/* Caregiver & Doctor Dashboards */}
                   <Route path="/caregiver" element={<CaregiverDashboard />} />

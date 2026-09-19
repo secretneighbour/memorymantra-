@@ -108,46 +108,35 @@ export const MemoryWallSection: React.FC = () => {
     <section
       ref={containerRef}
       id="memory-wall"
-      className="py-24 sm:py-32 px-4 sm:px-8 max-w-7xl mx-auto border-b border-ner-border/40 select-none overflow-hidden"
+      className="memory-wall-centered-section border-b border-ner-border/40 select-none overflow-hidden"
     >
-      <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-20">
-        <span className="text-xs font-mono uppercase tracking-widest text-ner-terracotta font-bold block mb-2">
-          {t.memoryWallBadge}
-        </span>
-        <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-ner-black uppercase">
-          {t.memoryWallTitle}
-        </h2>
-        <p className="text-sm sm:text-base text-ner-black/70 font-light mt-3 max-w-2xl mx-auto leading-relaxed">
-          {t.memoryWallSubtitle}
-        </p>
-      </div>
+        {/* Step 4: Centered Memory Wall Section Container */}
+        <div className="memory-wall-section">
+          <span className="text-xs font-mono uppercase tracking-widest text-ner-terracotta font-bold block mb-2">
+            {t.memoryWallBadge}
+          </span>
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-ner-black uppercase mb-3">
+            {t.memoryWallTitle}
+          </h2>
+          <p className="memory-wall-paragraph text-sm sm:text-base text-ner-black/70 font-light leading-relaxed">
+            {t.memoryWallSubtitle}
+          </p>
+        </div>
 
-      {/* Floating Memory Wall Layout with Subtle Parallax */}
-      <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch max-w-6xl mx-auto"
-        style={isReduced ? {} : { scale: convergence }}
-      >
-        {memoryCards.map((card, idx) => {
+        {/* Anchored Memory Wall Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch max-w-6xl mx-auto w-full text-left">
+        {memoryCards.map((card) => {
           const isSelected = selectedMemory === card.id;
-          const isFast = idx % 2 === 0;
 
           return (
             <motion.div
               key={card.id}
               onClick={() => setSelectedMemory(card.id)}
-              className={`rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-500 cursor-pointer ${
+              className={`rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 cursor-pointer ${
                 isSelected
                   ? 'bg-ner-black text-white shadow-2xl border-2 border-white scale-102 z-20'
                   : 'frost-white-intense text-ner-black border border-ner-border/90 shadow-md hover:border-ner-black/50 hover:shadow-xl opacity-90 hover:opacity-100 z-10'
               }`}
-              style={
-                isReduced
-                  ? {}
-                  : {
-                      y: isFast ? yShiftFast : yShiftSlow,
-                      willChange: 'transform',
-                    }
-              }
               whileHover={{ y: -4 }}
             >
               {/* Card Header */}
@@ -213,7 +202,7 @@ export const MemoryWallSection: React.FC = () => {
             <ArrowRight className="w-3.5 h-3.5 text-ner-terracotta" />
           </button>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 };

@@ -73,96 +73,102 @@ export const RoleSwitcherModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ner-black/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-ner-offwhite border border-ner-black/20 w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-6">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-ner-terracotta/10 text-ner-terracotta border border-ner-terracotta/20">
-                <Sparkles className="w-3 h-3" /> {t.roleModalTag}
-              </span>
+    <div className="modal-overlay-backdrop animate-fade-in">
+      <div className="modal-contained-card animate-scale-up">
+        {/* Sticky Header: "Choose Your Experience Mode" */}
+        <div className="modal-sticky-header">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-ner-terracotta/10 text-ner-terracotta border border-ner-terracotta/20">
+                  <Sparkles className="w-3 h-3" /> {t.roleModalTag}
+                </span>
+              </div>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-ner-black">
+                {t.roleSwitcherTitle}
+              </h2>
+              <p className="text-ner-black/60 text-xs sm:text-sm mt-1">
+                {t.roleSwitcherDesc}
+              </p>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-ner-black">
-              {t.roleSwitcherTitle}
-            </h2>
-            <p className="text-ner-black/60 text-sm mt-1">
-              {t.roleSwitcherDesc}
-            </p>
+            <button
+              onClick={() => setIsRoleModalOpen(false)}
+              className="p-2 rounded-full hover:bg-ner-black/5 text-ner-black/60 hover:text-ner-black transition-colors shrink-0"
+              aria-label="Close dialog"
+            >
+              <X className="w-6 h-6" />
+            </button>
           </div>
-          <button
-            onClick={() => setIsRoleModalOpen(false)}
-            className="p-2 rounded-full hover:bg-ner-black/5 text-ner-black/60 hover:text-ner-black transition-colors"
-            aria-label="Close dialog"
-          >
-            <X className="w-6 h-6" />
-          </button>
         </div>
 
-        {/* Roles list */}
-        <div className="space-y-3.5">
-          {rolesConfig.map((item) => {
-            const isSelected = role === item.id;
-            return (
-              <div
-                key={item.id}
-                onClick={() => handleSelectRole(item.id, item.path)}
-                className={`group cursor-pointer rounded-2xl p-5 border transition-all duration-200 relative ${
-                  isSelected
-                    ? 'bg-white border-ner-black shadow-md ring-2 ring-ner-black/10'
-                    : 'bg-white/60 hover:bg-white border-ner-border hover:border-ner-black/40'
-                }`}
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-start gap-3.5">
-                    <div className="p-3 rounded-xl bg-ner-offwhite border border-ner-border group-hover:scale-105 transition-transform">
-                      {item.icon}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-lg text-ner-black">{item.title}</h3>
-                        <span className="text-xs px-2 py-0.5 rounded-md bg-ner-black/5 text-ner-black/70 font-medium">
-                          {item.badge}
-                        </span>
+        {/* Scrollable Body: Experience Mode Cards */}
+        <div className="modal-scrollable-body">
+          <div className="space-y-3.5">
+            {rolesConfig.map((item) => {
+              const isSelected = role === item.id;
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => handleSelectRole(item.id, item.path)}
+                  className={`group cursor-pointer rounded-2xl p-4 sm:p-5 border transition-all duration-200 relative ${
+                    isSelected
+                      ? 'bg-white border-ner-black shadow-md ring-2 ring-ner-black/10'
+                      : 'bg-white/70 hover:bg-white border-ner-border hover:border-ner-black/40'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3 sm:gap-4">
+                    <div className="flex items-start gap-3 sm:gap-3.5">
+                      <div className="p-2.5 sm:p-3 rounded-xl bg-ner-offwhite border border-ner-border group-hover:scale-105 transition-transform shrink-0">
+                        {item.icon}
                       </div>
-                      <p className="text-xs font-semibold text-ner-terracotta mt-0.5">
-                        {item.persona}
-                      </p>
-                      <p className="text-sm text-ner-black/70 mt-1">
-                        {item.tagline}
-                      </p>
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="font-bold text-base sm:text-lg text-ner-black">{item.title}</h3>
+                          <span className="text-[11px] sm:text-xs px-2 py-0.5 rounded-md bg-ner-black/5 text-ner-black/70 font-medium">
+                            {item.badge}
+                          </span>
+                        </div>
+                        <p className="text-xs font-semibold text-ner-terracotta mt-0.5">
+                          {item.persona}
+                        </p>
+                        <p className="text-xs sm:text-sm text-ner-black/70 mt-1 leading-relaxed">
+                          {item.tagline}
+                        </p>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="flex items-center gap-2">
-                    {isSelected ? (
-                      <span className="w-7 h-7 rounded-full bg-ner-black text-white flex items-center justify-center">
-                        <Check className="w-4 h-4" />
-                      </span>
-                    ) : (
-                      <span className="w-7 h-7 rounded-full border border-ner-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-ner-black text-xs">
-                        →
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2 shrink-0">
+                      {isSelected ? (
+                        <span className="w-7 h-7 rounded-full bg-ner-black text-white flex items-center justify-center shadow-xs">
+                          <Check className="w-4 h-4" />
+                        </span>
+                      ) : (
+                        <span className="w-7 h-7 rounded-full border border-ner-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-ner-black text-xs">
+                          →
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
 
-        {/* Note */}
-        <div className="mt-6 pt-4 border-t border-ner-border flex items-center justify-between text-xs text-ner-black/50">
-          <span className="flex items-center gap-1.5">
-            <ShieldAlert className="w-3.5 h-3.5 text-ner-terracotta" />
-            {t.simulationActive}
-          </span>
-          <button
-            onClick={() => setIsRoleModalOpen(false)}
-            className="font-semibold text-ner-black hover:underline"
-          >
-            ✕
-          </button>
+        {/* Sticky Footer: "Prototype Simulation Mode Active" */}
+        <div className="modal-sticky-footer">
+          <div className="flex items-center justify-between text-xs text-ner-black/50">
+            <span className="flex items-center gap-1.5 font-medium">
+              <ShieldAlert className="w-3.5 h-3.5 text-ner-terracotta" />
+              {t.simulationActive}
+            </span>
+            <button
+              onClick={() => setIsRoleModalOpen(false)}
+              className="font-semibold text-ner-black hover:underline px-1.5 py-0.5 rounded hover:bg-ner-black/5 transition"
+            >
+              ✕
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -8,11 +8,15 @@ import {
   WellbeingCheckIn, 
   ActivityResult, 
   MemoryItem, 
-  FamilyMember 
+  FamilyMember,
+  ImportantPlace,
+  EmergencyContact,
+  EmergencySmsLog
 } from '../types';
 import { mockPatients } from '../data/patients';
 import { initialReminders } from '../data/reminders';
 import { mockMemories, mockFamilyMembers } from '../data/memories';
+import { initialImportantPlaces, initialEmergencyContacts } from '../data/places';
 import { AdaptiveCognitiveEngine } from '../services/ai/adaptiveEngine';
 import { evaluateConsecutiveNegativeResponses, WellbeingResponse, isNegativeMood } from '../utils/wellbeingUtils';
 
@@ -35,12 +39,25 @@ export interface RoleContextType {
   memories: MemoryItem[];
   addMemoryItem: (item: Omit<MemoryItem, 'id'>) => void;
   familyMembers: FamilyMember[];
+  importantPlaces: ImportantPlace[];
+  addImportantPlace: (place: Omit<ImportantPlace, 'id'>) => void;
+  updateImportantPlace: (id: string, updates: Partial<ImportantPlace>) => void;
+  deleteImportantPlace: (id: string) => void;
+  emergencyContacts: EmergencyContact[];
+  addEmergencyContact: (contact: Omit<EmergencyContact, 'id'>) => void;
+  deleteEmergencyContact: (id: string) => void;
+  emergencySmsLogs: EmergencySmsLog[];
+  sendEmergencySMS: (contactId: string, customText?: string) => Promise<EmergencySmsLog>;
   isRoleModalOpen: boolean;
   setIsRoleModalOpen: (open: boolean) => void;
   isAICompanionOpen: boolean;
   setIsAICompanionOpen: (open: boolean) => void;
   isHelpModalOpen: boolean;
   setIsHelpModalOpen: (open: boolean) => void;
+  isEmergencyModalOpen: boolean;
+  setIsEmergencyModalOpen: (open: boolean) => void;
+  isWalkthroughOpen: boolean;
+  setIsWalkthroughOpen: (open: boolean) => void;
   recordGameCompletion: (gameTitle: string, score: number) => void;
   recordActivityResult: (result: Omit<ActivityResult, 'id' | 'completedAt'>) => void;
   exportAllDataJSON: () => string;
@@ -113,6 +130,25 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isRoleModalOpen, setIsRoleModalOpen] = useState<boolean>(false);
   const [isAICompanionOpen, setIsAICompanionOpen] = useState<boolean>(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState<boolean>(false);
+  const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState<boolean>(false);
+  const [isWalkthroughOpen, setIsWalkthroughOpen] = useState<boolean>(() => {
+    return localStorage.getItem('smriti_walkthrough_completed') !== 'true';
+  });
+
+  const [importantPlaces, setImportantPlaces] = useState<ImportantPlace[]>(() => {
+    const saved = localStorage.getItem('neuro_places');
+    return saved ? JSON.parse(saved) : initialImportantPlaces;
+  });
+
+  const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>(() => {
+    const saved = localStorage.getItem('neuro_emergency_contacts');
+    return saved ? JSON.parse(saved) : initialEmergencyContacts;
+  });
+
+  const [emergencySmsLogs, setEmergencySmsLogs] = useState<EmergencySmsLog[]>(() => {
+    const saved = localStorage.getItem('neuro_sms_logs');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   // Sync to local storage for offline resilience
   useEffect(() => {
@@ -134,6 +170,18 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     localStorage.setItem('neuro_active_patient', JSON.stringify(activePatient));
   }, [activePatient]);
+
+  useEffect(() => {
+    localStorage.setItem('neuro_places', JSON.stringify(importantPlaces));
+  }, [importantPlaces]);
+
+  useEffect(() => {
+    localStorage.setItem('neuro_emergency_contacts', JSON.stringify(emergencyContacts));
+  }, [emergencyContacts]);
+
+  useEffect(() => {
+    localStorage.setItem('neuro_sms_logs', JSON.stringify(emergencySmsLogs));
+  }, [emergencySmsLogs]);
 
   const setRole = (newRole: UserRole) => {
     setRoleState(newRole);
@@ -331,16 +379,81 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return JSON.stringify(payload, null, 2);
   };
 
+  const addImportantPlace = (place: Omit<ImportantPlace, 'id'>) => {
+    const newPlace: ImportantPlace = {
+      ...place,
+      id: `plc-${Date.now()}`
+    };
+    setImportantPlaces(prev => [newPlace, ...prev]);
+  };
+
+  const updateImportantPlace = (id: string, updates: Partial<ImportantPlace>) => {
+    setImportantPlaces(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
+  };
+
+  const deleteImportantPlace = (id: string) => {
+    setImportantPlaces(prev => prev.filter(p => p.id !== id));
+  };
+
+  const addEmergencyContact = (contact: Omit<EmergencyContact, 'id'>) => {
+    const newContact: EmergencyContact = {
+      ...contact,
+      id: `ec-${Date.now()}`
+    };
+    setEmergencyContacts(prev => [...prev, newContact]);
+  };
+
+  const deleteEmergencyContact = (id: string) => {
+    setEmergencyContacts(prev => prev.filter(c => c.id !== id));
+  };
+
+  const sendEmergencySMS = async (contactId: string, customText?: string): Promise<EmergencySmsLog> => {
+    const contact = emergencyContacts.find(c => c.id === contactId) || emergencyContacts[0];
+    const message = customText || `Smriti Care alert: ${activePatient.name} may need assistance. Please check in on them.`;
+
+    const newLog: EmergencySmsLog = {
+      id: `sms-${Date.now()}`,
+      contactId: contact ? contact.id : 'unknown',
+      contactName: contact ? contact.name : 'Emergency Contact',
+      phoneNumber: contact ? contact.phone : '+91 98640 12345',
+      message,
+      status: 'delivered',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      confirmedByUser: true
+    };
+
+    const newAlert: CaregiverAlert = {
+      id: `alt-${Date.now()}`,
+      type: 'help_request',
+      title: '🚨 Emergency SMS Triggered',
+      message: `SMS dispatched to ${newLog.contactName} (${newLog.phoneNumber}): "${message}"`,
+      severity: 'urgent',
+      createdAt: 'Just now',
+      reviewed: false,
+      actionLabel: `Call ${newLog.contactName}`
+    };
+
+    setAlerts(prev => [newAlert, ...prev]);
+    setEmergencySmsLogs(prev => [newLog, ...prev]);
+    return newLog;
+  };
+
   const clearAllLocalData = () => {
     localStorage.removeItem('neuro_reminders');
     localStorage.removeItem('neuro_alerts');
     localStorage.removeItem('neuro_wellbeing');
     localStorage.removeItem('neuro_memories');
     localStorage.removeItem('neuro_active_patient');
+    localStorage.removeItem('neuro_places');
+    localStorage.removeItem('neuro_emergency_contacts');
+    localStorage.removeItem('neuro_sms_logs');
     setReminders(initialReminders);
     setAlerts(initialAlertsList);
     setMemories(mockMemories);
     setActivePatient(mockPatients[0]);
+    setImportantPlaces(initialImportantPlaces);
+    setEmergencyContacts(initialEmergencyContacts);
+    setEmergencySmsLogs([]);
   };
 
   return (
@@ -364,12 +477,25 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children
         memories,
         addMemoryItem,
         familyMembers,
+        importantPlaces,
+        addImportantPlace,
+        updateImportantPlace,
+        deleteImportantPlace,
+        emergencyContacts,
+        addEmergencyContact,
+        deleteEmergencyContact,
+        emergencySmsLogs,
+        sendEmergencySMS,
         isRoleModalOpen,
         setIsRoleModalOpen,
         isAICompanionOpen,
         setIsAICompanionOpen,
         isHelpModalOpen,
         setIsHelpModalOpen,
+        isEmergencyModalOpen,
+        setIsEmergencyModalOpen,
+        isWalkthroughOpen,
+        setIsWalkthroughOpen,
         recordGameCompletion,
         recordActivityResult,
         exportAllDataJSON,

@@ -44,14 +44,16 @@ export const Navbar: React.FC = () => {
 
   const currentLangMeta = nerLanguages.find((l) => l.code === language) || nerLanguages[0];
 
-  const navLinks = [
+  const navLinks: { label: string; path: string; isSecondary?: boolean }[] = [
     { label: t.navHome, path: '/' },
     { label: t.navCare, path: '/patient' },
     { label: t.navGames, path: '/games' },
     { label: t.navMemory, path: '/memory' },
+    { label: 'Places', path: '/places' },
     { label: t.navProgress, path: '/progress' },
-    { label: t.navCircle, path: '/caregiver' },
-    { label: t.navDoctor, path: '/doctor' },
+    { label: t.navCircle, path: '/caregiver', isSecondary: true },
+    { label: t.navDoctor, path: '/doctor', isSecondary: true },
+    { label: 'Presentation', path: '/presentation', isSecondary: true },
   ];
 
   const getRoleLabel = () => {
@@ -61,79 +63,77 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-3 sm:top-5 left-1/2 -translate-x-1/2 z-50 w-[96%] max-w-6xl transition-all duration-300 pointer-events-none">
-      <div className="frost-white-intense rounded-full px-3 sm:px-5 py-2 shadow-xl border border-ner-border/90 flex items-center justify-between gap-3 pointer-events-auto">
-        
-        {/* Left: Nothing-style Dot-Matrix Glyph + Logo */}
-        <Link 
-          to="/"
-          className="flex items-center gap-2.5 group focus:outline-none shrink-0"
-        >
-          {/* Authentic dot matrix icon SVG */}
-          <div className="w-8 h-8 rounded-full bg-ner-black text-white flex items-center justify-center p-1.5 shadow-sm group-hover:bg-ner-terracotta transition-colors">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="3" cy="3" r="1.5" fill="currentColor" />
-              <circle cx="8" cy="3" r="1.5" fill="currentColor" />
-              <circle cx="13" cy="3" r="1.5" fill="currentColor" />
-              <circle cx="3" cy="8" r="1.5" fill="currentColor" />
-              <circle cx="8" cy="8" r="1.5" fill="#DE4A30" />
-              <circle cx="13" cy="8" r="1.5" fill="currentColor" />
-              <circle cx="3" cy="13" r="1.5" fill="currentColor" />
-              <circle cx="8" cy="13" r="1.5" fill="currentColor" />
-              <circle cx="13" cy="13" r="1.5" fill="currentColor" />
-            </svg>
-          </div>
+    <>
+      <header className="navbar">
+        {/* Left: Logo wrapper (SMRITICARE (R)) */}
+        <div className="navbar-left">
+          <Link 
+            to="/"
+            className="flex items-center gap-2.5 group focus:outline-none"
+          >
+            <div className="w-8 h-8 rounded-full bg-ner-black text-white flex items-center justify-center p-1.5 shadow-xs group-hover:bg-ner-terracotta transition-colors shrink-0">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="3" cy="3" r="1.5" fill="currentColor" />
+                <circle cx="8" cy="3" r="1.5" fill="currentColor" />
+                <circle cx="13" cy="3" r="1.5" fill="currentColor" />
+                <circle cx="3" cy="8" r="1.5" fill="currentColor" />
+                <circle cx="8" cy="8" r="1.5" fill="#DE4A30" />
+                <circle cx="13" cy="8" r="1.5" fill="currentColor" />
+                <circle cx="3" cy="13" r="1.5" fill="currentColor" />
+                <circle cx="8" cy="13" r="1.5" fill="currentColor" />
+                <circle cx="13" cy="13" r="1.5" fill="currentColor" />
+              </svg>
+            </div>
 
-          <div className="flex flex-col">
-            <span className="font-mono text-xs sm:text-sm font-bold tracking-widest text-ner-black uppercase group-hover:text-ner-terracotta transition-colors">
-              {t.appName.toUpperCase()}
-            </span>
-          </div>
-          <span className="hidden md:inline-block text-[10px] text-ner-black/40 font-mono pl-1 uppercase tracking-wider">
-            (R)
-          </span>
-        </Link>
+            <div className="logo-wrapper">
+              <span className="font-mono text-xs sm:text-sm font-bold tracking-widest text-ner-black uppercase group-hover:text-ner-terracotta transition-colors">
+                {t.appName.toUpperCase()}
+              </span>
+              <span className="logo-r-symbol font-mono font-medium">
+                (R)
+              </span>
+            </div>
+          </Link>
+        </div>
 
-        {/* Center: Desktop Navigation Bar */}
-        <nav className="hidden lg:flex items-center gap-1 bg-ner-offwhite/70 p-1 rounded-full border border-ner-border/60">
-          {navLinks.map((link) => {
-            const isActive = location.pathname === link.path || 
-              (link.path !== '/' && location.pathname.startsWith(link.path));
-            return (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium tracking-wide transition-all duration-200 ${
-                  isActive
-                    ? 'bg-ner-black text-white shadow-sm font-semibold'
-                    : 'text-ner-black/70 hover:text-ner-black hover:bg-black/5'
-                }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
-        </nav>
+        {/* Center: Navigation Links (Visible on screens > 1440px) */}
+        <div className="navbar-center">
+          <nav className="nav-links">
+            {navLinks.map((link) => {
+              const isActive = location.pathname === link.path || 
+                (link.path !== '/' && location.pathname.startsWith(link.path));
+              return (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`nav-link ${isActive ? 'active' : ''} ${link.isSecondary ? 'hidden 2xl:inline-flex' : 'inline-flex'}`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
 
-        {/* Right: Actions, Role Pill & Auth */}
-        <div className="flex items-center gap-1 sm:gap-2">
+        {/* Right: Action Buttons (PATIENT, AI Demo, SIGN IN, English, Gear) & Hamburger */}
+        <div className="navbar-right">
           {/* Role Pill Switcher */}
           <button
             onClick={() => setIsRoleModalOpen(true)}
-            className="px-2 sm:px-3 py-1.5 rounded-full bg-ner-offwhite hover:bg-white border border-ner-border flex items-center gap-1 sm:gap-1.5 text-xs font-semibold text-ner-black transition-all shadow-sm active:scale-95"
+            className="nav-btn h-[38px] px-3 rounded-full bg-ner-offwhite/90 hover:bg-white border border-ner-border/80 flex items-center gap-1.5 text-xs font-semibold text-ner-black shadow-xs shrink-0"
             title={t.navRoleSwitcher}
           >
             {role === 'patient' && <User className="w-3.5 h-3.5 text-ner-terracotta shrink-0" />}
             {role === 'caregiver' && <Users className="w-3.5 h-3.5 text-ner-sage shrink-0" />}
             {role === 'doctor' && <Stethoscope className="w-3.5 h-3.5 text-ner-calmBlue shrink-0" />}
-            <span className="text-[10px] sm:text-[11px] font-mono font-bold uppercase">{getRoleLabel()}</span>
+            <span className="text-[11px] font-mono font-bold uppercase">{getRoleLabel()}</span>
             <span className="hidden sm:inline text-[10px] text-ner-terracotta font-mono underline ml-0.5">{t.navSwitch}</span>
           </button>
 
           {/* AI Memory Companion Quick Launcher */}
           <button
             onClick={() => setIsAICompanionOpen(true)}
-            className="hidden md:flex px-3 py-1.5 rounded-full bg-ner-black text-white hover:bg-ner-black/85 items-center gap-1.5 text-xs font-medium transition-all shadow-sm active:scale-95"
+            className="nav-btn hidden sm:flex h-[38px] px-3.5 rounded-full bg-ner-black text-white hover:bg-ner-black/90 items-center gap-1.5 text-xs font-medium shadow-xs shrink-0"
             title={t.aiCompanionTitle}
           >
             <Bot className="w-3.5 h-3.5 text-ner-terracotta" />
@@ -143,16 +143,16 @@ export const Navbar: React.FC = () => {
 
           {/* Authentication Pill (Sign In / User Profile) */}
           {isAuthenticated && user ? (
-            <div className="flex items-center gap-1 pl-0.5">
+            <div className="flex items-center gap-1 shrink-0">
               <span 
-                className="hidden sm:inline-block px-2.5 py-1 rounded-full bg-ner-black/5 border border-ner-border text-[11px] font-mono font-bold text-ner-black max-w-[110px] truncate"
+                className="hidden sm:inline-flex items-center h-[38px] px-3 rounded-full bg-ner-black/5 border border-ner-border text-[11px] font-mono font-bold text-ner-black max-w-[110px] truncate"
                 title={`Signed in as ${user.name} (${user.email})`}
               >
                 {user.name.split(' ')[0]}
               </span>
               <button
                 onClick={signOut}
-                className="p-1.5 sm:p-2 rounded-full hover:bg-rose-50 text-ner-black/70 hover:text-rose-600 transition-colors"
+                className="nav-btn w-[38px] h-[38px] rounded-full hover:bg-rose-50 text-ner-black/70 hover:text-rose-600 border border-ner-border/60 flex items-center justify-center transition-colors shrink-0"
                 title={t.navLogout}
                 aria-label={t.navLogout}
               >
@@ -162,11 +162,7 @@ export const Navbar: React.FC = () => {
           ) : (
             <Link
               to="/login"
-              className={`hidden sm:flex px-3 py-1.5 rounded-full text-xs font-mono font-bold uppercase tracking-wider items-center gap-1.5 transition-all shadow-sm active:scale-95 ${
-                location.pathname === '/login'
-                  ? 'bg-ner-black text-white'
-                  : 'bg-ner-offwhite hover:bg-ner-black hover:text-white border border-ner-border text-ner-black'
-              }`}
+              className="nav-btn-signin hidden sm:flex h-[38px] px-4 rounded-full text-xs font-mono font-bold uppercase tracking-wider items-center gap-1.5 shadow-xs shrink-0 bg-ner-black text-white"
               title={t.navLogin}
             >
               <LogIn className="w-3.5 h-3.5 text-ner-terracotta" />
@@ -175,15 +171,15 @@ export const Navbar: React.FC = () => {
           )}
 
           {/* Regional Language Switcher Pill */}
-          <div className="relative" ref={langMenuRef}>
+          <div className="relative hidden xl:block shrink-0" ref={langMenuRef}>
             <button
               onClick={() => setLangMenuOpen(!langMenuOpen)}
-              className="px-2 sm:px-2.5 py-1.5 rounded-full bg-ner-offwhite hover:bg-white border border-ner-border flex items-center gap-1 text-xs font-semibold text-ner-black transition-all shadow-sm active:scale-95"
+              className="nav-btn h-[38px] px-3 rounded-full bg-ner-offwhite hover:bg-white border border-ner-border flex items-center gap-1 text-xs font-semibold text-ner-black shadow-xs shrink-0"
               title="Switch Page & Narration Language"
               aria-label="Switch Language"
             >
               <Globe className="w-3.5 h-3.5 text-ner-calmBlue shrink-0" />
-              <span className="text-[10px] sm:text-[11px] font-mono font-bold max-w-[52px] sm:max-w-[70px] truncate">{currentLangMeta.native}</span>
+              <span className="text-[11px] font-mono font-bold max-w-[60px] truncate">{currentLangMeta.native}</span>
             </button>
 
             {langMenuOpen && (
@@ -221,48 +217,65 @@ export const Navbar: React.FC = () => {
           {/* Accessibility Settings */}
           <Link
             to="/settings"
-            className="p-1.5 sm:p-2 rounded-full hover:bg-ner-black/5 text-ner-black transition-colors"
+            className="nav-btn hidden xl:flex w-[38px] h-[38px] rounded-full bg-ner-offwhite hover:bg-white border border-ner-border items-center justify-center text-ner-black/70 hover:text-ner-black shadow-xs transition-colors shrink-0"
             title={t.navSettings}
             aria-label="Settings"
           >
             <Settings className="w-4 h-4" />
           </Link>
 
-          {/* Mobile hamburger button */}
+          {/* Hamburger button (Visible on screens <= 1440px) */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-1.5 rounded-full text-ner-black hover:bg-black/5 active:scale-95"
-            aria-label="Toggle menu"
+            className="navbar-hamburger-btn nav-btn w-[38px] h-[38px] rounded-full text-ner-black hover:bg-black/5 flex items-center justify-center shrink-0 border border-ner-border/80 bg-white"
+            aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
-      </div>
+      </header>
 
-      {/* Mobile Drawer Navigation */}
+      {/* Mobile/Tablet Drawer Navigation (All Navigation Links) */}
       {mobileMenuOpen && (
-        <div className="lg:hidden mt-2 max-w-sm mx-auto pointer-events-auto frost-white-intense rounded-3xl p-5 shadow-2xl border border-ner-border animate-fade-in">
-          <div className="flex flex-col gap-1.5">
-            {navLinks.map((link) => {
-              const isActive = location.pathname === link.path;
-              return (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`px-4 py-2.5 rounded-2xl text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-ner-black text-white font-semibold'
-                      : 'text-ner-black/80 hover:bg-black/5'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
+        <div className="navbar-mobile-drawer fixed top-[5.5rem] left-1/2 -translate-x-1/2 w-[95%] max-w-[1400px] z-[9998] rounded-3xl border border-ner-border/80 bg-white/95 backdrop-blur-xl px-6 py-6 shadow-2xl animate-scale-up">
+          <div className="flex flex-col gap-4 max-w-2xl mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {navLinks.map((link) => {
+                const isActive = location.pathname === link.path;
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-4 py-2.5 rounded-2xl text-sm font-medium transition-colors text-center ${
+                      isActive
+                        ? 'bg-ner-black text-white font-semibold shadow-xs'
+                        : 'text-ner-black/80 hover:bg-black/5 bg-ner-offwhite/60'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </div>
             
+            {/* Mobile AI Demo Launcher */}
+            <div className="pt-2 sm:hidden">
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setIsAICompanionOpen(true);
+                }}
+                className="w-full py-2.5 px-4 rounded-2xl bg-ner-black text-white text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm active:scale-98"
+              >
+                <Bot className="w-4 h-4 text-ner-terracotta" />
+                <span>{t.navAIDemo}</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-ner-sage animate-pulse" />
+              </button>
+            </div>
+
             {/* Mobile Auth Button */}
-            <div className="pt-2">
+            <div className="pt-1 sm:hidden">
               {isAuthenticated && user ? (
                 <div className="flex items-center justify-between p-3 rounded-2xl bg-ner-offwhite border border-ner-border text-xs">
                   <div>
@@ -292,7 +305,7 @@ export const Navbar: React.FC = () => {
             </div>
 
             {/* Mobile Regional Language Selector */}
-            <div className="pt-3 mt-2 border-t border-ner-border">
+            <div className="pt-3 border-t border-ner-border xl:hidden">
               <div className="flex items-center justify-between text-xs text-ner-black/60 px-1 mb-2">
                 <span className="font-mono uppercase font-bold text-[10px] tracking-wider text-ner-black/50 flex items-center gap-1">
                   <Globe className="w-3 h-3 text-ner-calmBlue" />
@@ -321,7 +334,7 @@ export const Navbar: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-3 mt-2 border-t border-ner-border flex items-center justify-between text-xs text-ner-black/60 px-2">
+            <div className="pt-2 border-t border-ner-border flex items-center justify-between text-xs text-ner-black/60 px-2">
               <span>{t.currentRole}: {getRoleLabel()}</span>
               <button 
                 onClick={() => {
@@ -336,6 +349,6 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
       )}
-    </header>
+    </>
   );
 };
