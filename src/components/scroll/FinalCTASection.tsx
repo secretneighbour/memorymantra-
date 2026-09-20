@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { useRole } from '../../context/RoleContext';
 import { useAccessibility } from '../../context/AccessibilityContext';
+import { useAuth } from '../../context/AuthContext';
+import { getRoleDashboardPath } from '../auth/AuthGuard';
 import { 
   ArrowRight, 
   Sparkles, 
@@ -15,7 +17,7 @@ import {
 export const FinalCTASection: React.FC = () => {
   const containerRef = useRef<HTMLElement>(null);
   const navigate = useNavigate();
-  const { setRole } = useRole();
+  const { role, setRole } = useRole();
   const { motion: contextMotion, t } = useAccessibility();
   const systemReducedMotion = useReducedMotion();
   const isReduced = contextMotion === 'reduced' || systemReducedMotion;
@@ -28,9 +30,23 @@ export const FinalCTASection: React.FC = () => {
   const scaleTransform = useTransform(scrollYProgress, [0.2, 0.9], [0.95, 1]);
   const opacityTransform = useTransform(scrollYProgress, [0.1, 0.8], [0.6, 1]);
 
+  const { isAuthenticated, user } = useAuth();
+
   const handleExplore = () => {
-    setRole('patient');
-    navigate('/patient');
+    if (isAuthenticated) {
+      navigate(getRoleDashboardPath(user?.role || role));
+    } else {
+      navigate('/login');
+    }
+  };
+
+  const handlePortalSelect = (targetRole: 'patient' | 'caregiver' | 'doctor', targetPath: string) => {
+    setRole(targetRole);
+    if (isAuthenticated) {
+      navigate(targetPath);
+    } else {
+      navigate(`/login?role=${targetRole}&redirect=${encodeURIComponent(targetPath)}`);
+    }
   };
 
   return (
@@ -81,7 +97,7 @@ export const FinalCTASection: React.FC = () => {
             onClick={handleExplore}
             className="h-14 sm:h-16 px-10 sm:px-12 rounded-full bg-ner-black text-white hover:bg-ner-black/85 transition-all text-xs sm:text-sm font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-3 shadow-2xl active:scale-95 group"
           >
-            <span>{t.finalCtaButton}</span>
+            <span>{isAuthenticated ? t.finalCtaButton : (t.navLogin ? `${t.navLogin} / ${t.start || 'Get Started'}` : 'Sign In / Get Started')}</span>
             <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-ner-terracotta group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
@@ -89,10 +105,7 @@ export const FinalCTASection: React.FC = () => {
         {/* Quick Portal Switcher Mini-Grid */}
         <div className="mt-14 pt-10 border-t border-ner-border/60 max-w-3xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-3">
           <button
-            onClick={() => {
-              setRole('patient');
-              navigate('/patient');
-            }}
+            onClick={() => handlePortalSelect('patient', '/patient')}
             className="p-3.5 rounded-2xl frost-white-intense border border-ner-border hover:border-ner-black transition text-left group"
           >
             <Brain className="w-4 h-4 text-ner-terracotta mb-1 group-hover:scale-110 transition-transform" />
@@ -101,10 +114,7 @@ export const FinalCTASection: React.FC = () => {
           </button>
 
           <button
-            onClick={() => {
-              setRole('caregiver');
-              navigate('/caregiver');
-            }}
+            onClick={() => handlePortalSelect('caregiver', '/caregiver')}
             className="p-3.5 rounded-2xl frost-white-intense border border-ner-border hover:border-ner-black transition text-left group"
           >
             <HeartHandshake className="w-4 h-4 text-ner-sage mb-1 group-hover:scale-110 transition-transform" />
@@ -113,10 +123,7 @@ export const FinalCTASection: React.FC = () => {
           </button>
 
           <button
-            onClick={() => {
-              setRole('doctor');
-              navigate('/doctor');
-            }}
+            onClick={() => handlePortalSelect('doctor', '/doctor')}
             className="p-3.5 rounded-2xl frost-white-intense border border-ner-border hover:border-ner-black transition text-left group"
           >
             <Stethoscope className="w-4 h-4 text-ner-calmBlue mb-1 group-hover:scale-110 transition-transform" />
@@ -125,7 +132,13 @@ export const FinalCTASection: React.FC = () => {
           </button>
 
           <button
-            onClick={() => navigate('/memory')}
+            onClick={() => {
+              if (isAuthenticated) {
+                navigate('/memory');
+              } else {
+                navigate('/login?redirect=%2Fmemory');
+              }
+            }}
             className="p-3.5 rounded-2xl frost-white-intense border border-ner-border hover:border-ner-black transition text-left group"
           >
             <FolderLock className="w-4 h-4 text-ner-warmAmber mb-1 group-hover:scale-110 transition-transform" />

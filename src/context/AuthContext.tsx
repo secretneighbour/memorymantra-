@@ -4,18 +4,20 @@ import {
   SignUpParams, 
   SignInParams, 
   AuthActionResult,
-  authServiceLayer,
+  supabase,
   isSupabaseConfigured,
-  mapSupabaseUser,
-  formatSupabaseAuthError
+  mapSupabaseUser
 } from '../lib/supabase';
+import { Session } from '@supabase/supabase-js';
 import { useRole } from './RoleContext';
 import { DEMO_ACCOUNTS, AuthCredentials } from '../services/authService';
 
-interface AuthContextType {
+export interface AuthContextType {
   user: AppUser | null;
-  isAuthenticated: boolean;
+  session: Session | null;
+  loading: boolean;
   isLoading: boolean;
+  isAuthenticated: boolean;
   error: string | null;
   unverifiedEmail: string | null;
   isConfigured: boolean;
@@ -36,280 +38,262 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { setRole } = useRole();
   const [user, setUser] = useState<AppUser | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
   const configured = isSupabaseConfigured();
 
-  // 1. Initial Session Check & Live Auth State Listener
+  // 1. Initial Session Check & Global onAuthStateChange Listener
   useEffect(() => {
     let isMounted = true;
 
-    async function initializeSession() {
-      try {
-        if (configured) {
-          const session = await authServiceLayer.getSession();
-          if (session?.user && isMounted) {
-            const currentUser = await authServiceLayer.getCurrentUser();
-            const resolvedUser = currentUser || mapSupabaseUser(session.user);
-            setUser(resolvedUser);
-            if (resolvedUser) setRole(resolvedUser.role);
-          }
-        } else {
-          // In non-configured mode, check local storage for remembered session
-          const localStored = localStorage.getItem('neuro_ner_sb_local_user');
-          if (localStored && isMounted) {
-            try {
-              const parsed: AppUser = JSON.parse(localStored);
-              setUser(parsed);
-              setRole(parsed.role);
-            } catch {
-              localStorage.removeItem('neuro_ner_sb_local_user');
-            }
-          }
-        }
-      } catch (err) {
-        console.error('Session initialization error:', err);
-      } finally {
-        if (isMounted) setIsLoading(false);
+    // Direct getSession from Supabase Auth v2
+    supabase.auth.getSession().then(({ data: { session: initSession }, error: sessionError }) => {
+      if (sessionError) {
+        console.warn('Initial Supabase session fetch warning:', sessionError.message);
       }
-    }
+      if (isMounted) {
+        setSession(initSession);
+        if (initSession?.user) {
+          const resolvedUser = mapSupabaseUser(initSession.user);
+          setUser(resolvedUser);
+          if (resolvedUser) setRole(resolvedUser.role);
+        }
+        setIsLoading(false);
+      }
+    }).catch((err) => {
+      console.warn('Session retrieval exception:', err);
+      if (isMounted) setIsLoading(false);
+    });
 
-    initializeSession();
-
-    // 2. Real-time GoTrue auth state subscription
-    const { data: authSubscription } = authServiceLayer.onAuthStateChange(async (event, session) => {
+    // Global real-time auth state subscription
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
       if (!isMounted) return;
 
-      if (session?.user) {
-        const currentUser = await authServiceLayer.getCurrentUser();
-        const resolvedUser = currentUser || mapSupabaseUser(session.user);
+      setSession(currentSession);
+      if (currentSession?.user) {
+        const resolvedUser = mapSupabaseUser(currentSession.user);
         setUser(resolvedUser);
         if (resolvedUser) setRole(resolvedUser.role);
-      } else if (event === 'SIGNED_OUT') {
+      } else if (event === 'SIGNED_OUT' || !currentSession) {
         setUser(null);
-        localStorage.removeItem('neuro_ner_sb_local_user');
+        setSession(null);
       }
+      setIsLoading(false);
     });
 
     return () => {
       isMounted = false;
-      authSubscription?.subscription?.unsubscribe();
+      subscription.unsubscribe();
     };
-  }, [configured, setRole]);
+  }, [setRole]);
 
-  // 3. Sign Up
+  // 2. Sign Up: Direct supabase.auth.signUp call
   const signUp = async (params: SignUpParams): Promise<AuthActionResult> => {
     setIsLoading(true);
     setError(null);
 
-    if (configured) {
-      const result = await authServiceLayer.signUp(params);
-      setIsLoading(false);
+    try {
+      const emailRedirectTo = typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined;
 
-      if (!result.success) {
-        setError(result.error || 'Registration failed');
-        return result;
-      }
-
-      if (result.requiresEmailVerification) {
-        setUnverifiedEmail(params.email.trim());
-      } else if (result.user) {
-        setUser(result.user);
-        setRole(result.user.role);
-      }
-
-      return result;
-    } else {
-      // Local development fallback
-      await new Promise((r) => setTimeout(r, 600));
-      const mockUser: AppUser = {
-        id: `usr-${Date.now()}`,
-        name: params.name.trim(),
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email: params.email.trim().toLowerCase(),
-        role: params.role,
-        location: params.location?.trim() || 'North Eastern Region',
-        emailConfirmed: true,
-        lastLogin: new Date().toISOString()
-      };
+        password: params.password,
+        options: {
+          data: {
+            name: params.name.trim(),
+            role: params.role,
+            location: params.location?.trim() || 'North Eastern Region',
+          },
+          emailRedirectTo,
+        },
+      });
 
-      localStorage.setItem('neuro_ner_sb_local_user', JSON.stringify(mockUser));
-      setUser(mockUser);
-      setRole(mockUser.role);
+      if (signUpError) {
+        setIsLoading(false);
+        setError(signUpError.message);
+        return {
+          success: false,
+          error: signUpError.message,
+        };
+      }
+
+      // Check if email confirmation is required (in v2: data.session is null when email confirmation is enabled)
+      const requiresEmailVerification = !data.session;
+      if (requiresEmailVerification) {
+        setUnverifiedEmail(params.email.trim());
+      }
+
+      const appUser = data.user ? mapSupabaseUser(data.user) : null;
+      if (appUser && data.session) {
+        setUser(appUser);
+        setRole(appUser.role);
+      }
+
       setIsLoading(false);
-
       return {
         success: true,
-        user: mockUser,
-        requiresEmailVerification: false
+        user: appUser || undefined,
+        requiresEmailVerification,
       };
+    } catch (err: any) {
+      setIsLoading(false);
+      const errMsg = err?.message || 'An unexpected error occurred during sign up.';
+      setError(errMsg);
+      return { success: false, error: errMsg };
     }
   };
 
-  // 4. Sign In
+  // 3. Sign In: Direct supabase.auth.signInWithPassword call
   const signIn = async (params: SignInParams): Promise<AuthActionResult> => {
     setIsLoading(true);
     setError(null);
 
-    if (configured) {
-      const result = await authServiceLayer.signIn(params);
+    try {
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: params.email.trim().toLowerCase(),
+        password: params.password,
+      });
 
-      if (!result.success) {
-        // Auto-provision demo account in Supabase if matched and missing
-        const matchedDemo = DEMO_ACCOUNTS.find(
-          (d) => d.email.toLowerCase() === params.email.trim().toLowerCase()
-        );
-
-        if (matchedDemo && result.error?.includes('incorrect')) {
-          const autoSignup = await authServiceLayer.signUp({
-            name: matchedDemo.user.name,
-            email: matchedDemo.email,
-            password: params.password,
-            role: matchedDemo.role,
-            location: matchedDemo.user.location
-          });
-
-          if (autoSignup.success) {
-            const retrySignIn = await authServiceLayer.signIn(params);
-            if (retrySignIn.success && retrySignIn.user) {
-              setIsLoading(false);
-              setUser(retrySignIn.user);
-              setRole(retrySignIn.user.role);
-              setUnverifiedEmail(null);
-              return retrySignIn;
-            }
-          }
-        }
-
+      if (signInError) {
         setIsLoading(false);
-        setError(result.error || 'Sign in failed');
-        if (result.requiresEmailVerification) {
+        setError(signInError.message);
+        const isEmailNotConfirmed = signInError.message.toLowerCase().includes('email not confirmed');
+        if (isEmailNotConfirmed) {
           setUnverifiedEmail(params.email.trim());
         }
-        return result;
+        return {
+          success: false,
+          error: signInError.message,
+          requiresEmailVerification: isEmailNotConfirmed,
+        };
       }
 
-      setIsLoading(false);
-      if (result.user) {
-        setUser(result.user);
-        setRole(result.user.role);
+      const appUser = data.user ? mapSupabaseUser(data.user) : null;
+      if (appUser) {
+        setUser(appUser);
+        setRole(appUser.role);
         setUnverifiedEmail(null);
       }
 
-      return result;
-    } else {
-      // Local development fallback
-      await new Promise((r) => setTimeout(r, 500));
-      const matchedDemo = DEMO_ACCOUNTS.find(
-        (a) => a.email.toLowerCase() === params.email.trim().toLowerCase()
-      );
-
-      const namePart = params.email.split('@')[0].replace(/[._]/g, ' ');
-      const fallbackName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-
-      const mockUser: AppUser = matchedDemo ? {
-        id: matchedDemo.user.id,
-        name: matchedDemo.user.name,
-        email: matchedDemo.email,
-        role: matchedDemo.role,
-        location: matchedDemo.user.location,
-        avatarUrl: matchedDemo.user.avatarUrl,
-        emailConfirmed: true,
-        lastLogin: new Date().toISOString()
-      } : {
-        id: `usr-${Date.now()}`,
-        name: fallbackName || 'Care Member',
-        email: params.email.trim().toLowerCase(),
-        role: params.email.includes('doc') ? 'doctor' : params.email.includes('care') ? 'caregiver' : 'patient',
-        location: 'North Eastern Region',
-        emailConfirmed: true,
-        lastLogin: new Date().toISOString()
-      };
-
-      localStorage.setItem('neuro_ner_sb_local_user', JSON.stringify(mockUser));
-      setUser(mockUser);
-      setRole(mockUser.role);
-      setUnverifiedEmail(null);
       setIsLoading(false);
-
       return {
         success: true,
-        user: mockUser
+        user: appUser || undefined,
       };
+    } catch (err: any) {
+      setIsLoading(false);
+      const errMsg = err?.message || 'An unexpected error occurred during sign in.';
+      setError(errMsg);
+      return { success: false, error: errMsg };
     }
   };
 
-  // 5. Sign Out
+  // 4. Sign Out: Direct supabase.auth.signOut call
   const signOut = async (): Promise<void> => {
     setIsLoading(true);
-    if (configured) {
-      await authServiceLayer.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error('Sign out error:', err);
+    } finally {
+      setUser(null);
+      setSession(null);
+      setIsLoading(false);
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+        window.location.href = '/login';
+      }
     }
-    localStorage.removeItem('neuro_ner_sb_local_user');
-    setUser(null);
-    setIsLoading(false);
   };
 
-  // 6. Resend Verification Email
+  // 5. Resend Verification Email: Direct supabase.auth.resend call
   const resendVerification = async (email: string) => {
-    if (configured) {
-      return await authServiceLayer.resendVerificationEmail(email);
-    } else {
+    try {
+      const emailRedirectTo = typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined;
+      const { error: resendError } = await supabase.auth.resend({
+        type: 'signup',
+        email: email.trim().toLowerCase(),
+        options: { emailRedirectTo },
+      });
+
+      if (resendError) {
+        return { success: false, message: resendError.message };
+      }
+
       return {
         success: true,
-        message: 'Verification link dispatched to your email address.'
+        message: 'Verification link dispatched to your email address.',
       };
+    } catch (err: any) {
+      return { success: false, message: err?.message || 'Failed to resend verification email.' };
     }
   };
 
-  // 7. Send Password Reset
+  // 6. Send Password Reset: Direct supabase.auth.resetPasswordForEmail call
   const sendPasswordReset = async (email: string) => {
-    if (configured) {
-      return await authServiceLayer.sendPasswordResetEmail(email);
-    } else {
+    try {
+      const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/reset-password` : undefined;
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
+        redirectTo,
+      });
+
+      if (resetError) {
+        return { success: false, message: resetError.message };
+      }
+
       return {
         success: true,
-        message: `Password reset instructions have been dispatched to ${email}.`
+        message: `Password reset instructions have been dispatched to ${email}.`,
       };
+    } catch (err: any) {
+      return { success: false, message: err?.message || 'Failed to send password reset email.' };
     }
   };
 
-  // 8. Update Password
+  // 7. Update Password: Direct supabase.auth.updateUser call
   const updatePassword = async (password: string) => {
-    if (configured) {
-      return await authServiceLayer.updatePassword(password);
-    } else {
+    try {
+      const { error: updateError } = await supabase.auth.updateUser({ password });
+
+      if (updateError) {
+        return { success: false, message: updateError.message };
+      }
+
       return {
         success: true,
-        message: 'Password updated successfully.'
+        message: 'Password updated successfully.',
       };
+    } catch (err: any) {
+      return { success: false, message: err?.message || 'Failed to update password.' };
     }
   };
 
-  // 9. Update User Profile
+  // 8. Update User Profile: Direct supabase.auth.updateUser call
   const updateUserProfile = async (updates: { name?: string; location?: string; avatarUrl?: string }) => {
     if (!user) return { success: false, error: 'No active user session' };
 
-    if (configured) {
-      const res = await authServiceLayer.updateProfile({
-        ...updates,
-        role: user.role
+    try {
+      const { data: authData, error: updateError } = await supabase.auth.updateUser({
+        data: {
+          ...(updates.name && { name: updates.name.trim() }),
+          ...(updates.location && { location: updates.location.trim() }),
+          ...(updates.avatarUrl && { avatar_url: updates.avatarUrl }),
+        },
       });
-      if (res.success && res.user) {
-        setUser(res.user);
-        return { success: true };
+
+      if (updateError) {
+        return { success: false, error: updateError.message };
       }
-      return { success: false, error: res.error };
-    } else {
-      const updatedUser: AppUser = {
-        ...user,
-        ...(updates.name && { name: updates.name.trim() }),
-        ...(updates.location && { location: updates.location.trim() }),
-        ...(updates.avatarUrl && { avatarUrl: updates.avatarUrl })
-      };
-      localStorage.setItem('neuro_ner_sb_local_user', JSON.stringify(updatedUser));
-      setUser(updatedUser);
+
+      if (authData.user) {
+        const updated = mapSupabaseUser(authData.user);
+        if (updated) setUser(updated);
+      }
+
       return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Failed to update profile.' };
     }
   };
 
@@ -329,8 +313,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: !!user,
+        session,
+        loading: isLoading,
         isLoading,
+        isAuthenticated: !!user || !!session,
         error,
         unverifiedEmail,
         isConfigured: configured,

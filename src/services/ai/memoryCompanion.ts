@@ -1,4 +1,5 @@
 import { Patient, ReminderItem, MemoryNote } from '../../types';
+import { FinOpsAICache, generateAICompositeKey, ELDERLY_QUOTA_FALLBACK } from '../../utils/finOpsShield';
 
 export interface PinnedMemoryContext {
   id: string;
@@ -138,12 +139,18 @@ export class MemoryCompanionService {
     history?: { role: 'user' | 'assistant'; text: string }[];
     mode?: 'companion' | 'memory_recall' | 'calm' | 'routine';
   }): Promise<CompanionResponse> {
-    const normalizedKey = `${params.language || 'en'}_${params.mode || 'companion'}_${params.message.trim().toLowerCase()}`;
-    const cached = getClientCachedResponse(normalizedKey);
+    // 1. Check FinOps 24-hour LocalStorage cache (keyed by prompt + patient context hash)
+    const compositeKey = generateAICompositeKey(params.message, {
+      patientName: params.patient.name,
+      mode: params.mode,
+      language: params.language,
+    });
+
+    const cached = FinOpsAICache.get<CompanionResponse>(compositeKey) || getClientCachedResponse(compositeKey);
     if (cached) {
       return {
         ...cached,
-        provider: `${cached.provider || 'gemini-3.8-flash'} (cached)`,
+        provider: `${cached.provider || 'gemini-3.8-flash'} (24h Cached)`,
       };
     }
 
@@ -177,6 +184,17 @@ export class MemoryCompanionService {
 
       clearTimeout(timeoutId);
 
+      if (response.status === 429) {
+        console.warn('[FinOps Shield] AI endpoint returned 429 Too Many Requests.');
+        return {
+          text: ELDERLY_QUOTA_FALLBACK.reply,
+          provider: 'quota-fallback',
+          actionRoute: ELDERLY_QUOTA_FALLBACK.actionRoute,
+          actionLabel: ELDERLY_QUOTA_FALLBACK.actionLabel,
+          suggestedReplies: ELDERLY_QUOTA_FALLBACK.suggestedReplies,
+        };
+      }
+
       if (!response.ok) {
         throw new Error(`Server returned status ${response.status}`);
       }
@@ -190,7 +208,9 @@ export class MemoryCompanionService {
           actionLabel: data.actionLabel,
           suggestedReplies: Array.isArray(data.suggestedReplies) ? data.suggestedReplies : undefined,
         };
-        setClientCachedResponse(normalizedKey, result);
+        // Persist to FinOps 24h LocalStorage cache & memory cache
+        FinOpsAICache.set(compositeKey, result);
+        setClientCachedResponse(compositeKey, result);
         return result;
       }
     } catch (err) {

@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useRole } from '../context/RoleContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { TTSButton } from '../components/TTSButton';
+import { 
+  StaggerContainer, 
+  StaggerItem 
+} from '../components/motion/MotionPrimitives';
 import { 
   Bell, 
   Plus, 
@@ -102,8 +107,8 @@ export const RemindersPage: React.FC = () => {
             onClick={() => setFilter(cat.id as any)}
             className={`text-xs px-4 py-2 rounded-full border transition-all font-semibold capitalize ${
               filter === cat.id
-                ? 'bg-ner-black text-white border-ner-black shadow-sm'
-                : 'bg-white text-ner-black/70 border-ner-border hover:border-ner-black/40'
+                ? 'bg-ner-black dark:bg-ner-terracotta text-white border-ner-black dark:border-ner-terracotta shadow-sm'
+                : 'bg-white dark:bg-gray-800 text-ner-black/70 dark:text-white border-ner-border dark:border-gray-700 hover:border-ner-black/40 dark:hover:bg-gray-700'
             }`}
           >
             {cat.label}
@@ -112,93 +117,109 @@ export const RemindersPage: React.FC = () => {
       </div>
 
       {/* Reminders List */}
-      <div className="space-y-4">
+      <StaggerContainer staggerDelay={0.05} className="space-y-4">
         {filtered.map((item) => (
-          <div
-            key={item.id}
-            onClick={() => toggleReminder(item.id)}
-            className={`frost-card rounded-3xl p-6 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer hover:border-ner-black/50 ${
-              item.completed ? 'opacity-65 bg-white/40' : 'shadow-sm'
-            }`}
-          >
-            <div className="flex items-start gap-4">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleReminder(item.id);
-                }}
-                className="mt-1 shrink-0"
-              >
-                {item.completed ? (
-                  <CheckCircle2 className="w-7 h-7 text-ner-sage fill-emerald-100" />
-                ) : (
-                  <Circle className="w-7 h-7 text-ner-black/30 hover:text-ner-black" />
-                )}
-              </button>
+          <StaggerItem key={item.id}>
+            <div
+              onClick={() => toggleReminder(item.id)}
+              className={`frost-card rounded-3xl p-6 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer hover:border-ner-black/50 tactile-card ${
+                item.completed ? 'opacity-65 bg-white/40' : 'shadow-sm'
+              }`}
+            >
+              <div className="flex items-start gap-4">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleReminder(item.id);
+                  }}
+                  className="mt-1 shrink-0 tactile-btn"
+                  aria-label={item.completed ? 'Mark incomplete' : 'Mark complete'}
+                >
+                  {item.completed ? (
+                    <motion.div
+                      initial={{ scale: 0.8 }}
+                      animate={{ scale: 1 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <CheckCircle2 className="w-7 h-7 text-ner-sage fill-emerald-100" />
+                    </motion.div>
+                  ) : (
+                    <Circle className="w-7 h-7 text-ner-black/30 hover:text-ner-black transition-colors" />
+                  )}
+                </button>
 
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded bg-ner-offwhite border border-ner-border font-bold text-ner-black">
-                    {getCategoryIcon(item.category)}
-                    {item.time}
-                  </span>
-                  <span className="text-xs uppercase font-mono tracking-wider text-ner-black/40">
-                    {item.category}
-                  </span>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded bg-ner-offwhite border border-ner-border font-bold text-ner-black">
+                      {getCategoryIcon(item.category)}
+                      {item.time}
+                    </span>
+                    <span className="text-xs uppercase font-mono tracking-wider text-ner-black/40">
+                      {item.category}
+                    </span>
+                  </div>
+
+                  <h3 className={`text-lg font-bold transition-colors ${item.completed ? 'line-through text-ner-black/50' : 'text-ner-black'}`}>
+                    {item.title}
+                  </h3>
+                  {item.doseOrNote && (
+                    <p className="text-xs text-ner-black/60 mt-0.5">{item.doseOrNote}</p>
+                  )}
                 </div>
+              </div>
 
-                <h3 className={`text-lg font-bold ${item.completed ? 'line-through text-ner-black/50' : 'text-ner-black'}`}>
-                  {item.title}
-                </h3>
-                {item.doseOrNote && (
-                  <p className="text-xs text-ner-black/60 mt-0.5">{item.doseOrNote}</p>
-                )}
+              {/* Right actions */}
+              <div className="flex items-center gap-3 self-end sm:self-center">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    playSimulatedChime(item.title);
+                  }}
+                  className="px-3 py-1.5 rounded-full border border-ner-border bg-white hover:bg-black/5 text-xs font-semibold text-ner-black inline-flex items-center gap-1.5 shadow-sm tactile-btn"
+                  title={t.remindersTestChime}
+                >
+                  <Bell className="w-3.5 h-3.5 text-ner-terracotta" />
+                  <span>{t.remindersTestChime}</span>
+                </button>
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteReminder(item.id);
+                  }}
+                  className="p-2 rounded-full hover:bg-black/5 text-ner-black/40 hover:text-red-600 transition-colors tactile-btn"
+                  title={t.remindersDeletePrompt}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             </div>
-
-            {/* Right actions */}
-            <div className="flex items-center gap-3 self-end sm:self-center">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  playSimulatedChime(item.title);
-                }}
-                className="px-3 py-1.5 rounded-full border border-ner-border bg-white hover:bg-black/5 text-xs font-semibold text-ner-black inline-flex items-center gap-1.5 shadow-sm active:scale-95"
-                title={t.remindersTestChime}
-              >
-                <Bell className="w-3.5 h-3.5 text-ner-terracotta" />
-                <span>{t.remindersTestChime}</span>
-              </button>
-
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deleteReminder(item.id);
-                }}
-                className="p-2 rounded-full hover:bg-black/5 text-ner-black/40 hover:text-red-600 transition-colors"
-                title={t.remindersDeletePrompt}
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+          </StaggerItem>
         ))}
-      </div>
+      </StaggerContainer>
 
       {/* Simulated Chime Toast */}
-      {chimePlayed && (
-        <div className="fixed bottom-8 right-8 z-50 p-4 rounded-2xl bg-ner-black text-white shadow-2xl border border-ner-terracotta flex items-center gap-3 animate-fade-in">
-          <div className="p-2 rounded-xl bg-ner-terracotta/20 text-ner-terracotta">
-            <Bell className="w-5 h-5 animate-bounce" />
-          </div>
-          <div>
-            <h4 className="font-bold text-xs font-mono uppercase tracking-wider text-ner-terracotta">
-              {t.remindersChimeTriggered}
-            </h4>
-            <p className="text-sm font-semibold">{chimePlayed}</p>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {chimePlayed && (
+          <motion.div
+            initial={{ opacity: 0, y: 16, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 12, scale: 0.98 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed bottom-8 right-8 z-50 p-4 rounded-2xl bg-ner-black text-white shadow-2xl border border-ner-terracotta flex items-center gap-3"
+          >
+            <div className="p-2 rounded-xl bg-ner-terracotta/20 text-ner-terracotta">
+              <Bell className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="font-bold text-xs font-mono uppercase tracking-wider text-ner-terracotta">
+                {t.remindersChimeTriggered}
+              </h4>
+              <p className="text-sm font-semibold">{chimePlayed}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

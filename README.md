@@ -23,6 +23,10 @@ Built with a high-contrast industrial aesthetic inspired by Nothing OS and Diete
    - [3. Fixed-Pinned Responsive Header & Navigation System](#3-fixed-pinned-responsive-header--navigation-system)
    - [4. Modal Layering & Stacking Context Fix (`z-index: 99999`)](#4-modal-layering--stacking-context-fix-z-index-99999)
    - [5. Multilingual Audio Auditioning & Speech Engine Stabilization](#5-multilingual-audio-auditioning--speech-engine-stabilization)
+   - [6. Production-Ready Supabase Auth (v2) Pipeline & Centralized Client](#6-production-ready-supabase-auth-v2-pipeline--centralized-client)
+   - [7. Unauthenticated-Only Landing Experience & Route Protection](#7-unauthenticated-only-landing-experience--route-protection)
+   - [8. Independent Accessibility Architecture (No Sign-In Required)](#8-independent-accessibility-architecture-no-sign-in-required)
+   - [9. Complete Premium Dark Mode & Button Styling System](#9-complete-premium-dark-mode--button-styling-system)
 6. [🧩 Comprehensive Modules Catalog](#-comprehensive-modules-catalog)
    - [1. Core Pages & Dashboards](#1-core-pages--dashboards)
    - [2. Dynamic User State & Central Identity Engine (`useCurrentUser`)](#2-dynamic-user-state--central-identity-engine-usecurrentuser)
@@ -295,9 +299,12 @@ Open the `.env` file in VS Code or any text editor (Notepad, nano, etc.). It sho
 # 1. Google Gemini AI (Optional for Advanced Reminiscence & Clinical AI)
 GEMINI_API_KEY=AIzaSyYourGeminiApiKeyHere
 
-# 2. Supabase Authentication & PostgreSQL Database (Optional for Cloud Sync)
+# 2. Supabase Authentication & PostgreSQL Database (Dual Vite & Next.js Support)
 VITE_SUPABASE_URL=https://your-project-id.supabase.co
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-public-key
+# Also seamlessly supported across environments:
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-public-key
 
 # 3. Google Maps Platform (Optional for Live Online Google Maps & Google Places Search)
 VITE_GOOGLE_MAPS_API_KEY=AIzaSyYourGoogleMapsApiKeyHere
@@ -485,6 +492,75 @@ This section provides an executive summary and technical breakdown of recent maj
 
 ---
 
+### 6. Production-Ready Supabase Auth (v2) Pipeline & Centralized Client
+* **Files Modified/Created:** `src/lib/supabaseClient.ts`, `src/lib/supabase.ts`, `src/context/AuthContext.tsx`, `src/pages/LoginPage.tsx`, `src/pages/SignupPage.tsx`, `vite.config.ts`
+* **The Problem:**
+  Previous authentication logic utilized custom intermediate wrappers that masked specific Supabase errors, had inconsistent environment variable detection between Vite and Next.js, and lacked robust email confirmation flow handling.
+* **Architecture & Solution:**
+  1. **Centralized Client (`src/lib/supabaseClient.ts`)**:
+     - Initialized once with `createClient` using environment variables.
+     - Dual environment compatibility: seamlessly resolves `NEXT_PUBLIC_SUPABASE_*` and `VITE_SUPABASE_*` across `import.meta.env` and `process.env`.
+     - Standardized PKCE auth flow, persistent `localStorage` session handling, and auto token refresh.
+  2. **Global Auth Context & Real-Time Listener (`src/context/AuthContext.tsx`)**:
+     - Global subscription using `supabase.auth.onAuthStateChange` to keep session state synchronized across tabs, refreshes, and auth events.
+     - Exposes `user`, `session`, `loading`, `signIn`, `signUp`, and `signOut` via `useAuth()`.
+  3. **Direct Sign In (`LoginPage.tsx`)**:
+     - Direct standard call to `supabase.auth.signInWithPassword({ email, password })`.
+     - Loading states with disabled button and spinner feedback.
+     - Direct Supabase `error.message` display, with automatic detection for unconfirmed email accounts.
+  4. **Direct Sign Up (`SignupPage.tsx`)**:
+     - Direct standard call to `supabase.auth.signUp(...)` with user metadata (`name`, `role`, `location`).
+     - Gracefully handles email verification flow (`data.session === null`), guiding users to check their inbox.
+  5. **Clean Session Destruction**:
+     - Standardized `signOut()` method destroying the Supabase session, clearing local auth context, and redirecting the user to `/login`.
+
+---
+
+### 7. Unauthenticated-Only Landing Experience & Route Protection
+* **Files Modified:** `src/components/auth/AuthGuard.tsx`, `src/App.tsx`, `src/pages/LandingPage.tsx`
+* **The Problem:**
+  Authenticated users were repeatedly shown the public introductory landing page, and unauthenticated visitors could attempt to access protected clinical and patient dashboards.
+* **Architecture & Solution:**
+  1. **Unauthenticated Landing Invariant**: The Introduction/Landing page (`/` and `/intro`) is strictly reserved for logged-out visitors.
+  2. **Immediate Dashboard Routing**: Once authenticated, users are immediately routed into their corresponding role dashboard (`/patient`, `/caregiver`, or `/doctor`) without flashing or showing the landing page.
+  3. **Route Protection Guards (`src/components/auth/AuthGuard.tsx`)**:
+     - `ProtectedRoute`: Verifies active session before rendering protected routes; redirects unauthenticated users to `/login` with a return URL.
+     - `PublicAuthRoute`: Prevents logged-in users from visiting `/login` and `/signup`, redirecting them to their dashboard.
+     - `PublicIntroRoute`: Blocks authenticated users from `/` and `/intro`, forwarding them straight into their care dashboard.
+
+---
+
+### 8. Independent Accessibility Architecture (No Sign-In Required)
+* **Files Modified:** `src/context/AccessibilityContext.tsx`, `src/components/AccessibilityModal.tsx`, `src/pages/LandingPage.tsx`, `src/components/Navbar.tsx`
+* **The Problem:**
+  Cognitive accessibility settings (text scaling, simple UI, contrast, voice assistance) should never require an account, as elderly users need accessible controls before they can even read or complete sign-in.
+* **Architecture & Solution:**
+  1. **Decoupled Accessibility**: The complete accessibility control suite is available directly from the unauthenticated landing page, navigation header, and modal dialogs.
+  2. **Full In-Browser Persistence**: Preferences are saved locally to `localStorage` (`smriti_accessibility_prefs`, `smriti_theme`, `smriti_font_size`) and persist across browser reloads, through sign-in, and after logout.
+  3. **Data Privacy**: No private patient or clinical telemetry is ever stored in accessibility preference stores.
+
+---
+
+### 9. Complete Premium Dark Mode & Button Styling System
+* **Files Modified:** `src/index.css`, `index.html`, `electron/main.ts`, `src/context/AccessibilityContext.tsx`, `src/components/Navbar.tsx`, `src/pages/LoginPage.tsx`, `src/pages/SignupPage.tsx`, `src/components/AccessibilityModal.tsx`
+* **The Problem:**
+  In dark mode, several option buttons, language cards, and form inputs retained light grey backgrounds with low-contrast dark text, disrupting the dark mode aesthetic.
+* **Architecture & Solution:**
+  1. **Foundational Color Palette**:
+     - Canvas Background: Near-black (`#0A0A0C`).
+     - Secondary Surfaces: Deep charcoal (`#141418`).
+     - Cards & Containers: Charcoal (`#17171C` / `rgba(23, 23, 28, 0.92)`).
+     - Typography: Pure white headings & body (`#FFFFFF`), soft light gray secondary (`#A1A1AA`), and strategic Smriti Care terracotta red (`#DE4A30`).
+  2. **Option & Standard Button Styling Pass**:
+     - Standard/option buttons in dark mode render with dark grey background (`#2A2A2A` / `dark:bg-gray-800`), crisp white text (`#FFFFFF`), and subtle dark borders (`#3F3F4A` / `dark:border-gray-700`).
+     - Selected/active states highlight with Smriti Care terracotta orange/red (`#DE4A30`) with white typography.
+     - Primary action buttons ("SIGN IN", "LISTEN ALOUD") preserve their bold terracotta styling.
+  3. **Anti-White-Flash Engineering**:
+     - Pre-render inline theme detection script in `index.html` applies `.dark` before React mounts.
+     - Desktop Electron window configured with `backgroundColor: '#0C0C0E'` to eliminate white flashes on desktop startup.
+
+---
+
 ## 🧩 Comprehensive Modules Catalog
 
 SmritiCare is structured into **23 comprehensive functional modules** covering client presentation, state management, cognitive game engines, AI therapy, clinical telemetry, regional inclusion, and native desktop integration:
@@ -507,10 +583,10 @@ SmritiCare is structured into **23 comprehensive functional modules** covering c
 | **Reminders & Routine Page** | `/src/pages/RemindersPage.tsx` | Daily schedule management interface for morning, afternoon, and evening medication, hydration goals, and doctor appointments with audio alarms. |
 | **Cognitive Progress Page** | `/src/pages/ProgressPage.tsx` | Patient and family progress overview with weekly activity heatmaps, cognitive domain radar charts, and milestone achievement badges. |
 | **Patient Profile Page** | `/src/pages/PatientProfilePage.tsx` | Medical history, emergency contacts, primary clinician contact, diagnosis stage, allergies, and caregiver circle management. |
-| **Landing & Orientation Page** | `/src/pages/LandingPage.tsx` | Public introduction page highlighting the **Personalized Memory-Assisted Cognitive Care (USP Section)** with 8 core pillars, 4-tier care ecosystem, clinical game methodology, accessibility features, and quick demo login access. |
-| **Authentication & Auth Pages** | `/src/pages/LoginPage.tsx`<br>`/src/pages/SignupPage.tsx`<br>`/src/pages/ForgotPasswordPage.tsx`<br>`/src/pages/ResetPasswordPage.tsx`<br>`/src/pages/EmailVerificationPage.tsx`<br>`/src/pages/AuthCallbackPage.tsx` | Complete authentication suite supporting email/password registration, password recovery, magic link verification, 3-tab role selector (Patient, Caregiver, Doctor), dynamic Visitor identity binding, and 1-Click Demo Accounts. |
+| **Landing & Orientation Page** | `/src/pages/LandingPage.tsx` | Unauthenticated-only introduction page highlighting the **Personalized Memory-Assisted Cognitive Care (USP Section)** with 8 core pillars, 4-tier care ecosystem, clinical game methodology, independent accessibility controls (no sign-in required), and quick demo login access. Guarded by `PublicIntroRoute`. |
+| **Authentication & Auth Pages** | `/src/pages/LoginPage.tsx`<br>`/src/pages/SignupPage.tsx`<br>`/src/pages/ForgotPasswordPage.tsx`<br>`/src/pages/ResetPasswordPage.tsx`<br>`/src/pages/EmailVerificationPage.tsx`<br>`/src/pages/AuthCallbackPage.tsx` | Production-ready authentication suite utilizing standard Supabase Auth v2 methods (`signInWithPassword`, `signUp`, `signOut`), direct error message reporting, loading spinners, graceful email confirmation flows, strict dark mode compliance, and `PublicAuthRoute` route protection. |
 | **Role Selection Portal** | `/src/pages/RoleSelectionPage.tsx` | Interactive switcher allowing instant role swapping between Patient, Caregiver, and Doctor for demonstration and multi-user environments. |
-| **Accessibility & Settings** | `/src/pages/SettingsPage.tsx` | Global accessibility preferences: Simple UI Mode toggle, 4-step fluid typography scaling (Small, Normal, Large, Extra Large) with live preview, Dyslexia font, High Contrast, and Replay Walkthrough. |
+| **Accessibility & Settings** | `/src/pages/SettingsPage.tsx` | Global accessibility preferences available without sign-in: Simple UI Mode toggle, 4-step fluid typography scaling (Small, Normal, Large, Extra Large) with live preview, Dyslexia font, High Contrast, Display Theme (Light/Dark), and Replay Walkthrough. |
 
 ---
 
@@ -655,11 +731,13 @@ SmritiCare is structured into **23 comprehensive functional modules** covering c
 ---
 
 ### 15. Multi-Role Authentication & User Security System
-* **Location:** `/src/pages/LoginPage.tsx`, `/src/pages/SignupPage.tsx`, `/src/context/AuthContext.tsx`, `/src/services/authService.ts`
+* **Location:** `/src/pages/LoginPage.tsx`, `/src/pages/SignupPage.tsx`, `/src/context/AuthContext.tsx`, `/src/lib/supabaseClient.ts`, `/src/components/auth/AuthGuard.tsx`
 * **Key Capabilities:**
-  - 3-Role operational modes: Patient, Caregiver, and Doctor.
-  - Supabase Auth integration with secure JWT session handling and password reset workflows.
-  - Instant 1-Click Demo Accounts for rapid testing.
+  - 3-Role operational modes: Patient, Caregiver, and Doctor with automatic route-directed entry.
+  - Production-ready Supabase Auth (v2) integration with PKCE flow, persistent session handling, and real-time `onAuthStateChange` synchronization.
+  - Direct `signInWithPassword` and `signUp` calls with instant inline error display and graceful email confirmation flows.
+  - Route Protection Architecture: `ProtectedRoute` guarding clinical and patient dashboards, and `PublicAuthRoute` redirecting authenticated users away from login/signup.
+  - Instant 1-Click Demo Accounts for testing without cloud credentials.
 
 ---
 

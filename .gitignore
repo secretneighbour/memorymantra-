@@ -18,3 +18,6 @@ builder-debug.yml
 .env
 .env.*
 !.env.example
+
+# Scratch & temporary scripts
+scratch/

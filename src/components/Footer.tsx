@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAccessibility } from '../context/AccessibilityContext';
+import { useAuth } from '../context/AuthContext';
 
 export const Footer: React.FC = () => {
   const { language, t } = useAccessibility();
+  const { isAuthenticated } = useAuth();
 
   // Localized regional pill labels for compact, single-line alignment
   const regionPillLabels: Record<string, string> = {
@@ -51,47 +53,88 @@ export const Footer: React.FC = () => {
 
         {/* Center Responsive Navigation Links */}
         <nav className="flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-8 gap-y-3 max-w-3xl mx-auto text-sm sm:text-base font-light tracking-tight text-center">
-          <Link 
-            to="/patient" 
-            className="transition-all duration-200 text-white/70 hover:text-white hover:tracking-wide"
-          >
-            {t.footerCognitiveCare}
-          </Link>
-          <span className="text-white/20 hidden sm:inline">•</span>
-          <Link 
-            to="/games" 
-            className="transition-all duration-200 text-white/70 hover:text-white hover:tracking-wide"
-          >
-            {t.footerTherapeuticGames}
-          </Link>
-          <span className="text-white/20 hidden sm:inline">•</span>
-          <Link 
-            to="/memory" 
-            className="transition-all duration-200 text-white/70 hover:text-white hover:tracking-wide"
-          >
-            {t.footerMemoryCompanion}
-          </Link>
-          <span className="text-white/20 hidden sm:inline">•</span>
-          <Link 
-            to="/progress" 
-            className="transition-all duration-200 text-white/70 hover:text-white hover:tracking-wide"
-          >
-            {t.footerLongitudinalProgress}
-          </Link>
-          <span className="text-white/20 hidden sm:inline">•</span>
-          <Link 
-            to="/caregiver" 
-            className="transition-all duration-200 text-white/70 hover:text-white hover:tracking-wide"
-          >
-            {t.footerCareCircle}
-          </Link>
-          <span className="text-white/20 hidden sm:inline">•</span>
-          <Link 
-            to="/doctor" 
-            className="transition-all duration-200 text-white/70 hover:text-white hover:tracking-wide"
-          >
-            {t.footerClinicianRoster}
-          </Link>
+          {isAuthenticated ? (
+            <>
+              <Link 
+                to="/patient" 
+                className="transition-all duration-200 text-white/70 hover:text-white hover:tracking-wide"
+              >
+                {t.footerCognitiveCare}
+              </Link>
+              <span className="text-white/20 hidden sm:inline">•</span>
+              <Link 
+                to="/games" 
+                className="transition-all duration-200 text-white/70 hover:text-white hover:tracking-wide"
+              >
+                {t.footerTherapeuticGames}
+              </Link>
+              <span className="text-white/20 hidden sm:inline">•</span>
+              <Link 
+                to="/memory" 
+                className="transition-all duration-200 text-white/70 hover:text-white hover:tracking-wide"
+              >
+                {t.footerMemoryCompanion}
+              </Link>
+              <span className="text-white/20 hidden sm:inline">•</span>
+              <Link 
+                to="/progress" 
+                className="transition-all duration-200 text-white/70 hover:text-white hover:tracking-wide"
+              >
+                {t.footerLongitudinalProgress}
+              </Link>
+              <span className="text-white/20 hidden sm:inline">•</span>
+              <Link 
+                to="/caregiver" 
+                className="transition-all duration-200 text-white/70 hover:text-white hover:tracking-wide"
+              >
+                {t.footerCareCircle}
+              </Link>
+              <span className="text-white/20 hidden sm:inline">•</span>
+              <Link 
+                to="/doctor" 
+                className="transition-all duration-200 text-white/70 hover:text-white hover:tracking-wide"
+              >
+                {t.footerClinicianRoster}
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link 
+                to="/" 
+                className="transition-all duration-200 text-white/70 hover:text-white hover:tracking-wide"
+              >
+                {t.navHome || 'Overview'}
+              </Link>
+              <span className="text-white/20 hidden sm:inline">•</span>
+              <Link 
+                to="/presentation" 
+                className="transition-all duration-200 text-white/70 hover:text-white hover:tracking-wide"
+              >
+                Presentation
+              </Link>
+              <span className="text-white/20 hidden sm:inline">•</span>
+              <Link 
+                to="/login" 
+                className="transition-all duration-200 text-white/70 hover:text-white hover:tracking-wide"
+              >
+                {t.navLogin || 'Sign In'}
+              </Link>
+              <span className="text-white/20 hidden sm:inline">•</span>
+              <Link 
+                to="/signup" 
+                className="transition-all duration-200 text-white/70 hover:text-white hover:tracking-wide"
+              >
+                {t.navSignup || 'Register'}
+              </Link>
+              <span className="text-white/20 hidden sm:inline">•</span>
+              <Link 
+                to="/settings" 
+                className="transition-all duration-200 text-white/70 hover:text-white hover:tracking-wide"
+              >
+                {t.navSettings || 'Accessibility'}
+              </Link>
+            </>
+          )}
         </nav>
 
         {/* Action Callout Pills - Single line, consistent height and pristine alignment */}

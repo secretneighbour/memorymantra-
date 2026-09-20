@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { mockPatients } from '../data/patients';
 import { Patient } from '../types';
 import { useAccessibility } from '../context/AccessibilityContext';
+import { 
+  StaggerContainer, 
+  StaggerItem 
+} from '../components/motion/MotionPrimitives';
 import { 
   Stethoscope, 
   Search, 
@@ -40,7 +45,13 @@ import {
 } from 'recharts';
 
 export const DoctorDashboard: React.FC = () => {
-  const { t } = useAccessibility();
+  const { t, theme } = useAccessibility();
+  const isDark = theme === 'dark';
+
+  const chartGridColor = isDark ? '#272732' : '#E2E2DC';
+  const chartTextColor = isDark ? '#A1A1AA' : '#111111';
+  const chartTooltipBg = isDark ? '#17171C' : '#FFFFFF';
+  const chartTooltipBorder = isDark ? '1px solid #DE4A30' : '1px solid #E2E2DC';
   const [patientsList, setPatientsList] = useState<Patient[]>(mockPatients);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPatientModal, setSelectedPatientModal] = useState<Patient | null>(null);
@@ -137,42 +148,46 @@ NOTE: This report is generated from supportive cognitive exercise telemetry and 
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-32 sm:pb-24 px-4 sm:px-8 max-w-7xl mx-auto animate-fade-in">
-      {/* Header */}
-      <div className="frost-card rounded-3xl p-6 sm:p-10 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-ner-calmBlue/10 text-ner-calmBlue font-bold">
-              {t.doctorPatientRoster}
-            </span>
-            <span className="text-xs text-ner-black/40 font-mono">{t.doctorTitle}</span>
+    <div className="min-h-screen pt-24 pb-32 sm:pb-24 px-4 sm:px-8 max-w-7xl mx-auto">
+      <StaggerContainer staggerDelay={0.05} className="space-y-8">
+        {/* Header */}
+        <StaggerItem>
+          <div className="frost-card rounded-3xl p-6 sm:p-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6 tactile-card">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-ner-calmBlue/10 text-ner-calmBlue font-bold">
+                  {t.doctorPatientRoster}
+                </span>
+                <span className="text-xs text-ner-black/40 font-mono">{t.doctorTitle}</span>
+              </div>
+              <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-ner-black">
+                {t.doctorTitle}
+              </h1>
+              <p className="text-ner-black/70 text-base sm:text-lg mt-2 max-w-2xl font-normal">
+                {t.doctorSubtitle}
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-white border border-ner-border text-xs font-mono text-ner-black/60 max-w-xs">
+              <div className="flex items-center gap-1.5 text-ner-terracotta font-bold mb-1">
+                <ShieldAlert className="w-4 h-4" />
+                <span>{t.encouragement}</span>
+              </div>
+              {t.doctorCognitiveTrajectory}
+            </div>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-ner-black">
-            {t.doctorTitle}
-          </h1>
-          <p className="text-ner-black/70 text-base sm:text-lg mt-2 max-w-2xl font-normal">
-            {t.doctorSubtitle}
-          </p>
-        </div>
+        </StaggerItem>
 
-        <div className="p-4 rounded-2xl bg-white border border-ner-border text-xs font-mono text-ner-black/60 max-w-xs">
-          <div className="flex items-center gap-1.5 text-ner-terracotta font-bold mb-1">
-            <ShieldAlert className="w-4 h-4" />
-            <span>{t.encouragement}</span>
+        {exportFeedback && (
+          <div className="p-4 rounded-2xl bg-emerald-50 border border-ner-sage text-ner-sage font-mono text-xs font-bold flex items-center gap-2 animate-fade-in">
+            <CheckCircle2 className="w-5 h-5 shrink-0" />
+            <span>{exportFeedback}</span>
           </div>
-          {t.doctorCognitiveTrajectory}
-        </div>
-      </div>
+        )}
 
-      {exportFeedback && (
-        <div className="mb-6 p-4 rounded-2xl bg-emerald-50 border border-ner-sage text-ner-sage font-mono text-xs font-bold flex items-center gap-2 animate-fade-in">
-          <CheckCircle2 className="w-5 h-5 shrink-0" />
-          <span>{exportFeedback}</span>
-        </div>
-      )}
-
-      {/* Analytics KPI Tiles */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 mb-8">
+        {/* Analytics KPI Tiles */}
+        <StaggerItem>
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
         <div className="frost-card rounded-3xl p-6">
           <span className="text-xs uppercase font-mono tracking-wider text-ner-black/40 block mb-1">
             Enrolled Patients
@@ -209,7 +224,7 @@ NOTE: This report is generated from supportive cognitive exercise telemetry and 
           </span>
         </div>
 
-        <div className="frost-card rounded-3xl p-6">
+        <div className="frost-card rounded-3xl p-6 tactile-card">
           <span className="text-xs uppercase font-mono tracking-wider text-ner-black/40 block mb-1">
             Clinical Tele-Alerts
           </span>
@@ -221,9 +236,11 @@ NOTE: This report is generated from supportive cognitive exercise telemetry and 
           </span>
         </div>
       </div>
+    </StaggerItem>
 
-      {/* Patient Table with Search */}
-      <div className="frost-card rounded-3xl p-6 sm:p-8 shadow-sm mb-8">
+    {/* Patient Table with Search */}
+    <StaggerItem>
+      <div className="frost-card rounded-3xl p-6 sm:p-8 shadow-sm mb-8 tactile-card">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
             <h2 className="text-xl font-bold text-ner-black">
@@ -241,7 +258,7 @@ NOTE: This report is generated from supportive cognitive exercise telemetry and 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by name, state..."
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-white border border-ner-border text-xs focus:outline-none focus:border-ner-black"
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-white border border-ner-border text-xs focus:outline-none focus:border-ner-black input-smooth"
             />
           </div>
         </div>
@@ -249,61 +266,65 @@ NOTE: This report is generated from supportive cognitive exercise telemetry and 
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead>
-              <tr className="border-b border-ner-border font-mono text-xs uppercase tracking-wider text-ner-black/50">
-                <th className="pb-3 pl-2">Patient</th>
-                <th className="pb-3">Age / State</th>
-                <th className="pb-3">Support Stage</th>
-                <th className="pb-3 text-center">Streak</th>
-                <th className="pb-3 text-center">Score</th>
-                <th className="pb-3">Last Active</th>
-                <th className="pb-3 text-right pr-2">Action</th>
+            <thead className="text-[11px] uppercase font-mono tracking-wider text-ner-black/50 border-b border-ner-border">
+              <tr>
+                <th className="pb-3 font-semibold">Patient</th>
+                <th className="pb-3 font-semibold">State / City</th>
+                <th className="pb-3 font-semibold">Adherence</th>
+                <th className="pb-3 font-semibold">Weekly Score</th>
+                <th className="pb-3 font-semibold">Telemetry Status</th>
+                <th className="pb-3 font-semibold text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ner-border/60">
-              {filtered.map((patient) => (
+              {filtered.map((p) => (
                 <tr
-                  key={patient.id}
-                  onClick={() => setSelectedPatientModal(patient)}
-                  className="hover:bg-white/80 transition-colors cursor-pointer group"
+                  key={p.id}
+                  onClick={() => setSelectedPatientModal(p)}
+                  className="hover:bg-ner-offwhite/50 cursor-pointer transition-colors group"
                 >
-                  <td className="py-4 pl-2 font-bold text-ner-black flex items-center gap-3">
+                  <td className="py-3.5 flex items-center gap-3">
                     <img
-                      src={patient.avatarUrl}
-                      alt={patient.name}
+                      src={p.avatarUrl}
+                      alt={p.name}
                       className="w-9 h-9 rounded-full object-cover border border-ner-border"
                     />
                     <div>
-                      <span>{patient.name}</span>
-                      <span className="block text-[11px] font-normal text-ner-black/50">
-                        Caregiver: {patient.primaryCaregiver.name}
+                      <span className="font-bold text-ner-black block group-hover:text-ner-terracotta transition-colors">
+                        {p.name}
+                      </span>
+                      <span className="text-[11px] text-ner-black/50">
+                        {p.age} yrs • {p.stage}
                       </span>
                     </div>
                   </td>
-                  <td className="py-4 text-ner-black/70">
-                    {patient.age} yrs • {patient.location}, {patient.state}
+                  <td className="py-3.5 text-xs text-ner-black/70">
+                    {p.location}, {p.state}
                   </td>
-                  <td className="py-4">
-                    <span className="text-xs px-2.5 py-1 rounded-full bg-ner-offwhite border border-ner-border font-semibold text-ner-black">
-                      {patient.stage}
+                  <td className="py-3.5">
+                    <span className="font-mono text-xs font-bold text-ner-black">
+                      {p.stats.completedToday} / {p.stats.totalToday} today
                     </span>
                   </td>
-                  <td className="py-4 text-center font-mono font-bold text-ner-black">
-                    🔥 {patient.stats.streakDays}d
+                  <td className="py-3.5">
+                    <span className="inline-flex items-center gap-1 font-mono font-bold text-xs text-ner-sage">
+                      <TrendingUp className="w-3.5 h-3.5" />
+                      {p.stats.weeklyScore}%
+                    </span>
                   </td>
-                  <td className="py-4 text-center font-mono font-bold text-ner-terracotta">
-                    {patient.stats.weeklyScore}%
+                  <td className="py-3.5">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-emerald-100 text-ner-sage font-bold">
+                      <span className="w-1.5 h-1.5 rounded-full bg-ner-sage"></span>
+                      Stable Baseline
+                    </span>
                   </td>
-                  <td className="py-4 text-ner-black/60 text-xs">
-                    {patient.stats.lastActive}
-                  </td>
-                  <td className="py-4 text-right pr-2">
+                  <td className="py-3.5 text-right">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setSelectedPatientModal(patient);
+                        setSelectedPatientModal(p);
                       }}
-                      className="text-xs font-semibold px-3 py-1 rounded-full bg-ner-black text-white hover:bg-ner-black/85"
+                      className="text-xs font-semibold px-3 py-1 rounded-full bg-ner-black text-white hover:bg-ner-black/85 tactile-btn"
                     >
                       Clinical View
                     </button>
@@ -314,11 +335,26 @@ NOTE: This report is generated from supportive cognitive exercise telemetry and 
           </table>
         </div>
       </div>
+    </StaggerItem>
+  </StaggerContainer>
 
-      {/* Patient Detail Modal */}
-      {selectedPatientModal && (
-        <div className="modal-overlay animate-fade-in">
-          <div className="modal-wrapper border-2 border-ner-black max-w-4xl w-full relative">
+  {/* Patient Detail Modal */}
+  <AnimatePresence>
+    {selectedPatientModal && (
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        className="modal-overlay"
+      >
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.98, y: 8 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.98, y: 8 }}
+          transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+          className="modal-wrapper border-2 border-ner-black max-w-4xl w-full relative"
+        >
             {/* Modal Header */}
             <div className="modal-header flex items-start justify-between">
               <div className="flex items-center gap-4">
@@ -368,7 +404,9 @@ NOTE: This report is generated from supportive cognitive exercise telemetry and 
                     key={t}
                     onClick={() => setTimeRange(t)}
                     className={`px-3 py-1 rounded-lg text-xs font-mono font-bold uppercase transition-all ${
-                      timeRange === t ? 'bg-ner-black text-white' : 'bg-ner-offwhite text-ner-black hover:bg-black/5'
+                      timeRange === t
+                        ? 'bg-ner-black dark:bg-ner-terracotta text-white font-bold'
+                        : 'bg-ner-offwhite dark:bg-gray-800 text-ner-black dark:text-white border border-transparent dark:border-gray-700 hover:bg-black/5 dark:hover:bg-gray-700'
                     }`}
                   >
                     {t.toUpperCase()}
@@ -433,9 +471,9 @@ NOTE: This report is generated from supportive cognitive exercise telemetry and 
                         { subject: 'Engagement', score: selectedPatientModal.cognitiveDomains.engagement },
                       ]}
                     >
-                      <PolarGrid stroke="#E2E2DC" />
-                      <PolarAngleAxis dataKey="subject" tick={{ fill: '#111111', fontSize: 11 }} />
-                      <PolarRadiusAxis domain={[0, 100]} />
+                      <PolarGrid stroke={chartGridColor} />
+                      <PolarAngleAxis dataKey="subject" tick={{ fill: chartTextColor, fontSize: 11 }} />
+                      <PolarRadiusAxis domain={[0, 100]} stroke={chartTextColor} />
                       <Radar dataKey="score" stroke="#DE4A30" fill="#DE4A30" fillOpacity={0.4} />
                     </RadarChart>
                   </ResponsiveContainer>
@@ -454,11 +492,18 @@ NOTE: This report is generated from supportive cognitive exercise telemetry and 
                   <div className="h-44 w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={trendData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                        <XAxis dataKey="period" tick={{ fontSize: 10 }} />
-                        <YAxis domain={[50, 100]} tick={{ fontSize: 10 }} />
-                        <Tooltip />
-                        <Area type="monotone" dataKey="score" stroke="#2D5A46" fill="#2D5A46" fillOpacity={0.2} />
+                        <CartesianGrid strokeDasharray="3 3" stroke={chartGridColor} />
+                        <XAxis dataKey="period" stroke={chartTextColor} tick={{ fontSize: 10, fill: chartTextColor }} />
+                        <YAxis domain={[50, 100]} stroke={chartTextColor} tick={{ fontSize: 10, fill: chartTextColor }} />
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: chartTooltipBg, 
+                            border: chartTooltipBorder, 
+                            borderRadius: '12px',
+                            color: isDark ? '#FFFFFF' : '#111111' 
+                          }} 
+                        />
+                        <Area type="monotone" dataKey="score" stroke="#DE4A30" fill="#DE4A30" fillOpacity={0.25} />
                       </AreaChart>
                     </ResponsiveContainer>
                   </div>
@@ -525,14 +570,15 @@ NOTE: This report is generated from supportive cognitive exercise telemetry and 
 
               <button
                 onClick={() => setSelectedPatientModal(null)}
-                className="w-full sm:w-auto px-8 py-3 rounded-xl bg-ner-black text-white font-bold text-xs uppercase tracking-wider hover:bg-ner-black/85"
+                className="w-full sm:w-auto px-8 py-3 rounded-xl bg-ner-black text-white font-bold text-xs uppercase tracking-wider hover:bg-ner-black/85 tactile-btn"
               >
                 Close Record
               </button>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
+    </AnimatePresence>
     </div>
   );
 };

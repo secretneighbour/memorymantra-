@@ -37,7 +37,7 @@ function createWindow(): void {
     minHeight: 700,
     show: false, // Prevent visual flicker before rendering
     autoHideMenuBar: true, // Clean native Windows UI
-    backgroundColor: '#F5F5F2',
+    backgroundColor: '#0C0C0E',
     icon: fs.existsSync(iconPath) ? iconPath : undefined,
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),

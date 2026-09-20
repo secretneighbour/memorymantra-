@@ -10,10 +10,12 @@ import {
   ChevronDown, 
   Sparkles,
   Activity,
-  Heart
+  Heart,
+  Sliders
 } from 'lucide-react';
 
-import { useCurrentUser } from '../../context/AuthContext';
+import { useCurrentUser, useAuth } from '../../context/AuthContext';
+import { getRoleDashboardPath } from '../auth/AuthGuard';
 
 interface HeroScrollSectionProps {
   onScrollToExplore: () => void;
@@ -24,8 +26,8 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
 }) => {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLElement>(null);
-  const { setRole, setIsRoleModalOpen, setIsAICompanionOpen, activePatient } = useRole();
-  const { t, motion: contextMotion } = useAccessibility();
+  const { role, setRole, setIsRoleModalOpen, setIsAICompanionOpen, activePatient } = useRole();
+  const { t, motion: contextMotion, setIsAccessibilityModalOpen } = useAccessibility();
   const { displayName } = useCurrentUser();
   const systemReducedMotion = useReducedMotion();
   const isReduced = contextMotion === 'reduced' || systemReducedMotion;
@@ -58,9 +60,14 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
   const bottomBarY = useTransform(scrollYProgress, [0, 0.5], ['0%', '60%']);
   const bottomBarOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
 
+  const { isAuthenticated, user } = useAuth();
+
   const handleStartCare = () => {
-    setRole('patient');
-    navigate('/patient');
+    if (isAuthenticated) {
+      navigate(getRoleDashboardPath(user?.role || role));
+    } else {
+      navigate('/login');
+    }
   };
 
   return (
@@ -87,10 +94,28 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
           viewBox="0 0 800 800"
           fill="none"
         >
-          {/* Subtle concentric orbital nodes */}
-          <circle cx="400" cy="400" r="140" stroke="currentColor" strokeWidth="1" strokeDasharray="3 6" />
-          <circle cx="400" cy="400" r="240" stroke="currentColor" strokeWidth="1" strokeDasharray="4 8" />
-          <circle cx="400" cy="400" r="340" stroke="currentColor" strokeWidth="0.75" strokeDasharray="2 10" />
+          {/* Subtle concentric orbital nodes with gentle breathing pulse */}
+          <motion.circle 
+            cx="400" cy="400" r="140" 
+            stroke="currentColor" strokeWidth="1" strokeDasharray="3 6"
+            animate={isReduced ? {} : { scale: [1, 1.02, 1], opacity: [0.7, 1, 0.7] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+            style={{ transformOrigin: '400px 400px' }}
+          />
+          <motion.circle 
+            cx="400" cy="400" r="240" 
+            stroke="currentColor" strokeWidth="1" strokeDasharray="4 8"
+            animate={isReduced ? {} : { scale: [1, 1.015, 1], opacity: [0.8, 1, 0.8] }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+            style={{ transformOrigin: '400px 400px' }}
+          />
+          <motion.circle 
+            cx="400" cy="400" r="340" 
+            stroke="currentColor" strokeWidth="0.75" strokeDasharray="2 10" 
+            animate={isReduced ? {} : { scale: [1, 1.01, 1] }}
+            transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+            style={{ transformOrigin: '400px 400px' }}
+          />
 
           {/* Radial interconnect rays */}
           <line x1="400" y1="400" x2="200" y2="180" stroke="currentColor" strokeWidth="1" strokeDasharray="2 4" />
@@ -100,14 +125,14 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
           <line x1="400" y1="400" x2="200" y2="620" stroke="currentColor" strokeWidth="1" strokeDasharray="2 4" />
           <line x1="400" y1="400" x2="150" y2="400" stroke="currentColor" strokeWidth="1" strokeDasharray="2 4" />
 
-          {/* Micro dots */}
-          <circle cx="200" cy="180" r="4" fill="#DE4A30" />
-          <circle cx="600" cy="180" r="4" fill="#10B981" />
-          <circle cx="650" cy="400" r="4" fill="#DE4A30" />
-          <circle cx="600" cy="620" r="4" fill="#3B82F6" />
-          <circle cx="200" cy="620" r="4" fill="#E67E22" />
+          {/* Micro dots with subtle organic pulse */}
+          <motion.circle cx="200" cy="180" r="4" fill="#DE4A30" animate={isReduced ? {} : { scale: [1, 1.3, 1] }} transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }} style={{ transformOrigin: '200px 180px' }} />
+          <motion.circle cx="600" cy="180" r="4" fill="#10B981" animate={isReduced ? {} : { scale: [1, 1.25, 1] }} transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }} style={{ transformOrigin: '600px 180px' }} />
+          <motion.circle cx="650" cy="400" r="4" fill="#DE4A30" animate={isReduced ? {} : { scale: [1, 1.3, 1] }} transition={{ duration: 3.6, repeat: Infinity, ease: 'easeInOut', delay: 1 }} style={{ transformOrigin: '650px 400px' }} />
+          <motion.circle cx="600" cy="620" r="4" fill="#3B82F6" animate={isReduced ? {} : { scale: [1, 1.2, 1] }} transition={{ duration: 4.4, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }} style={{ transformOrigin: '600px 620px' }} />
+          <motion.circle cx="200" cy="620" r="4" fill="#E67E22" animate={isReduced ? {} : { scale: [1, 1.25, 1] }} transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: 2 }} style={{ transformOrigin: '200px 620px' }} />
           <circle cx="150" cy="400" r="4" fill="#111111" />
-          <circle cx="400" cy="400" r="6" fill="#DE4A30" />
+          <motion.circle cx="400" cy="400" r="6" fill="#DE4A30" animate={isReduced ? {} : { scale: [1, 1.2, 1] }} transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }} style={{ transformOrigin: '400px 400px' }} />
         </svg>
       </motion.div>
 
@@ -183,19 +208,40 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
             <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3 pt-2">
               <button
                 onClick={handleStartCare}
-                className="h-12 sm:h-13 px-6 sm:px-8 rounded-full bg-ner-black text-white hover:bg-ner-black/85 transition-all text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2.5 shadow-xl active:scale-95 group min-h-[44px]"
+                className="h-12 sm:h-13 px-6 sm:px-8 rounded-full bg-ner-black text-white hover:bg-ner-black/85 tactile-btn text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2.5 shadow-xl active:scale-95 group min-h-[44px]"
               >
-                <span>{t.btnStartPatientCare}</span>
+                <span>{isAuthenticated ? t.btnStartPatientCare : (t.navLogin ? `${t.navLogin} / ${t.start || 'Get Started'}` : 'Sign In / Get Started')}</span>
                 <ArrowRight className="w-4 h-4 text-ner-terracotta group-hover:translate-x-1 transition-transform" />
               </button>
 
-              <button
-                onClick={() => setIsRoleModalOpen(true)}
-                className="h-12 sm:h-13 px-5 sm:px-6 rounded-full frost-white-intense text-ner-black hover:border-ner-black/60 transition-all text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm active:scale-95 min-h-[44px]"
-              >
-                <span>{t.btnRoleSwitcher}</span>
-                <span className="w-2 h-2 rounded-full bg-ner-sage animate-pulse" />
-              </button>
+              {isAuthenticated ? (
+                <button
+                  onClick={() => setIsRoleModalOpen(true)}
+                  className="h-12 sm:h-13 px-5 sm:px-6 rounded-full frost-white-intense text-ner-black hover:border-ner-black/60 tactile-btn text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm active:scale-95 min-h-[44px]"
+                >
+                  <span>{t.btnRoleSwitcher}</span>
+                  <span className="w-2 h-2 rounded-full bg-ner-sage animate-pulse" />
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={() => setIsAccessibilityModalOpen(true)}
+                    className="h-12 sm:h-13 px-4 sm:px-5 rounded-full frost-white-intense border-2 border-ner-black/20 hover:border-ner-black text-ner-black tactile-btn text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm active:scale-95 min-h-[44px]"
+                    title="Configure Font Size, Simple UI, Voice, Contrast"
+                  >
+                    <Sliders className="w-3.5 h-3.5 text-ner-sage" />
+                    <span>Accessibility</span>
+                  </button>
+
+                  <button
+                    onClick={onScrollToExplore}
+                    className="h-12 sm:h-13 px-5 sm:px-6 rounded-full frost-white-intense text-ner-black hover:border-ner-black/60 tactile-btn text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm active:scale-95 min-h-[44px]"
+                  >
+                    <span>{t.learnMore || 'Explore Features'}</span>
+                    <ChevronDown className="w-4 h-4 text-ner-terracotta animate-bounce" />
+                  </button>
+                </>
+              )}
 
               {/* Inline TTS Voice Trigger */}
               <div className="flex justify-center sm:justify-start">
@@ -213,7 +259,7 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
             <div className="flex flex-col gap-3.5 w-full max-w-lg mx-auto lg:ml-auto">
               
               {/* Card 1: 8 STATES MONITORED / Digital Care Status Node */}
-              <div className="frost-white-intense rounded-3xl p-4 sm:p-5 border border-ner-border/90 shadow-lg hover:border-ner-black/40 transition-colors">
+              <div className="frost-white-intense rounded-3xl p-4 sm:p-5 border border-ner-border/90 shadow-lg hover:border-ner-black/40 tactile-card">
                 <div className="flex items-center justify-between mb-2.5">
                   <span className="text-[10px] font-mono uppercase tracking-widest text-ner-black/50 font-bold flex items-center gap-1.5">
                     <Activity className="w-3.5 h-3.5 text-ner-terracotta" />
@@ -235,7 +281,7 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
               </div>
 
               {/* Card 2: ACTIVE SESSION / Patient Session Telemetry */}
-              <div className="frost-white-intense rounded-3xl p-4 sm:p-5 border border-ner-border/90 shadow-lg hover:border-ner-black/40 transition-colors">
+              <div className="frost-white-intense rounded-3xl p-4 sm:p-5 border border-ner-border/90 shadow-lg hover:border-ner-black/40 tactile-card">
                 <div className="flex items-center justify-between mb-2.5">
                   <span className="text-[10px] font-mono uppercase tracking-widest text-ner-black/50 font-bold flex items-center gap-1.5">
                     <Heart className="w-3.5 h-3.5 text-ner-terracotta" />
@@ -252,11 +298,9 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
                   </div>
                   <button
                     onClick={() => navigate('/patient')}
-                    className="w-9 h-9 rounded-full bg-ner-black text-white flex items-center justify-center hover:bg-ner-terracotta transition-colors shadow-sm shrink-0"
-                    title={t.navCare}
-                    aria-label={t.navCare}
+                    className="px-3.5 py-1.5 rounded-xl bg-ner-black text-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-ner-black/85 tactile-btn shadow-xs"
                   >
-                    <ArrowRight className="w-4 h-4" />
+                    Open
                   </button>
                 </div>
               </div>

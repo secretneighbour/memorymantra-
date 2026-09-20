@@ -19,10 +19,21 @@ import {
   Area
 } from 'recharts';
 import { Trophy, Flame, ShieldAlert, Sparkles, TrendingUp, CheckCircle2 } from 'lucide-react';
+import { 
+  StaggerContainer, 
+  StaggerItem 
+} from '../components/motion/MotionPrimitives';
 
 export const ProgressPage: React.FC = () => {
   const { activePatient } = useRole();
-  const { t } = useAccessibility();
+  const { t, theme } = useAccessibility();
+  const isDark = theme === 'dark';
+
+  const chartGridColor = isDark ? '#272732' : '#E2E2DC';
+  const chartTextColor = isDark ? '#A1A1AA' : '#111111';
+  const chartBarFill = isDark ? '#DE4A30' : '#111111';
+  const chartTooltipBg = isDark ? '#17171C' : '#111111';
+  const chartTooltipBorder = isDark ? '1px solid #DE4A30' : 'none';
 
   const domainData = [
     { subject: 'Memory', score: activePatient.cognitiveDomains.memory, fullMark: 100 },
@@ -50,52 +61,58 @@ export const ProgressPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen pt-24 pb-32 sm:pb-24 px-4 sm:px-8 max-w-5xl mx-auto animate-fade-in">
-      {/* Header */}
-      <div className="frost-card rounded-3xl p-6 sm:p-10 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-ner-sage/10 text-ner-sage font-bold">
-              {t.progressLongitudinalBadge}
-            </span>
-            <span className="text-xs text-ner-black/40 font-mono">{t.rolePatient}: {activePatient.name}</span>
+    <div className="min-h-screen pt-24 pb-32 sm:pb-24 px-4 sm:px-8 max-w-5xl mx-auto">
+      <StaggerContainer staggerDelay={0.06} className="space-y-8">
+        {/* Header */}
+        <StaggerItem>
+          <div className="frost-card rounded-3xl p-6 sm:p-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6 tactile-card">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-ner-sage/10 text-ner-sage font-bold">
+                  {t.progressLongitudinalBadge}
+                </span>
+                <span className="text-xs text-ner-black/40 font-mono">{t.rolePatient}: {activePatient.name}</span>
+              </div>
+              <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-ner-black">
+                {t.progressHeading}
+              </h1>
+              <p className="text-ner-black/70 text-base sm:text-lg mt-2 max-w-xl font-normal">
+                {t.progressSubheading}
+              </p>
+            </div>
+
+            <TTSButton
+              text={`${t.progressHeading}. ${t.progressSubheading}. ${t.cognitiveVitality}: ${activePatient.stats.weeklyScore}%.`}
+              label={t.listenAloud}
+              size="lg"
+            />
           </div>
-          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-ner-black">
-            {t.progressHeading}
-          </h1>
-          <p className="text-ner-black/70 text-base sm:text-lg mt-2 max-w-xl font-normal">
-            {t.progressSubheading}
-          </p>
-        </div>
+        </StaggerItem>
 
-        <TTSButton
-          text={`${t.progressHeading}. ${t.progressSubheading}. ${t.cognitiveVitality}: ${activePatient.stats.weeklyScore}%.`}
-          label={t.listenAloud}
-          size="lg"
-        />
-      </div>
-
-      {/* Friendly Interpretation Banner */}
-      <div className="frost-card rounded-3xl p-6 mb-8 border-2 border-ner-border bg-emerald-50/50 flex items-start gap-4 shadow-sm">
-        <div className="p-3 rounded-2xl bg-ner-sage text-white shrink-0">
-          <Sparkles className="w-6 h-6" />
-        </div>
-        <div>
-          <h3 className="font-bold text-base text-ner-black">
-            {t.progressFriendlyTitle}
-          </h3>
-          <p className="text-sm text-ner-black/75 mt-0.5 leading-relaxed">
-            {t.progressFriendlyDesc}
-          </p>
-          <div className="mt-3 flex items-center gap-2 text-[11px] font-mono text-ner-black/50">
-            <ShieldAlert className="w-3.5 h-3.5 text-ner-terracotta" />
-            <span>{t.encouragement}</span>
+        {/* Friendly Interpretation Banner */}
+        <StaggerItem>
+          <div className="frost-card rounded-3xl p-6 border-2 border-ner-border bg-emerald-50/50 flex items-start gap-4 shadow-sm tactile-card">
+            <div className="p-3 rounded-2xl bg-ner-sage text-white shrink-0">
+              <Sparkles className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="font-bold text-base text-ner-black">
+                {t.progressFriendlyTitle}
+              </h3>
+              <p className="text-sm text-ner-black/75 mt-0.5 leading-relaxed">
+                {t.progressFriendlyDesc}
+              </p>
+              <div className="mt-3 flex items-center gap-2 text-[11px] font-mono text-ner-black/50">
+                <ShieldAlert className="w-3.5 h-3.5 text-ner-terracotta" />
+                <span>{t.encouragement}</span>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </StaggerItem>
 
-      {/* Stats row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+        {/* Stats row */}
+        <StaggerItem>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div className="frost-card rounded-3xl p-6 text-center">
           <span className="text-xs uppercase font-mono tracking-widest text-ner-black/40 block mb-1">
             Weekly Accuracy
@@ -131,100 +148,107 @@ export const ProgressPage: React.FC = () => {
           <span className="text-xs text-ner-black/60 font-semibold block mt-1">
             Across 4 cognitive games
           </span>
-        </div>
-      </div>
-
-      {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
-        {/* Radar Chart (5 Cognitive Domains) */}
-        <div className="lg:col-span-6 frost-card rounded-3xl p-6 sm:p-8">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-lg text-ner-black">Cognitive Domains Radar</h3>
-            <span className="text-xs font-mono text-ner-terracotta font-bold">5 Pillars</span>
-          </div>
-          <p className="text-xs text-ner-black/60 mb-6">
-            Domain representation across Memory, Attention, Recognition, Sequence, and Engagement.
-          </p>
-
-          <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart cx="50%" cy="50%" outerRadius="75%" data={domainData}>
-                <PolarGrid stroke="#E2E2DC" />
-                <PolarAngleAxis dataKey="subject" stroke="#111111" tick={{ fill: '#111111', fontSize: 12, fontWeight: 600 }} />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#A0A09A" />
-                <Radar
-                  name="Score"
-                  dataKey="score"
-                  stroke="#DE4A30"
-                  fill="#DE4A30"
-                  fillOpacity={0.4}
-                />
-              </RadarChart>
-            </ResponsiveContainer>
           </div>
         </div>
+      </StaggerItem>
 
-        {/* Weekly Activities Bar Chart */}
-        <div className="lg:col-span-6 frost-card rounded-3xl p-6 sm:p-8">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-lg text-ner-black">Weekly Activity Consistency</h3>
-            <span className="text-xs font-mono text-ner-sage font-bold">7-Day Log</span>
+        {/* Charts Grid */}
+        <StaggerItem>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Radar Chart (5 Cognitive Domains) */}
+            <div className="lg:col-span-6 frost-card rounded-3xl p-6 sm:p-8 tactile-card">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-lg text-ner-black">Cognitive Domains Radar</h3>
+                <span className="text-xs font-mono text-ner-terracotta font-bold">5 Pillars</span>
+              </div>
+              <p className="text-xs text-ner-black/60 mb-6">
+                Domain representation across Memory, Attention, Recognition, Sequence, and Engagement.
+              </p>
+
+              <div className="h-72 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart cx="50%" cy="50%" outerRadius="75%" data={domainData}>
+                    <PolarGrid stroke={chartGridColor} />
+                    <PolarAngleAxis dataKey="subject" stroke={chartTextColor} tick={{ fill: chartTextColor, fontSize: 12, fontWeight: 600 }} />
+                    <PolarRadiusAxis angle={30} domain={[0, 100]} stroke={isDark ? '#71717A' : '#A0A09A'} />
+                    <Radar
+                      name="Score"
+                      dataKey="score"
+                      stroke="#DE4A30"
+                      fill="#DE4A30"
+                      fillOpacity={0.4}
+                      isAnimationActive={true}
+                    />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Weekly Activities Bar Chart */}
+            <div className="lg:col-span-6 frost-card rounded-3xl p-6 sm:p-8 tactile-card">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-lg text-ner-black">Weekly Activity Consistency</h3>
+                <span className="text-xs font-mono text-ner-sage font-bold">7-Day Log</span>
+              </div>
+              <p className="text-xs text-ner-black/60 mb-6">
+                Daily mental exercises completed across this current week.
+              </p>
+
+              <div className="h-72 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={weeklyActivityData}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartGridColor} />
+                    <XAxis dataKey="day" stroke={chartTextColor} tick={{ fill: chartTextColor }} />
+                    <YAxis domain={[0, 6]} stroke={chartTextColor} tick={{ fill: chartTextColor }} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: chartTooltipBg, color: '#fff', borderRadius: '12px', border: chartTooltipBorder }}
+                      itemStyle={{ color: '#fff' }}
+                    />
+                    <Bar dataKey="activities" fill={chartBarFill} radius={[8, 8, 0, 0]} isAnimationActive={true} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </div>
-          <p className="text-xs text-ner-black/60 mb-6">
-            Daily mental exercises completed across this current week.
-          </p>
+        </StaggerItem>
 
-          <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={weeklyActivityData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E2DC" />
-                <XAxis dataKey="day" stroke="#111111" />
-                <YAxis domain={[0, 6]} stroke="#111111" />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#111111', color: '#fff', borderRadius: '12px', border: 'none' }}
-                  itemStyle={{ color: '#fff' }}
-                />
-                <Bar dataKey="activities" fill="#111111" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+        {/* 4-Week Trend Area Chart: Cognitive Activity Trend */}
+        <StaggerItem>
+          <div className="frost-card rounded-3xl p-6 sm:p-8 tactile-card">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+              <div>
+                <h3 className="font-bold text-lg text-ner-black">Cognitive Activity Trend</h3>
+                <p className="text-xs text-ner-black/60 mt-0.5">
+                  Observed trends in cognitive activity and daily engagement performance.
+                </p>
+              </div>
+              <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-ner-sage/10 text-ner-sage font-bold self-start sm:self-auto">
+                Engagement &amp; Activity Performance
+              </span>
+            </div>
+
+            <div className="h-48 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={trendData}>
+                  <defs>
+                    <linearGradient id="scoreColor" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#DE4A30" stopOpacity={0.35}/>
+                      <stop offset="95%" stopColor="#DE4A30" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartGridColor} />
+                  <XAxis dataKey="week" stroke={chartTextColor} tick={{ fill: chartTextColor }} />
+                  <YAxis domain={[50, 100]} stroke={chartTextColor} tick={{ fill: chartTextColor }} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: chartTooltipBg, color: '#fff', borderRadius: '12px', border: chartTooltipBorder }}
+                  />
+                  <Area type="monotone" dataKey="score" stroke="#DE4A30" strokeWidth={3} fillOpacity={1} fill="url(#scoreColor)" isAnimationActive={true} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-        </div>
-      </div>
-
-      {/* 4-Week Trend Area Chart: Cognitive Activity Trend */}
-      <div className="frost-card rounded-3xl p-6 sm:p-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-          <div>
-            <h3 className="font-bold text-lg text-ner-black">Cognitive Activity Trend</h3>
-            <p className="text-xs text-ner-black/60 mt-0.5">
-              Observed trends in cognitive activity and daily engagement performance.
-            </p>
-          </div>
-          <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-ner-sage/10 text-ner-sage font-bold self-start sm:self-auto">
-            Engagement &amp; Activity Performance
-          </span>
-        </div>
-
-        <div className="h-48 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={trendData}>
-              <defs>
-                <linearGradient id="scoreColor" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10B981" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E2DC" />
-              <XAxis dataKey="week" stroke="#111111" />
-              <YAxis domain={[50, 100]} stroke="#111111" />
-              <Tooltip 
-                contentStyle={{ backgroundColor: '#111111', color: '#fff', borderRadius: '12px', border: 'none' }}
-              />
-              <Area type="monotone" dataKey="score" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#scoreColor)" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+        </StaggerItem>
+      </StaggerContainer>
     </div>
   );
 };

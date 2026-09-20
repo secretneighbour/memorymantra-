@@ -26,6 +26,11 @@ import {
   PieChart as PieIcon,
   Compass
 } from 'lucide-react';
+import { 
+  StaggerContainer, 
+  StaggerItem, 
+  PulseIndicator 
+} from '../components/motion/MotionPrimitives';
 import {
   ResponsiveContainer,
   LineChart,
@@ -55,7 +60,13 @@ export const CaregiverDashboard: React.FC = () => {
     wellbeingCheckIns,
     sendHelpAlert
   } = useRole();
-  const { t } = useAccessibility();
+  const { t, theme } = useAccessibility();
+  const isDark = theme === 'dark';
+
+  const chartGridColor = isDark ? '#272732' : '#E2E2DC';
+  const chartTextColor = isDark ? '#A1A1AA' : '#888888';
+  const chartTooltipBg = isDark ? '#17171C' : '#FFFFFF';
+  const chartTooltipBorder = isDark ? '#DE4A30' : '#E2E2DC';
 
   const [selectedAlertDetail, setSelectedAlertDetail] = useState<string | null>(null);
   const [contactPatientFeedback, setContactPatientFeedback] = useState<string | null>(null);
@@ -144,38 +155,41 @@ export const CaregiverDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-32 sm:pb-24 px-4 sm:px-8 max-w-6xl mx-auto animate-fade-in selection:bg-ner-terracotta selection:text-white">
-      {/* Header */}
-      <div className="frost-card rounded-3xl p-6 sm:p-10 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 border border-ner-border shadow-md">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-ner-sage/10 text-ner-sage font-bold">
-              {t.caregiverPortalBadge}
-            </span>
-            <span className="text-xs text-ner-black/40 font-mono">{t.caregiverPatientLabel}: {activePatient.name}</span>
-          </div>
-          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-ner-black">
-            {t.caregiverHeading}
-          </h1>
-          <p className="text-ner-black/70 text-base sm:text-lg mt-2 max-w-xl font-normal">
-            {t.caregiverSubheading}
-          </p>
-        </div>
+    <div className="min-h-screen pt-24 pb-32 sm:pb-24 px-4 sm:px-8 max-w-6xl mx-auto selection:bg-ner-terracotta selection:text-white">
+      <StaggerContainer staggerDelay={0.06} className="space-y-8">
+        {/* Header */}
+        <StaggerItem>
+          <div className="frost-card rounded-3xl p-6 sm:p-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6 border border-ner-border shadow-md tactile-card">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-ner-sage/10 text-ner-sage font-bold">
+                  {t.caregiverPortalBadge}
+                </span>
+                <span className="text-xs text-ner-black/40 font-mono">{t.caregiverPatientLabel}: {activePatient.name}</span>
+              </div>
+              <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-ner-black">
+                {t.caregiverHeading}
+              </h1>
+              <p className="text-ner-black/70 text-base sm:text-lg mt-2 max-w-xl font-normal">
+                {t.caregiverSubheading}
+              </p>
+            </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-100 text-ner-sage text-xs font-bold font-mono">
-            <span className="w-2 h-2 rounded-full bg-ner-sage animate-ping"></span>
-            {t.caregiverLastActive}
-          </span>
-          <button
-            onClick={handleContactPatient}
-            className="px-5 py-2.5 rounded-full bg-ner-black text-white hover:bg-ner-black/85 text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm active:scale-95"
-          >
-            <Phone className="w-3.5 h-3.5 text-ner-sage" />
-            <span>{t.caregiverContactPatient}</span>
-          </button>
-        </div>
-      </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 text-ner-sage text-xs font-bold font-mono">
+                <PulseIndicator color="#10B981" size={8} />
+                {t.caregiverLastActive}
+              </span>
+              <button
+                onClick={handleContactPatient}
+                className="px-5 py-2.5 rounded-full bg-ner-black text-white hover:bg-ner-black/85 text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm tactile-btn"
+              >
+                <Phone className="w-3.5 h-3.5 text-ner-sage" />
+                <span>{t.caregiverContactPatient}</span>
+              </button>
+            </div>
+          </div>
+        </StaggerItem>
 
       {contactPatientFeedback && (
         <div className="mb-6 p-4 rounded-2xl bg-emerald-50 border border-ner-sage text-ner-sage font-mono text-xs font-bold flex items-center gap-2 animate-fade-in">
@@ -325,17 +339,18 @@ export const CaregiverDashboard: React.FC = () => {
         <div className="h-72 w-full pt-4">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={activityTrendData} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E2E2DC" vertical={false} />
-              <XAxis dataKey="day" stroke="#888888" tickLine={false} tick={{ fontSize: 12, fontFamily: 'monospace' }} />
-              <YAxis domain={[0, 100]} stroke="#888888" tickLine={false} tick={{ fontSize: 12, fontFamily: 'monospace' }} />
+              <CartesianGrid strokeDasharray="3 3" stroke={chartGridColor} vertical={false} />
+              <XAxis dataKey="day" stroke={chartTextColor} tickLine={false} tick={{ fontSize: 12, fontFamily: 'monospace', fill: chartTextColor }} />
+              <YAxis domain={[0, 100]} stroke={chartTextColor} tickLine={false} tick={{ fontSize: 12, fontFamily: 'monospace', fill: chartTextColor }} />
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: '#FFFFFF', 
-                  borderColor: '#E2E2DC', 
+                  backgroundColor: chartTooltipBg, 
+                  borderColor: chartTooltipBorder, 
                   borderRadius: '16px',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
                   fontFamily: 'monospace',
-                  fontSize: '12px'
+                  fontSize: '12px',
+                  color: isDark ? '#FFFFFF' : '#111111'
                 }} 
               />
               <Line 
@@ -344,7 +359,7 @@ export const CaregiverDashboard: React.FC = () => {
                 name="Performance Score"
                 stroke="#DE4A30" 
                 strokeWidth={3} 
-                dot={{ r: 5, fill: '#DE4A30', strokeWidth: 2, stroke: '#FFFFFF' }} 
+                dot={{ r: 5, fill: '#DE4A30', strokeWidth: 2, stroke: isDark ? '#17171C' : '#FFFFFF' }} 
                 activeDot={{ r: 7 }} 
               />
               <Line 
@@ -396,19 +411,20 @@ export const CaregiverDashboard: React.FC = () => {
           <div className="h-48 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={completionData} margin={{ top: 5, right: 10, left: -25, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E2E2DC" vertical={false} />
-                <XAxis dataKey="day" stroke="#888888" tickLine={false} tick={{ fontSize: 11, fontFamily: 'monospace' }} />
-                <YAxis domain={[0, 6]} stroke="#888888" tickLine={false} tick={{ fontSize: 11, fontFamily: 'monospace' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chartGridColor} vertical={false} />
+                <XAxis dataKey="day" stroke={chartTextColor} tickLine={false} tick={{ fontSize: 11, fontFamily: 'monospace', fill: chartTextColor }} />
+                <YAxis domain={[0, 6]} stroke={chartTextColor} tickLine={false} tick={{ fontSize: 11, fontFamily: 'monospace', fill: chartTextColor }} />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#FFFFFF', 
+                    backgroundColor: chartTooltipBg, 
                     borderRadius: '12px',
-                    borderColor: '#E2E2DC',
+                    borderColor: chartTooltipBorder,
                     fontSize: '11px',
-                    fontFamily: 'monospace'
+                    fontFamily: 'monospace',
+                    color: isDark ? '#FFFFFF' : '#111111'
                   }} 
                 />
-                <Bar dataKey="completed" name="Completed" fill="#111111" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="completed" name="Completed" fill={isDark ? '#DE4A30' : '#111111'} radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -448,10 +464,11 @@ export const CaregiverDashboard: React.FC = () => {
                   </Pie>
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: '#FFFFFF', 
+                      backgroundColor: chartTooltipBg, 
                       borderRadius: '12px',
-                      borderColor: '#E2E2DC',
-                      fontSize: '11px' 
+                      borderColor: chartTooltipBorder,
+                      fontSize: '11px',
+                      color: isDark ? '#FFFFFF' : '#111111'
                     }} 
                   />
                 </PieChart>
@@ -529,9 +546,9 @@ export const CaregiverDashboard: React.FC = () => {
           <div className="h-56 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={activityProfileData} margin={{ top: 10, right: 20, bottom: 10, left: 20 }}>
-                <PolarGrid stroke="#E2E2DC" />
-                <PolarAngleAxis dataKey="domain" tick={{ fill: '#111111', fontSize: 11, fontFamily: 'monospace' }} />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#888888" tick={{ fontSize: 9 }} />
+                <PolarGrid stroke={chartGridColor} />
+                <PolarAngleAxis dataKey="domain" tick={{ fill: chartTextColor, fontSize: 11, fontFamily: 'monospace' }} />
+                <PolarRadiusAxis angle={30} domain={[0, 100]} stroke={chartTextColor} tick={{ fontSize: 9, fill: chartTextColor }} />
                 <Radar 
                   name="Observed Profile" 
                   dataKey="value" 
@@ -541,11 +558,12 @@ export const CaregiverDashboard: React.FC = () => {
                 />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#FFFFFF', 
+                    backgroundColor: chartTooltipBg, 
                     borderRadius: '12px',
-                    borderColor: '#E2E2DC',
+                    borderColor: chartTooltipBorder,
                     fontSize: '11px',
-                    fontFamily: 'monospace'
+                    fontFamily: 'monospace',
+                    color: isDark ? '#FFFFFF' : '#111111'
                   }} 
                 />
               </RadarChart>
@@ -771,6 +789,7 @@ export const CaregiverDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+      </StaggerContainer>
     </div>
   );
 };

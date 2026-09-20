@@ -28,6 +28,8 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { ImportantPlace, ImportantPlaceCategory, MapMode, LocationPermissionState } from '../types';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FadeIn, SlideUp, StaggerContainer, StaggerItem } from './motion/MotionPrimitives';
 import { GoogleMapOnline } from './GoogleMapOnline';
 import { NorthEastOfflineMap } from './NorthEastOfflineMap';
 import { EmergencyHelpModal } from './EmergencyHelpModal';
@@ -589,24 +591,25 @@ export const ImportantPlacesMap: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => handleOpenAddModal()}
-                    className="px-4 py-2 rounded-xl bg-ner-black text-white font-mono text-xs font-bold uppercase"
+                    className="px-4 py-2 rounded-xl bg-ner-black text-white font-mono text-xs font-bold uppercase tactile-btn"
                   >
                     {t.addPlaceBtn}
                   </button>
                 </div>
               ) : (
-                displayedPlaces.map(place => {
-                  const isSelected = selectedPlace?.id === place.id;
-                  return (
-                    <div
-                      key={place.id}
-                      onClick={() => setSelectedPlace(place)}
-                      className={`p-4 rounded-3xl border-2 transition-all cursor-pointer shadow-sm relative ${
-                        isSelected
-                          ? 'bg-white border-ner-black ring-2 ring-ner-black/5'
-                          : 'bg-white border-ner-border hover:border-ner-black/50'
-                      }`}
-                    >
+                <StaggerContainer staggerDelay={0.05} className="space-y-3">
+                  {displayedPlaces.map(place => {
+                    const isSelected = selectedPlace?.id === place.id;
+                    return (
+                      <StaggerItem key={place.id}>
+                        <div
+                          onClick={() => setSelectedPlace(place)}
+                          className={`p-4 rounded-3xl border-2 transition-all cursor-pointer shadow-sm relative tactile-card ${
+                            isSelected
+                              ? 'bg-white border-ner-black ring-2 ring-ner-black/5'
+                              : 'bg-white border-ner-border hover:border-ner-black/50'
+                          }`}
+                        >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-start gap-3">
                           <div className="w-11 h-11 rounded-2xl bg-ner-offwhite border border-ner-border flex items-center justify-center shrink-0">
@@ -697,10 +700,12 @@ export const ImportantPlacesMap: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                  );
-                })
-              )}
-            </div>
+                  </StaggerItem>
+                );
+              })}
+            </StaggerContainer>
+          )}
+        </div>
           </div>
 
           {/* Privacy Guarantee Banner */}
@@ -715,317 +720,365 @@ export const ImportantPlacesMap: React.FC = () => {
       )}
 
       {/* MODAL 1: Add or Edit Important Place */}
-      {isAddEditModalOpen && (
-        <div className="modal-overlay animate-fade-in">
-          <div className="modal-wrapper bg-ner-offwhite border-2 border-ner-black max-w-md w-full shadow-2xl relative">
-            <div className="modal-header flex items-center justify-between">
-              <h3 className="text-xl font-bold text-ner-black">
-                {editingPlaceId ? t.editPlaceBtn : t.addPlaceBtn}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setIsAddEditModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60 hover:text-ner-black shadow-xs"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSavePlaceSubmit} className="flex flex-col flex-grow overflow-hidden">
-              <div className="modal-body space-y-3.5">
-                <div>
-                  <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                    Place Name
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={placeName}
-                    onChange={e => setPlaceName(e.target.value)}
-                    placeholder="e.g. Minoti Devi Residence / Dispur Clinic"
-                    className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                    Category
-                  </label>
-                  <select
-                    value={placeCategory}
-                    onChange={e => setPlaceCategory(e.target.value as any)}
-                    className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none"
-                  >
-                    <option value="home">{t.placeCategoryHome}</option>
-                    <option value="doctor">{t.placeCategoryDoctor}</option>
-                    <option value="hospital">{t.placeCategoryHospital}</option>
-                    <option value="family">{t.placeCategoryFamily}</option>
-                    <option value="caregiver">{t.placeCategoryCaregiver}</option>
-                    <option value="pharmacy">{t.placeCategoryPharmacy}</option>
-                    <option value="park">{t.placeCategoryPark}</option>
-                    <option value="other">{t.placeCategoryOther}</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                    Address
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={placeAddress}
-                    onChange={e => setPlaceAddress(e.target.value)}
-                    placeholder="e.g. Silpukhuri East, Guwahati, Assam"
-                    className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                    Landmark Cue (Familiar memory anchor)
-                  </label>
-                  <input
-                    type="text"
-                    value={placeLandmark}
-                    onChange={e => setPlaceLandmark(e.target.value)}
-                    placeholder="e.g. Near Silpukhuri Water Tank & Namghar"
-                    className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
-                    Contact Phone (Optional)
-                  </label>
-                  <input
-                    type="tel"
-                    value={placePhone}
-                    onChange={e => setPlacePhone(e.target.value)}
-                    placeholder="+91 98640 12345"
-                    className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none"
-                  />
-                </div>
-
-                {role === 'caregiver' && (
-                  <div className="flex items-center gap-2 pt-1">
-                    <input
-                      type="checkbox"
-                      id="isPrimaryCheckbox"
-                      checked={placeIsPrimary}
-                      onChange={e => setPlaceIsPrimary(e.target.checked)}
-                      className="w-4 h-4 rounded border-ner-border text-ner-black focus:ring-0"
-                    />
-                    <label htmlFor="isPrimaryCheckbox" className="text-xs text-ner-black font-medium cursor-pointer">
-                      Mark as Primary Home Residence
-                    </label>
-                  </div>
-                )}
-              </div>
-
-              <div className="modal-footer flex items-center gap-3">
+      <AnimatePresence>
+        {isAddEditModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setIsAddEditModalOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 12 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-md bg-ner-offwhite border-2 border-ner-black rounded-3xl shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]"
+            >
+              <div className="p-5 border-b border-ner-border flex items-center justify-between bg-white">
+                <h3 className="text-xl font-bold text-ner-black">
+                  {editingPlaceId ? t.editPlaceBtn : t.addPlaceBtn}
+                </h3>
                 <button
                   type="button"
                   onClick={() => setIsAddEditModalOpen(false)}
-                  className="flex-1 py-3 rounded-xl border border-ner-border bg-white text-ner-black font-mono text-xs font-bold uppercase hover:bg-ner-offwhite"
+                  className="w-8 h-8 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60 hover:text-ner-black shadow-xs tactile-btn"
                 >
-                  {t.cancelBtn}
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-3 rounded-xl bg-ner-black text-white font-mono text-xs font-bold uppercase hover:bg-ner-black/90 shadow-md"
-                >
-                  {t.saveBtn}
+                  <X className="w-4 h-4" />
                 </button>
               </div>
-            </form>
+
+              <form onSubmit={handleSavePlaceSubmit} className="flex flex-col flex-grow overflow-hidden">
+                <div className="p-5 space-y-3.5 overflow-y-auto">
+                  <div>
+                    <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
+                      Place Name
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={placeName}
+                      onChange={e => setPlaceName(e.target.value)}
+                      placeholder="e.g. Minoti Devi Residence / Dispur Clinic"
+                      className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none input-smooth"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
+                      Category
+                    </label>
+                    <select
+                      value={placeCategory}
+                      onChange={e => setPlaceCategory(e.target.value as any)}
+                      className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none"
+                    >
+                      <option value="home">{t.placeCategoryHome}</option>
+                      <option value="doctor">{t.placeCategoryDoctor}</option>
+                      <option value="hospital">{t.placeCategoryHospital}</option>
+                      <option value="family">{t.placeCategoryFamily}</option>
+                      <option value="caregiver">{t.placeCategoryCaregiver}</option>
+                      <option value="pharmacy">{t.placeCategoryPharmacy}</option>
+                      <option value="park">{t.placeCategoryPark}</option>
+                      <option value="other">{t.placeCategoryOther}</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
+                      Address
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={placeAddress}
+                      onChange={e => setPlaceAddress(e.target.value)}
+                      placeholder="e.g. Silpukhuri East, Guwahati, Assam"
+                      className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none input-smooth"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
+                      Landmark Cue (Familiar memory anchor)
+                    </label>
+                    <input
+                      type="text"
+                      value={placeLandmark}
+                      onChange={e => setPlaceLandmark(e.target.value)}
+                      placeholder="e.g. Near Silpukhuri Water Tank & Namghar"
+                      className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none input-smooth"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-1">
+                      Contact Phone (Optional)
+                    </label>
+                    <input
+                      type="tel"
+                      value={placePhone}
+                      onChange={e => setPlacePhone(e.target.value)}
+                      placeholder="+91 98640 12345"
+                      className="w-full p-3 rounded-xl border border-ner-border bg-white text-ner-black text-sm focus:border-ner-black outline-none input-smooth"
+                    />
+                  </div>
+
+                  {role === 'caregiver' && (
+                    <div className="flex items-center gap-2 pt-1">
+                      <input
+                        type="checkbox"
+                        id="isPrimaryCheckbox"
+                        checked={placeIsPrimary}
+                        onChange={e => setPlaceIsPrimary(e.target.checked)}
+                        className="w-4 h-4 rounded border-ner-border text-ner-black focus:ring-0"
+                      />
+                      <label htmlFor="isPrimaryCheckbox" className="text-xs text-ner-black font-medium cursor-pointer">
+                        Mark as Primary Home Residence
+                      </label>
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-4 border-t border-ner-border bg-white flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsAddEditModalOpen(false)}
+                    className="flex-1 py-3 rounded-xl border border-ner-border bg-white text-ner-black font-mono text-xs font-bold uppercase hover:bg-ner-offwhite tactile-btn"
+                  >
+                    {t.cancelBtn}
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 py-3 rounded-xl bg-ner-black text-white font-mono text-xs font-bold uppercase hover:bg-ner-black/90 shadow-md tactile-btn"
+                  >
+                    {t.saveBtn}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
 
       {/* MODAL 2: Map & Offline Settings Modal */}
-      {isSettingsModalOpen && (
-        <div className="modal-overlay animate-fade-in">
-          <div className="modal-wrapper bg-ner-offwhite border-2 border-ner-black max-w-lg w-full shadow-2xl relative">
-            <div className="modal-header flex items-start justify-between gap-4">
-              <div>
-                <h3 className="text-xl font-bold text-ner-black mb-1">
-                  {t.mapSettingsTitle}
-                </h3>
-                <p className="text-xs text-ner-black/60">
-                  Configure online Google Maps vs offline open map datasets and data controls.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsSettingsModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60 hover:text-ner-black shrink-0 shadow-xs"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="modal-body space-y-4">
-              {/* Map Mode Selector */}
-              <div>
-                <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-2">
-                  Rendering Mode
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleSetMapMode('auto')}
-                    className={`py-2.5 px-3 rounded-xl border-2 font-mono text-xs font-bold uppercase transition-all ${
-                      mapMode === 'auto'
-                        ? 'bg-ner-black text-white border-ner-black'
-                        : 'bg-white border-ner-border text-ner-black hover:border-ner-black'
-                    }`}
-                  >
-                    Auto
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleSetMapMode('online')}
-                    className={`py-2.5 px-3 rounded-xl border-2 font-mono text-xs font-bold uppercase transition-all ${
-                      mapMode === 'online'
-                        ? 'bg-ner-black text-white border-ner-black'
-                        : 'bg-white border-ner-border text-ner-black hover:border-ner-black'
-                    }`}
-                  >
-                    Online
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleSetMapMode('offline')}
-                    className={`py-2.5 px-3 rounded-xl border-2 font-mono text-xs font-bold uppercase transition-all ${
-                      mapMode === 'offline'
-                        ? 'bg-ner-black text-white border-ner-black'
-                        : 'bg-white border-ner-border text-ner-black hover:border-ner-black'
-                    }`}
-                  >
-                    Offline
-                  </button>
-                </div>
-              </div>
-
-              {/* Offline Dataset Card */}
-              <div className="p-4 rounded-2xl bg-white border border-ner-border space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono font-bold uppercase text-ner-black">
-                    {t.offlineDataRegion}
-                  </span>
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold uppercase">
-                    Ready
-                  </span>
-                </div>
-                <p className="text-xs text-ner-black/70 leading-relaxed">
-                  <strong>Coverage: </strong>{t.offlineDataCoverage}
-                </p>
-                <div className="flex items-center justify-between text-xs text-ner-black/60 font-mono pt-1">
-                  <span>Actual Dataset Size:</span>
-                  <span className="font-bold text-ner-black">{offlineDataSize.formatted}</span>
-                </div>
-                <div className="text-[10px] text-ner-black/50 font-mono pt-1 border-t border-ner-border/60">
-                  {northEastDatasetMetadata.attribution}
-                </div>
-              </div>
-
-              {/* Location Permission Status */}
-              <div className="p-4 rounded-2xl bg-white border border-ner-border flex items-center justify-between">
+      <AnimatePresence>
+        {isSettingsModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setIsSettingsModalOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 12 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-lg bg-ner-offwhite border-2 border-ner-black rounded-3xl shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]"
+            >
+              <div className="p-5 border-b border-ner-border flex items-start justify-between gap-4 bg-white">
                 <div>
-                  <h5 className="text-xs font-mono uppercase font-bold text-ner-black">
-                    {t.locationPermission}
-                  </h5>
+                  <h3 className="text-xl font-bold text-ner-black mb-1">
+                    {t.mapSettingsTitle}
+                  </h3>
                   <p className="text-xs text-ner-black/60">
-                    Status: <strong className="capitalize">{locationStatus}</strong>
+                    Configure online Google Maps vs offline open map datasets and data controls.
                   </p>
                 </div>
                 <button
                   type="button"
-                  onClick={handleRequestLocation}
-                  className="px-3 py-1.5 rounded-xl bg-ner-offwhite border border-ner-border font-mono text-xs font-bold uppercase text-ner-black hover:bg-ner-black hover:text-white transition-all"
+                  onClick={() => setIsSettingsModalOpen(false)}
+                  className="w-8 h-8 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60 hover:text-ner-black shrink-0 shadow-xs tactile-btn"
                 >
-                  Test Location
+                  <X className="w-4 h-4" />
                 </button>
               </div>
-            </div>
 
-            <div className="modal-footer flex justify-end">
-              <button
-                type="button"
-                onClick={() => setIsSettingsModalOpen(false)}
-                className="px-5 py-2.5 rounded-xl bg-ner-black text-white font-mono text-xs font-bold uppercase shadow-sm hover:bg-ner-black/90 active:scale-95 transition-all"
-              >
-                Close Settings
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL 3: Emergency Care Nearby Drawer */}
-      {isEmergencyDrawerOpen && (
-        <div className="modal-overlay animate-fade-in">
-          <div className="modal-wrapper bg-ner-offwhite border-2 border-ner-black max-w-lg w-full shadow-2xl relative">
-            <div className="modal-header flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-red-100 text-red-600 flex items-center justify-center">
-                  <Cross className="w-5 h-5" />
-                </div>
+              <div className="p-5 space-y-4 overflow-y-auto">
+                {/* Map Mode Selector */}
                 <div>
-                  <h3 className="text-xl font-bold text-ner-black">
-                    {t.helpAndCareLocations}
-                  </h3>
-                  <p className="text-xs text-ner-black/70">
-                    Nearest emergency hospitals, clinics, and family assistance anchors.
+                  <label className="block text-xs font-mono uppercase font-bold text-ner-black/70 mb-2">
+                    Rendering Mode
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleSetMapMode('auto')}
+                      className={`py-2.5 px-3 rounded-xl border-2 font-mono text-xs font-bold uppercase transition-all tactile-btn ${
+                        mapMode === 'auto'
+                          ? 'bg-ner-black text-white border-ner-black shadow-sm'
+                          : 'bg-white border-ner-border text-ner-black hover:border-ner-black'
+                      }`}
+                    >
+                      Auto
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSetMapMode('online')}
+                      className={`py-2.5 px-3 rounded-xl border-2 font-mono text-xs font-bold uppercase transition-all tactile-btn ${
+                        mapMode === 'online'
+                          ? 'bg-ner-black text-white border-ner-black shadow-sm'
+                          : 'bg-white border-ner-border text-ner-black hover:border-ner-black'
+                      }`}
+                    >
+                      Online
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSetMapMode('offline')}
+                      className={`py-2.5 px-3 rounded-xl border-2 font-mono text-xs font-bold uppercase transition-all tactile-btn ${
+                        mapMode === 'offline'
+                          ? 'bg-ner-black text-white border-ner-black shadow-sm'
+                          : 'bg-white border-ner-border text-ner-black hover:border-ner-black'
+                      }`}
+                    >
+                      Offline
+                    </button>
+                  </div>
+                </div>
+
+                {/* Offline Dataset Card */}
+                <div className="p-4 rounded-2xl bg-white border border-ner-border space-y-2 tactile-card">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono font-bold uppercase text-ner-black">
+                      {t.offlineDataRegion}
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold uppercase">
+                      Ready
+                    </span>
+                  </div>
+                  <p className="text-xs text-ner-black/70 leading-relaxed">
+                    <strong>Coverage: </strong>{t.offlineDataCoverage}
                   </p>
+                  <div className="flex items-center justify-between text-xs text-ner-black/60 font-mono pt-1">
+                    <span>Actual Dataset Size:</span>
+                    <span className="font-bold text-ner-black">{offlineDataSize.formatted}</span>
+                  </div>
+                  <div className="text-[10px] text-ner-black/50 font-mono pt-1 border-t border-ner-border/60">
+                    {northEastDatasetMetadata.attribution}
+                  </div>
+                </div>
+
+                {/* Location Permission Status */}
+                <div className="p-4 rounded-2xl bg-white border border-ner-border flex items-center justify-between tactile-card">
+                  <div>
+                    <h5 className="text-xs font-mono uppercase font-bold text-ner-black">
+                      {t.locationPermission}
+                    </h5>
+                    <p className="text-xs text-ner-black/60">
+                      Status: <strong className="capitalize">{locationStatus}</strong>
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleRequestLocation}
+                    className="px-3 py-1.5 rounded-xl bg-ner-offwhite border border-ner-border font-mono text-xs font-bold uppercase text-ner-black hover:bg-ner-black hover:text-white transition-all tactile-btn"
+                  >
+                    Test Location
+                  </button>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => setIsEmergencyDrawerOpen(false)}
-                className="w-8 h-8 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60 hover:text-ner-black shadow-xs shrink-0"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
 
-            <div className="modal-body space-y-3">
-              {importantPlaces.filter(p => p.category === 'hospital' || p.category === 'doctor').map(place => (
-                <div key={place.id} className="p-3.5 rounded-2xl bg-white border border-ner-border flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <h5 className="text-sm font-bold text-ner-black truncate">{place.name}</h5>
-                    <p className="text-xs text-ner-black/60 truncate">{place.address}</p>
-                  </div>
-                  {place.phone && (
-                    <a
-                      href={`tel:${place.phone}`}
-                      className="px-3 py-2 rounded-xl bg-red-600 text-white font-mono text-xs font-bold uppercase flex items-center gap-1.5 shrink-0"
-                    >
-                      <Phone className="w-3.5 h-3.5" />
-                      <span>Call</span>
-                    </a>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <div className="modal-footer flex items-center justify-between gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsEmergencyDrawerOpen(false);
-                  setIsHelpModalOpen(true);
-                }}
-                className="w-full py-3 rounded-xl bg-ner-terracotta text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-md hover:bg-ner-terracotta/90"
-              >
-                <Cross className="w-4 h-4" />
-                <span>Open Emergency SOS & SMS</span>
-              </button>
-            </div>
+              <div className="p-4 border-t border-ner-border bg-white flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsSettingsModalOpen(false)}
+                  className="px-5 py-2.5 rounded-xl bg-ner-black text-white font-mono text-xs font-bold uppercase shadow-sm hover:bg-ner-black/90 transition-all tactile-btn"
+                >
+                  Close Settings
+                </button>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
+
+      {/* MODAL 3: Emergency Care Nearby Drawer */}
+      <AnimatePresence>
+        {isEmergencyDrawerOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setIsEmergencyDrawerOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 12 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-lg bg-ner-offwhite border-2 border-ner-black rounded-3xl shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]"
+            >
+              <div className="p-5 border-b border-ner-border flex items-center justify-between bg-white">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-red-100 text-red-600 flex items-center justify-center">
+                    <Cross className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-ner-black">
+                      {t.helpAndCareLocations}
+                    </h3>
+                    <p className="text-xs text-ner-black/70">
+                      Nearest emergency hospitals, clinics, and family assistance anchors.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsEmergencyDrawerOpen(false)}
+                  className="w-8 h-8 rounded-full bg-white border border-ner-border flex items-center justify-center text-ner-black/60 hover:text-ner-black shadow-xs shrink-0 tactile-btn"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="p-5 space-y-3 overflow-y-auto">
+                {importantPlaces.filter(p => p.category === 'hospital' || p.category === 'doctor').map(place => (
+                  <div key={place.id} className="p-3.5 rounded-2xl bg-white border border-ner-border flex items-center justify-between gap-3 tactile-card">
+                    <div className="min-w-0">
+                      <h5 className="text-sm font-bold text-ner-black truncate">{place.name}</h5>
+                      <p className="text-xs text-ner-black/60 truncate">{place.address}</p>
+                    </div>
+                    {place.phone && (
+                      <a
+                        href={`tel:${place.phone}`}
+                        className="px-3 py-2 rounded-xl bg-red-600 text-white font-mono text-xs font-bold uppercase flex items-center gap-1.5 shrink-0 tactile-btn"
+                      >
+                        <Phone className="w-3.5 h-3.5" />
+                        <span>Call</span>
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div className="p-4 border-t border-ner-border bg-white flex items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsEmergencyDrawerOpen(false);
+                    setIsHelpModalOpen(true);
+                  }}
+                  className="w-full py-3 rounded-xl bg-ner-terracotta text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-md hover:bg-ner-terracotta/90 tactile-btn"
+                >
+                  <Cross className="w-4 h-4" />
+                  <span>Open Emergency SOS & SMS</span>
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

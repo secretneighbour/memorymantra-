@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useRole } from '../context/RoleContext';
 import { useAccessibility } from '../context/AccessibilityContext';
+import { SuccessCheckmark } from './motion/MotionPrimitives';
 import { 
   Phone, 
   AlertTriangle, 
@@ -81,16 +83,28 @@ export const EmergencyHelpModal: React.FC = () => {
     : '';
 
   return (
-    <div 
-      className="modal-overlay animate-fade-in"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="emergency-modal-title"
-    >
-      <div className="modal-wrapper border-2 border-ner-black relative">
-        {/* Modal Header */}
-        <div className="modal-header flex items-center justify-between">
-          <div className="flex items-center gap-3">
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="emergency-modal-title"
+        >
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.98, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.98, y: 8 }}
+            transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+            className="modal-wrapper border-2 border-ner-black relative"
+          >
+            {/* Modal Header */}
+            <div className="modal-header flex items-center justify-between">
+              <div className="flex items-center gap-3">
             <div className={`w-11 h-11 rounded-2xl flex items-center justify-center border ${
               selectedUrgency === 'critical' && mode !== 'select'
                 ? 'bg-red-100 text-red-600 border-red-300'
@@ -135,14 +149,14 @@ export const EmergencyHelpModal: React.FC = () => {
             </p>
 
             {/* Urgency selection toggle */}
-            <div className="grid grid-cols-2 gap-2.5 p-1 bg-white border border-ner-border rounded-2xl">
+            <div className="grid grid-cols-2 gap-2.5 p-1 bg-white dark:bg-gray-800 border border-ner-border dark:border-gray-700 rounded-2xl">
               <button
                 type="button"
                 onClick={() => setSelectedUrgency('gentle')}
                 className={`py-3 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 ${
                   selectedUrgency === 'gentle'
-                    ? 'bg-ner-black text-white shadow-sm'
-                    : 'text-ner-black/60 hover:text-ner-black'
+                    ? 'bg-ner-black text-white shadow-sm dark:bg-ner-terracotta'
+                    : 'text-ner-black/60 hover:text-ner-black dark:text-gray-300 dark:hover:text-white'
                 }`}
               >
                 <HeartHandshake className="w-4 h-4" />
@@ -194,7 +208,7 @@ export const EmergencyHelpModal: React.FC = () => {
                     {/* Direct phone call button */}
                     <a
                       href={`tel:${contact.phone}`}
-                      className="w-10 h-10 rounded-xl bg-ner-offwhite border border-ner-border flex items-center justify-center text-ner-black hover:bg-ner-black hover:text-white transition-all active:scale-95"
+                      className="w-10 h-10 rounded-xl bg-ner-offwhite dark:bg-gray-800 border border-ner-border dark:border-gray-700 flex items-center justify-center text-ner-black dark:text-white hover:bg-ner-black hover:text-white dark:hover:bg-gray-700 transition-all active:scale-95"
                       title={`Call ${contact.name}`}
                       aria-label={`Call ${contact.name}`}
                     >
@@ -259,7 +273,7 @@ export const EmergencyHelpModal: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setMode('select')}
-                className="flex-1 py-3.5 px-4 rounded-2xl border border-ner-border bg-white text-ner-black font-mono text-xs font-bold uppercase tracking-wider hover:bg-ner-offwhite transition-all active:scale-95"
+                className="flex-1 py-3.5 px-4 rounded-2xl border border-ner-border dark:border-gray-700 bg-white dark:bg-gray-800 text-ner-black dark:text-white font-mono text-xs font-bold uppercase tracking-wider hover:bg-ner-offwhite dark:hover:bg-gray-700 transition-all active:scale-95"
               >
                 {t.cancelSendBtn}
               </button>
@@ -284,9 +298,7 @@ export const EmergencyHelpModal: React.FC = () => {
         {/* VIEW 3: DISPATCH STATUS & MOBILE SMS PROTOCOL FALLBACK */}
         {mode === 'status' && targetContact && (
           <div className="space-y-4 my-2 text-center">
-            <div className="w-16 h-16 rounded-full bg-emerald-100 text-ner-sage border border-ner-sage/40 flex items-center justify-center mx-auto shadow-inner">
-              <CheckCircle2 className="w-8 h-8" />
-            </div>
+            <SuccessCheckmark size={52} color="#10B981" className="mx-auto" />
 
             <div>
               <h3 className="text-xl font-bold text-ner-black">
@@ -307,7 +319,7 @@ export const EmergencyHelpModal: React.FC = () => {
               </p>
               <a
                 href={`sms:${targetContact.phone}?body=${currentSmsBody}`}
-                className="w-full py-3 px-4 rounded-xl bg-ner-black text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-ner-black/90 transition-all shadow-sm"
+                className="w-full py-3 px-4 rounded-xl bg-ner-black text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-ner-black/90 transition-all shadow-sm tactile-btn"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 <span>{t.smsNativeTrigger}</span>
@@ -316,7 +328,7 @@ export const EmergencyHelpModal: React.FC = () => {
 
             <button
               onClick={handleClose}
-              className="w-full py-3.5 rounded-2xl bg-ner-offwhite border border-ner-border font-mono text-xs font-bold uppercase tracking-wider text-ner-black hover:bg-white transition-all"
+              className="w-full py-3.5 rounded-2xl bg-ner-offwhite border border-ner-border font-mono text-xs font-bold uppercase tracking-wider text-ner-black hover:bg-white transition-all tactile-btn"
             >
               Done & Close
             </button>
@@ -331,7 +343,9 @@ export const EmergencyHelpModal: React.FC = () => {
             [ {t.simulationActive} • Safe Emergency Testing Layer ]
           </span>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
   );
 };

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { memoryCardPairs, MemoryCardData } from '../data/gamesData';
 import { useRole } from '../context/RoleContext';
 import { useCurrentUser } from '../context/AuthContext';
 import { TTSButton } from '../components/TTSButton';
+import { SuccessCheckmark } from '../components/motion/MotionPrimitives';
 import { 
   RotateCcw, 
   ArrowLeft, 
@@ -15,7 +17,6 @@ import {
   ChevronRight,
   HelpCircle
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
 
 interface PlayCard extends MemoryCardData {
   uniqueId: string;
@@ -151,17 +152,6 @@ export const MemoryMatchGame: React.FC = () => {
     setFinalScore(calculatedScore);
 
     recordGameCompletion('Heritage Memory Match', calculatedScore);
-
-    try {
-      confetti({
-        particleCount: 80,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#DE4A30', '#10B981', '#E67E22', '#3B82F6']
-      });
-    } catch (e) {
-      // safe fallback if confetti fails
-    }
   };
 
   const formatTime = (seconds: number) => {
@@ -308,9 +298,7 @@ export const MemoryMatchGame: React.FC = () => {
         <div className="modal-overlay animate-fade-in">
           <div className="modal-wrapper border-2 border-ner-black max-w-md w-full text-center shadow-2xl relative overflow-hidden">
             <div className="modal-header">
-              <div className="w-16 h-16 rounded-full bg-ner-sage/10 text-ner-sage flex items-center justify-center mx-auto mb-2 border border-ner-sage/30">
-                <Trophy className="w-8 h-8" />
-              </div>
+              <SuccessCheckmark size={56} color="#10B981" className="mx-auto mb-3" />
 
               <span className="text-xs font-mono uppercase tracking-widest text-ner-sage font-bold">
                 Cognitive Session Complete

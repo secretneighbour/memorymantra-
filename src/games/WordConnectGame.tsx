@@ -12,7 +12,7 @@ import {
   XCircle, 
   ChevronRight 
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import { SuccessCheckmark } from '../components/motion/MotionPrimitives';
 
 export const WordConnectGame: React.FC = () => {
   const navigate = useNavigate();
@@ -46,9 +46,6 @@ export const WordConnectGame: React.FC = () => {
     } else {
       setIsGameOver(true);
       recordGameCompletion('Brahmaputra Word Connect', score + (selectedAnswer === currentQ.correctAnswer ? 20 : 0));
-      try {
-        confetti({ particleCount: 75, spread: 65 });
-      } catch (e) {}
     }
   };
 
@@ -185,9 +182,7 @@ export const WordConnectGame: React.FC = () => {
         <div className="modal-overlay animate-fade-in">
           <div className="modal-wrapper border-2 border-ner-black max-w-md w-full text-center shadow-2xl">
             <div className="modal-header">
-              <div className="w-16 h-16 rounded-full bg-ner-sage/10 text-ner-sage flex items-center justify-center mx-auto mb-2 border border-ner-sage/30">
-                <Trophy className="w-8 h-8" />
-              </div>
+              <SuccessCheckmark size={56} color="#10B981" className="mx-auto mb-3" />
 
               <h2 className="text-2xl font-bold text-ner-black">
                 Great Language Recall!

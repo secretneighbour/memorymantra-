@@ -4,7 +4,7 @@ import { useRole } from '../context/RoleContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { TTSButton } from '../components/TTSButton';
 import { AdaptiveCognitiveEngine } from '../services/ai/adaptiveEngine';
-import confetti from 'canvas-confetti';
+import { SuccessCheckmark } from '../components/motion/MotionPrimitives';
 import { 
   ArrowLeft, 
   RotateCcw, 
@@ -122,17 +122,6 @@ export const EmotionRecognitionGame: React.FC = () => {
       setIsComplete(true);
 
       const finalScore = Math.round(((correctCount + (selectedOption === currentPrompt.correctAnswer ? 1 : 0)) / EMOTION_PROMPTS.length) * 100);
-
-      // Trigger celebration
-      try {
-        confetti({
-          particleCount: 75,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
-      } catch (e) {
-        // Safe fallback
-      }
 
       // Record result to global role & telemetry state
       recordActivityResult({
@@ -264,9 +253,7 @@ export const EmotionRecognitionGame: React.FC = () => {
       ) : (
         /* Completion Screen with Adaptive AI Telemetry */
         <div className="frost-white-intense rounded-3xl p-8 sm:p-12 shadow-2xl border border-ner-border/90 text-center max-w-2xl mx-auto animate-fade-in">
-          <div className="w-16 h-16 rounded-full bg-emerald-100 text-ner-sage flex items-center justify-center mx-auto mb-4 border border-ner-sage/20">
-            <Trophy className="w-8 h-8" />
-          </div>
+          <SuccessCheckmark size={56} color="#10B981" className="mx-auto mb-4" />
 
           <span className="text-xs font-mono uppercase tracking-widest text-ner-sage font-bold block mb-1">
             [ Session Completed ]

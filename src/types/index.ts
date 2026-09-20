@@ -3,6 +3,7 @@ export type UserRole = 'patient' | 'caregiver' | 'doctor';
 export type TextSize = 'small' | 'normal' | 'large' | 'extra-large';
 export type MotionPreference = 'full' | 'reduced';
 export type ContrastMode = 'standard' | 'high';
+export type ThemeMode = 'light' | 'dark';
 
 export type NERLanguage = 
   | 'en'       // English

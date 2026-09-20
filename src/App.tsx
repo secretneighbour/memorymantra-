@@ -12,6 +12,15 @@ import { OfflineBanner } from './components/OfflineBanner';
 import { PageNarrator } from './components/PageNarrator';
 import { MobileBottomNav } from './components/MobileBottomNav';
 
+import { 
+  ProtectedRoute, 
+  PublicIntroRoute, 
+  PublicAuthRoute, 
+  RoleDashboardRedirect 
+} from './components/auth/AuthGuard';
+import { Navigate } from 'react-router-dom';
+import { PageTransition } from './components/motion/MotionPrimitives';
+
 // Pages
 import { LandingPage } from './pages/LandingPage';
 import { RoleSelectionPage } from './pages/RoleSelectionPage';
@@ -35,6 +44,7 @@ import { PlacesPage } from './pages/PlacesPage';
 import { PresentationPage } from './pages/PresentationPage';
 import { WalkthroughModal } from './components/WalkthroughModal';
 import { EmergencyHelpModal } from './components/EmergencyHelpModal';
+import { AccessibilityModal } from './components/AccessibilityModal';
 
 // Games
 import { MemoryMatchGame } from './games/MemoryMatchGame';
@@ -67,6 +77,72 @@ const isElectron = typeof window !== 'undefined' && (
 
 const Router = isElectron ? HashRouter : BrowserRouter;
 
+// AppRoutes: Renders application routes with smooth, accessible page transitions
+const AppRoutes: React.FC = () => {
+  const location = useLocation();
+
+  return (
+    <PageTransition key={location.pathname} className="w-full flex-grow flex flex-col">
+      <Routes location={location}>
+        {/* Public Introduction & Presentation Routes */}
+        <Route path="/" element={<PublicIntroRoute><LandingPage /></PublicIntroRoute>} />
+        <Route path="/intro" element={<PublicIntroRoute><LandingPage /></PublicIntroRoute>} />
+        <Route path="/presentation" element={<PresentationPage />} />
+
+        {/* Public Authentication Routes */}
+        <Route path="/login" element={<PublicAuthRoute><LoginPage /></PublicAuthRoute>} />
+        <Route path="/signin" element={<PublicAuthRoute><LoginPage /></PublicAuthRoute>} />
+        <Route path="/signup" element={<PublicAuthRoute><SignupPage /></PublicAuthRoute>} />
+        <Route path="/forgot-password" element={<PublicAuthRoute><ForgotPasswordPage /></PublicAuthRoute>} />
+        <Route path="/verify-email" element={<EmailVerificationPage />} />
+        <Route path="/auth/callback" element={<AuthCallbackPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+        {/* Protected Patient & General Care Flow */}
+        <Route path="/patient" element={<ProtectedRoute><PatientDashboard /></ProtectedRoute>} />
+        <Route path="/role-selection" element={<ProtectedRoute><RoleSelectionPage /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<RoleDashboardRedirect />} />
+        <Route path="/app" element={<RoleDashboardRedirect />} />
+
+        {/* Protected Games Suite */}
+        <Route path="/games" element={<ProtectedRoute><GamesHub /></ProtectedRoute>} />
+        <Route path="/games/memory" element={<ProtectedRoute><MemoryMatchGame /></ProtectedRoute>} />
+        <Route path="/games/sequence" element={<ProtectedRoute><SequenceRecallGame /></ProtectedRoute>} />
+        <Route path="/games/pattern" element={<ProtectedRoute><PatternFinderGame /></ProtectedRoute>} />
+        <Route path="/games/object" element={<ProtectedRoute><PictureRecognitionGame /></ProtectedRoute>} />
+        <Route path="/games/recognition" element={<ProtectedRoute><PictureRecognitionGame /></ProtectedRoute>} />
+        <Route path="/games/routine" element={<ProtectedRoute><RoutineRecallGame /></ProtectedRoute>} />
+        <Route path="/games/emotion" element={<ProtectedRoute><EmotionRecognitionGame /></ProtectedRoute>} />
+        <Route path="/games/words" element={<ProtectedRoute><WordConnectGame /></ProtectedRoute>} />
+        <Route path="/games/market" element={<ProtectedRoute><MarketMemoryGame /></ProtectedRoute>} />
+        <Route path="/games/faces" element={<ProtectedRoute><NameFaceRecallGame /></ProtectedRoute>} />
+        
+        {/* Protected Memory Vault & Companion */}
+        <Route path="/memory" element={<ProtectedRoute><MemoriesPage /></ProtectedRoute>} />
+        <Route path="/memories" element={<ProtectedRoute><MemoriesPage /></ProtectedRoute>} />
+        <Route path="/memory-companion" element={<ProtectedRoute><MemoryCompanionPage /></ProtectedRoute>} />
+        <Route path="/ai-companion" element={<ProtectedRoute><MemoryCompanionPage /></ProtectedRoute>} />
+        <Route path="/reminders" element={<ProtectedRoute><RemindersPage /></ProtectedRoute>} />
+        <Route path="/progress" element={<ProtectedRoute><ProgressPage /></ProtectedRoute>} />
+        <Route path="/places" element={<ProtectedRoute><PlacesPage /></ProtectedRoute>} />
+
+        {/* Protected Caregiver & Doctor Dashboards */}
+        <Route path="/caregiver" element={<ProtectedRoute><CaregiverDashboard /></ProtectedRoute>} />
+        <Route path="/patient-profile" element={<ProtectedRoute><PatientProfilePage /></ProtectedRoute>} />
+        <Route path="/doctor" element={<ProtectedRoute><DoctorDashboard /></ProtectedRoute>} />
+        <Route path="/professional" element={<ProtectedRoute><DoctorDashboard /></ProtectedRoute>} />
+
+        {/* Public Settings & Accessibility (Available Without Sign-In) */}
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/accessibility" element={<SettingsPage />} />
+
+        {/* Intelligent Fallback */}
+        <Route path="*" element={<RoleDashboardRedirect />} />
+      </Routes>
+    </PageTransition>
+  );
+};
+
 export const App: React.FC = () => {
   return (
     <AccessibilityProvider>
@@ -79,6 +155,7 @@ export const App: React.FC = () => {
               <Navbar />
 
               {/* Global Modals, Drawers & Voice Narrator */}
+              <AccessibilityModal />
               <RoleSwitcherModal />
               <AICompanionDrawer />
               <OfflineBanner />
@@ -86,56 +163,8 @@ export const App: React.FC = () => {
               <WalkthroughModal />
               <EmergencyHelpModal />
 
-              <main className="flex-grow z-10 pb-20 md:pb-0">
-                <Routes>
-                  {/* Landing & Role Selection */}
-                  <Route path="/" element={<LandingPage />} />
-                  <Route path="/role-selection" element={<RoleSelectionPage />} />
-                  <Route path="/presentation" element={<PresentationPage />} />
-
-                  {/* Authentication Routes */}
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/signin" element={<LoginPage />} />
-                  <Route path="/signup" element={<SignupPage />} />
-                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                  <Route path="/verify-email" element={<EmailVerificationPage />} />
-                  <Route path="/auth/callback" element={<AuthCallbackPage />} />
-                  <Route path="/reset-password" element={<ResetPasswordPage />} />
-
-                  {/* Patient Flow */}
-                  <Route path="/patient" element={<PatientDashboard />} />
-                  <Route path="/games" element={<GamesHub />} />
-                  <Route path="/games/memory" element={<MemoryMatchGame />} />
-                  <Route path="/games/sequence" element={<SequenceRecallGame />} />
-                  <Route path="/games/pattern" element={<PatternFinderGame />} />
-                  <Route path="/games/object" element={<PictureRecognitionGame />} />
-                  <Route path="/games/recognition" element={<PictureRecognitionGame />} />
-                  <Route path="/games/routine" element={<RoutineRecallGame />} />
-                  <Route path="/games/emotion" element={<EmotionRecognitionGame />} />
-                  <Route path="/games/words" element={<WordConnectGame />} />
-                  <Route path="/games/market" element={<MarketMemoryGame />} />
-                  <Route path="/games/faces" element={<NameFaceRecallGame />} />
-                  
-                  {/* Memory Vault & Companion */}
-                  <Route path="/memory" element={<MemoriesPage />} />
-                  <Route path="/memories" element={<MemoriesPage />} />
-                  <Route path="/memory-companion" element={<MemoryCompanionPage />} />
-                  <Route path="/reminders" element={<RemindersPage />} />
-                  <Route path="/progress" element={<ProgressPage />} />
-                  <Route path="/places" element={<PlacesPage />} />
-
-                  {/* Caregiver & Doctor Dashboards */}
-                  <Route path="/caregiver" element={<CaregiverDashboard />} />
-                  <Route path="/patient-profile" element={<PatientProfilePage />} />
-                  <Route path="/doctor" element={<DoctorDashboard />} />
-
-                  {/* Settings & Accessibility */}
-                  <Route path="/settings" element={<SettingsPage />} />
-                  <Route path="/accessibility" element={<SettingsPage />} />
-
-                  {/* Fallback */}
-                  <Route path="*" element={<LandingPage />} />
-                </Routes>
+              <main className="flex-grow z-10 pb-20 md:pb-0 flex flex-col">
+                <AppRoutes />
               </main>
 
               {/* Native-feel Mobile Bottom Navigation */}
@@ -149,5 +178,6 @@ export const App: React.FC = () => {
     </AccessibilityProvider>
   );
 };
+
 
 export default App;

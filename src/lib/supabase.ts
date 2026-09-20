@@ -190,55 +190,10 @@ export type ActivityLogInsert = {
  * ----------------------------------------------------------------------------
  */
 
-const rawUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim();
-const rawKey = (
-  import.meta.env.VITE_SUPABASE_ANON_KEY || 
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 
-  ''
-).trim();
+import { supabase, isSupabaseConfigured, getEnv } from './supabaseClient';
+export { supabase, isSupabaseConfigured };
 
-const sanitizedUrl = rawUrl.replace(/\/+$/, '');
-
-export const isSupabaseConfigured = (): boolean => {
-  if (!sanitizedUrl || !rawKey) return false;
-  if (sanitizedUrl.includes('placeholder') || rawKey.includes('placeholder')) return false;
-  if (sanitizedUrl === 'https://' || rawKey === 'your-anon-key') return false;
-
-  const isHttp = sanitizedUrl.startsWith('https://') || sanitizedUrl.startsWith('http://');
-  const hasValidKeyLength = rawKey.length > 20;
-
-  return Boolean(isHttp && hasValidKeyLength);
-};
-
-let supabaseInstance: SupabaseClient | null = null;
-
-export const getSupabaseClient = (): SupabaseClient => {
-  if (!supabaseInstance) {
-    const isConfigured = isSupabaseConfigured();
-    const url = isConfigured ? sanitizedUrl : 'https://placeholder-project.supabase.co';
-    const key = isConfigured ? rawKey : 'placeholder-anon-key-development-mode';
-
-    supabaseInstance = createClient(url, key, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-        flowType: 'pkce',
-        storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-        storageKey: 'neuro_ner_sb_auth_token',
-      },
-      global: {
-        headers: {
-          'x-application-name': 'neuro-ner-cognitive-care',
-        },
-      },
-    });
-  }
-
-  return supabaseInstance;
-};
-
-export const supabase = getSupabaseClient();
+export const getSupabaseClient = (): SupabaseClient => supabase;
 
 /**
  * ----------------------------------------------------------------------------
@@ -280,82 +235,8 @@ export interface AuthActionResult {
 
 export function formatSupabaseAuthError(error: any): string {
   if (!error) return 'An unexpected authentication error occurred.';
-
-  const message = typeof error === 'string' ? error : error.message || error.error_description || '';
-  const status = error.status;
-
-  if (
-    message.includes('Invalid login credentials') || 
-    message.includes('invalid_credentials') ||
-    message.includes('invalid_grant')
-  ) {
-    return 'The email or password is incorrect. Please check your credentials and try again.';
-  }
-
-  if (
-    message.includes('Email not confirmed') || 
-    message.includes('email_not_confirmed') ||
-    message.includes('Email address not confirmed')
-  ) {
-    return 'Your email address has not been confirmed yet. Please check your email inbox for the confirmation link.';
-  }
-
-  if (
-    message.includes('User already registered') || 
-    message.includes('user_already_exists') ||
-    message.includes('already registered')
-  ) {
-    return 'An account with this email address already exists. Please sign in instead.';
-  }
-
-  if (message.includes('Password should be at least 6 characters') || message.includes('weak_password')) {
-    return 'Password must be at least 6 characters long.';
-  }
-
-  if (
-    message.includes('Token has expired') || 
-    message.includes('otp_expired') ||
-    message.includes('invalid_token') ||
-    message.includes('Token is invalid') ||
-    message.includes('bad_code_verifier')
-  ) {
-    return 'This verification link has expired or has already been used. Please request a fresh link.';
-  }
-
-  if (
-    message.includes('over_email_send_rate_limit') ||
-    message.includes('rate limit') ||
-    message.includes('too many requests') ||
-    status === 429
-  ) {
-    return 'Too many email requests sent. Please wait about a minute before requesting another link.';
-  }
-
-  if (
-    message.includes('Signup requires a valid password') ||
-    message.includes('missing email')
-  ) {
-    return 'Please provide both a valid email address and password.';
-  }
-
-  if (
-    message.includes('Failed to fetch') || 
-    message.includes('NetworkError') || 
-    message.includes('Network request failed') ||
-    message.includes('fetch failed')
-  ) {
-    return 'Unable to reach the authentication service. Please check your internet connection and Supabase URL.';
-  }
-
-  if (message.includes('Signups not allowed for this instance') || message.includes('signup_disabled')) {
-    return 'New user registrations are currently disabled on this Supabase project.';
-  }
-
-  if (message.includes('JWT') || message.includes('Postgres') || message.includes('relation') || message.includes('column') || message.includes('schema')) {
-    return 'A database configuration issue occurred. Please check your Supabase project settings.';
-  }
-
-  return message;
+  if (typeof error === 'string') return error;
+  return error.message || error.error_description || 'An unexpected authentication error occurred.';
 }
 
 export function mapSupabaseUser(user: User | null, profileData?: Partial<ProfileRow> | null): AppUser | null {

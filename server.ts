@@ -4,51 +4,106 @@ import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 
-// Multi-Key Rotation Manager for Gemini & Cloud Services
-const geminiKeys: string[] = [
+// Multi-Key Rotation Manager for Gemini & Cloud Services (FinOps Free-Tier Shield)
+interface KeyState {
+  key: string;
+  cooldownUntil: number;
+  failureCount: number;
+}
+
+const rawKeys: string[] = [
   process.env.GEMINI_API_KEY,
   process.env.GEMINI_API_KEY_FALLBACK,
+  process.env.GEMINI_API_KEY_1,
+  process.env.GEMINI_API_KEY_2,
+  process.env.GEMINI_API_KEY_3,
+  process.env.API_KEY_1,
+  process.env.API_KEY_2,
+  process.env.API_KEY_3,
 ].filter((k): k is string => Boolean(k && k.trim().length > 0));
+
+// Deduplicate keys
+const geminiKeys: string[] = Array.from(new Set(rawKeys));
+
+const keyStates: KeyState[] = geminiKeys.map((k) => ({
+  key: k,
+  cooldownUntil: 0,
+  failureCount: 0,
+}));
 
 let activeKeyIndex = 0;
 const clientCache = new Map<string, GoogleGenAI>();
 
-function getGeminiClient(): { client: GoogleGenAI; keyIndex: number } | null {
-  if (geminiKeys.length === 0) return null;
-  const currentKey = geminiKeys[activeKeyIndex % geminiKeys.length];
-  if (!clientCache.has(currentKey)) {
+function getNextHealthyKey(): { client: GoogleGenAI; keyIndex: number; key: string } | null {
+  if (keyStates.length === 0) return null;
+  const now = Date.now();
+
+  for (let i = 0; i < keyStates.length; i++) {
+    const idx = (activeKeyIndex + i) % keyStates.length;
+    const state = keyStates[idx];
+    if (state.cooldownUntil <= now) {
+      activeKeyIndex = idx;
+      if (!clientCache.has(state.key)) {
+        clientCache.set(
+          state.key,
+          new GoogleGenAI({
+            apiKey: state.key,
+            httpOptions: {
+              headers: { "User-Agent": "smriticare-backend-finops" },
+            },
+          })
+        );
+      }
+      return {
+        client: clientCache.get(state.key)!,
+        keyIndex: idx,
+        key: state.key,
+      };
+    }
+  }
+
+  // If all are cooling down, return the key that expires soonest
+  const soonest = [...keyStates].sort((a, b) => a.cooldownUntil - b.cooldownUntil)[0];
+  const idx = keyStates.indexOf(soonest);
+  activeKeyIndex = idx;
+  if (!clientCache.has(soonest.key)) {
     clientCache.set(
-      currentKey,
+      soonest.key,
       new GoogleGenAI({
-        apiKey: currentKey,
+        apiKey: soonest.key,
         httpOptions: {
-          headers: {
-            "User-Agent": "smriticare-backend-secure",
-          },
+          headers: { "User-Agent": "smriticare-backend-finops" },
         },
       })
     );
   }
   return {
-    client: clientCache.get(currentKey)!,
-    keyIndex: activeKeyIndex % geminiKeys.length,
+    client: clientCache.get(soonest.key)!,
+    keyIndex: idx,
+    key: soonest.key,
   };
 }
 
-function rotateGeminiKey(): boolean {
-  if (geminiKeys.length <= 1) return false;
-  activeKeyIndex = (activeKeyIndex + 1) % geminiKeys.length;
-  console.warn(`[Security & Billing] Failover: Rotated to Gemini API key index ${activeKeyIndex}`);
-  return true;
+function markKey429(keyIndex: number, cooldownSeconds = 60) {
+  if (keyStates[keyIndex]) {
+    keyStates[keyIndex].cooldownUntil = Date.now() + cooldownSeconds * 1000;
+    keyStates[keyIndex].failureCount++;
+    console.warn(`[FinOps Quota] Key #${keyIndex + 1} hit 429/Quota Limit. Placed on cooldown for ${cooldownSeconds}s.`);
+    activeKeyIndex = (keyIndex + 1) % keyStates.length;
+  }
 }
 
-// In-Memory Response Cache for AI Companion (15-minute TTL to reduce redundant billing)
+function getGeminiClient(): { client: GoogleGenAI; keyIndex: number; key: string } | null {
+  return getNextHealthyKey();
+}
+
+// In-Memory Response Cache for AI Companion (24-Hour TTL to eliminate redundant billing)
 interface CacheEntry {
   data: any;
   expiresAt: number;
 }
 const aiResponseCache = new Map<string, CacheEntry>();
-const CACHE_TTL_MS = 15 * 60 * 1000;
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours FinOps cache
 
 // Periodic cleanup of stale cache entries
 setInterval(() => {
@@ -58,7 +113,7 @@ setInterval(() => {
       aiResponseCache.delete(k);
     }
   }
-}, 10 * 60 * 1000);
+}, 30 * 60 * 1000);
 
 // Sliding-Window Rate Limiter for /api/ai endpoints (30 requests/min per IP)
 interface RateRecord {
@@ -335,59 +390,84 @@ JSON Output Schema:
           },
         ];
 
-        // Multi-model fallback chain to protect against temporary surges
+        // Multi-model and multi-key fallback chain (FinOps Auto-Retry Shield)
         const candidateModels = ["gemini-3.8-flash", "gemini-3.1-flash-lite"];
         let generatedReply: string | null = null;
         let actionRoute: string | undefined;
         let actionLabel: string | undefined;
         let suggestedReplies: string[] = [];
         let successfulModel = "";
+        let quotaExhausted = false;
 
-        for (const modelName of candidateModels) {
-          try {
-            const activeClient = getGeminiClient()?.client;
-            if (!activeClient) break;
+        const maxKeyAttempts = Math.max(1, keyStates.length);
 
-            const response = await activeClient.models.generateContent({
-              model: modelName,
-              contents,
-              config: {
-                systemInstruction,
-                responseMimeType: "application/json",
-                temperature: 0.6,
-                topP: 0.9,
-              },
-            });
-
-            if (response.text && response.text.trim().length > 0) {
-              try {
-                const parsed = JSON.parse(response.text.trim());
-                generatedReply = parsed.reply || response.text.trim();
-                actionRoute = parsed.actionRoute || undefined;
-                actionLabel = parsed.actionLabel || undefined;
-                if (Array.isArray(parsed.suggestedReplies)) {
-                  suggestedReplies = parsed.suggestedReplies.slice(0, 3);
-                }
-              } catch {
-                generatedReply = response.text.trim();
-              }
-              successfulModel = modelName;
-              break;
-            }
-          } catch (modelErr: any) {
-            console.warn(`[AI Engine] Model ${modelName} warning:`, modelErr?.message || modelErr);
-            const isRateLimit =
-              modelErr?.status === 429 ||
-              String(modelErr?.message || "").includes("429") ||
-              String(modelErr?.message || "").includes("RESOURCE_EXHAUSTED") ||
-              String(modelErr?.message || "").includes("quota");
-
-            if (isRateLimit && rotateGeminiKey()) {
-              console.log("[AI Engine] Rotated to secondary Gemini key after 429 quota alert.");
-            }
-            // Brief pause before trying fallback model
-            await new Promise((r) => setTimeout(r, 150));
+        keyLoop: for (let attempt = 0; attempt < maxKeyAttempts; attempt++) {
+          const healthyObj = getNextHealthyKey();
+          if (!healthyObj) {
+            quotaExhausted = true;
+            break;
           }
+
+          const { client: activeClient, keyIndex: currentKeyIdx } = healthyObj;
+
+          for (const modelName of candidateModels) {
+            try {
+              const response = await activeClient.models.generateContent({
+                model: modelName,
+                contents,
+                config: {
+                  systemInstruction,
+                  responseMimeType: "application/json",
+                  temperature: 0.6,
+                  topP: 0.9,
+                },
+              });
+
+              if (response.text && response.text.trim().length > 0) {
+                try {
+                  const parsed = JSON.parse(response.text.trim());
+                  generatedReply = parsed.reply || response.text.trim();
+                  actionRoute = parsed.actionRoute || undefined;
+                  actionLabel = parsed.actionLabel || undefined;
+                  if (Array.isArray(parsed.suggestedReplies)) {
+                    suggestedReplies = parsed.suggestedReplies.slice(0, 3);
+                  }
+                } catch {
+                  generatedReply = response.text.trim();
+                }
+                successfulModel = modelName;
+                break keyLoop; // Success, exit both loops immediately
+              }
+            } catch (modelErr: any) {
+              console.warn(`[FinOps Key #${currentKeyIdx + 1}] Model ${modelName} error:`, modelErr?.message || modelErr);
+              const isRateLimit =
+                modelErr?.status === 429 ||
+                String(modelErr?.message || "").includes("429") ||
+                String(modelErr?.message || "").includes("RESOURCE_EXHAUSTED") ||
+                String(modelErr?.message || "").includes("quota");
+
+              if (isRateLimit) {
+                // Key 1 hit 429: Mark on cooldown and auto-retry with Key 2
+                markKey429(currentKeyIdx, 60);
+                continue keyLoop;
+              }
+              // Brief pause before trying fallback model
+              await new Promise((r) => setTimeout(r, 120));
+            }
+          }
+        }
+
+        // Graceful degradation if all keys are rate-limited or quota is exceeded
+        if (!generatedReply && quotaExhausted) {
+          console.warn("[FinOps Shield] All API keys in quota limit/cooldown. Providing graceful elderly reassurance.");
+          return res.json({
+            reply: "Smriti is taking a short rest. Please try again in a few minutes.",
+            provider: "quota-fallback",
+            language: langLabel,
+            actionRoute: "/memory",
+            actionLabel: "View Today's Timeline",
+            suggestedReplies: ["What is my next reminder?", "Show today's date", "Play calming music"],
+          });
         }
 
         if (generatedReply) {

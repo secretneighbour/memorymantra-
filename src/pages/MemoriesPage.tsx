@@ -5,6 +5,10 @@ import { useAccessibility } from '../context/AccessibilityContext';
 import { MemoryItem, FamilyMember } from '../types';
 import { TTSButton } from '../components/TTSButton';
 import { 
+  StaggerContainer, 
+  StaggerItem 
+} from '../components/motion/MotionPrimitives';
+import { 
   Heart, 
   Image as ImageIcon, 
   BookOpen, 
@@ -185,11 +189,11 @@ export const MemoriesPage: React.FC = () => {
               }}
               className={`px-5 py-3 rounded-2xl text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2 shrink-0 transition-all border ${
                 isActive
-                  ? 'bg-ner-black text-white border-ner-black shadow-md'
-                  : 'bg-white text-ner-black/70 border-ner-border hover:border-ner-black/40'
+                  ? 'bg-ner-black dark:bg-ner-terracotta text-white border-ner-black dark:border-ner-terracotta shadow-md'
+                  : 'bg-white dark:bg-gray-800 text-ner-black/70 dark:text-white border-ner-border dark:border-gray-700 hover:border-ner-black/40 dark:hover:bg-gray-700'
               }`}
             >
-              <Icon className={`w-4 h-4 ${isActive ? 'text-ner-sage' : 'text-ner-black/40'}`} />
+              <Icon className={`w-4 h-4 ${isActive ? 'text-ner-sage dark:text-white' : 'text-ner-black/40 dark:text-gray-400'}`} />
               <span>{tab.label}</span>
             </button>
           );
@@ -381,63 +385,64 @@ export const MemoriesPage: React.FC = () => {
 
       {/* 3. STANDARD MEMORY CARDS (ALL, PHOTOS, STORIES, SONGS) */}
       {activeTab !== 'family' && activeTab !== 'therapy' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <StaggerContainer staggerDelay={0.06} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredMemories.map((mem) => (
-            <div
-              key={mem.id}
-              className="frost-card rounded-3xl border-2 border-ner-border overflow-hidden shadow-md hover:border-ner-black/40 transition-all flex flex-col justify-between group"
-            >
-              {mem.imageUrl && (
-                <div className="relative h-48 sm:h-52 overflow-hidden bg-ner-offwhite">
-                  <img
-                    src={mem.imageUrl}
-                    alt={mem.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    referrerPolicy="no-referrer"
-                  />
-                  {mem.pinned && (
-                    <span className="absolute top-3 right-3 px-3 py-1 rounded-full bg-ner-black/75 backdrop-blur-sm text-white text-[11px] font-mono flex items-center gap-1">
-                      <Pin className="w-3 h-3 text-ner-sage" /> Pinned
-                    </span>
-                  )}
-                  <span className="absolute bottom-3 left-3 px-3 py-1 rounded-xl bg-ner-black/75 backdrop-blur-sm text-white text-[11px] font-mono">
-                    {mem.personOrPlace}
-                  </span>
-                </div>
-              )}
-
-              <div className="p-6 flex-1 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="text-[11px] font-mono uppercase tracking-widest text-ner-terracotta font-bold">
-                      {mem.category}
-                    </span>
-                    {mem.dateOrYear && (
-                      <span className="text-[11px] font-mono text-ner-black/40">
-                        {mem.dateOrYear}
+            <StaggerItem key={mem.id}>
+              <div
+                className="frost-card rounded-3xl border-2 border-ner-border overflow-hidden shadow-md hover:border-ner-black/40 transition-all flex flex-col justify-between group tactile-card h-full"
+              >
+                {mem.imageUrl && (
+                  <div className="relative h-48 sm:h-52 overflow-hidden bg-ner-offwhite">
+                    <img
+                      src={mem.imageUrl}
+                      alt={mem.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      referrerPolicy="no-referrer"
+                    />
+                    {mem.pinned && (
+                      <span className="absolute top-3 right-3 px-3 py-1 rounded-full bg-ner-black/75 backdrop-blur-sm text-white text-[11px] font-mono flex items-center gap-1">
+                        <Pin className="w-3 h-3 text-ner-sage" /> Pinned
                       </span>
                     )}
+                    <span className="absolute bottom-3 left-3 px-3 py-1.5 rounded-xl bg-ner-black/75 backdrop-blur-sm text-white text-[11px] font-mono">
+                      {mem.personOrPlace}
+                    </span>
                   </div>
-                  <h4 className="text-xl font-bold text-ner-black mb-2">{mem.title}</h4>
-                  <p className="text-sm text-ner-black/70 line-clamp-3 leading-relaxed">
-                    {mem.storyText}
-                  </p>
-                </div>
+                )}
 
-                <div className="mt-6 pt-4 border-t border-ner-border/60 flex items-center justify-between">
-                  <TTSButton text={mem.storyText} label="Listen" />
-                  <button
-                    onClick={() => handleStartTherapy(mem)}
-                    className="px-3.5 py-2 rounded-xl bg-ner-black text-white hover:bg-ner-black/80 font-mono text-[11px] uppercase tracking-wider flex items-center gap-1.5"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-ner-sage" />
-                    <span>Memory Quiz</span>
-                  </button>
+                <div className="p-6 flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <span className="text-[11px] font-mono uppercase tracking-widest text-ner-terracotta font-bold">
+                        {mem.category}
+                      </span>
+                      {mem.dateOrYear && (
+                        <span className="text-[11px] font-mono text-ner-black/40">
+                          {mem.dateOrYear}
+                        </span>
+                      )}
+                    </div>
+                    <h4 className="text-xl font-bold text-ner-black mb-2">{mem.title}</h4>
+                    <p className="text-sm text-ner-black/70 line-clamp-3 leading-relaxed">
+                      {mem.storyText}
+                    </p>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-ner-border/60 flex items-center justify-between">
+                    <TTSButton text={mem.storyText} label="Listen" />
+                    <button
+                      onClick={() => handleStartTherapy(mem)}
+                      className="px-3.5 py-2 rounded-xl bg-ner-black text-white hover:bg-ner-black/80 font-mono text-[11px] uppercase tracking-wider flex items-center gap-1.5 tactile-btn"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-ner-sage" />
+                      <span>Memory Quiz</span>
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       )}
 
       {/* Simulated Call Modal */}

@@ -4,6 +4,20 @@ import App from './App';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import './index.css';
 
+// Register Service Worker for Map Tile Caching & PWA Offline Capabilities
+if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then((registration) => {
+        console.info('[SMRITICARE] Service Worker active with scope:', registration.scope);
+      })
+      .catch((error) => {
+        console.warn('[SMRITICARE] Service Worker registration failed:', error);
+      });
+  });
+}
+
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <ErrorBoundary>
@@ -11,3 +25,4 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     </ErrorBoundary>
   </React.StrictMode>
 );
+

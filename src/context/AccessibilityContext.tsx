@@ -1,11 +1,14 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { TextSize, MotionPreference, ContrastMode, NERLanguage } from '../types';
+import { TextSize, MotionPreference, ContrastMode, ThemeMode, NERLanguage } from '../types';
 import { translations, translate, TranslationDictionary, TranslationKey, auditTranslations } from '../i18n';
 import { speechEngine } from '../utils/speechEngine';
 
 export type TranslationFunction = ((key: TranslationKey, params?: Record<string, string | number>) => string) & TranslationDictionary;
 
 interface AccessibilityContextType {
+  theme: ThemeMode;
+  setTheme: (theme: ThemeMode) => void;
+  toggleTheme: () => void;
   textSize: TextSize;
   setTextSize: (size: TextSize) => void;
   simpleUIMode: boolean;
@@ -31,11 +34,21 @@ interface AccessibilityContextType {
   playAudioAsset: (url: string, options?: { onStart?: () => void; onEnd?: () => void }) => Promise<boolean>;
   playNarratorWelcome: (lang?: NERLanguage) => Promise<boolean>;
   playNarratorCue: (cue: 'paused' | 'resumed' | 'stopped' | 'completed' | 'next' | 'prev' | 'restart' | 'chime') => Promise<boolean>;
+  isAccessibilityModalOpen: boolean;
+  setIsAccessibilityModalOpen: (open: boolean) => void;
 }
 
 const AccessibilityContext = createContext<AccessibilityContextType | undefined>(undefined);
 
 export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [theme, setThemeState] = useState<ThemeMode>(() => {
+    const saved = localStorage.getItem('smriti_theme') || localStorage.getItem('neuro_theme');
+    if (saved === 'dark' || saved === 'light') return saved;
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+    return 'light';
+  });
   const [textSize, setTextSizeState] = useState<TextSize>(() => {
     return (localStorage.getItem('neuro_textSize') as TextSize) || 'normal';
   });
@@ -57,6 +70,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     const saved = localStorage.getItem('neuro_speechRate');
     return saved ? parseFloat(saved) : 0.88;
   });
+  const [isAccessibilityModalOpen, setIsAccessibilityModalOpen] = useState<boolean>(false);
 
   // Run translation audit in development mode
   useEffect(() => {
@@ -70,6 +84,17 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     }
   }, []);
+
+  const setTheme = (newTheme: ThemeMode) => {
+    setThemeState(newTheme);
+    localStorage.setItem('smriti_theme', newTheme);
+    localStorage.setItem('neuro_theme', newTheme);
+  };
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+  };
 
   const setTextSize = (size: TextSize) => {
     setTextSizeState(size);
@@ -118,9 +143,22 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, [speechRate]);
 
-  // Sync DOM classes for font scaling, high contrast, and simple UI mode
+  // Sync DOM classes for theme, font scaling, high contrast, and simple UI mode
   useEffect(() => {
     const root = document.documentElement;
+
+    // Theme (Dark / Light Mode)
+    if (theme === 'dark') {
+      root.classList.add('dark');
+      root.setAttribute('data-theme', 'dark');
+      const metaTheme = document.querySelector('meta[name="theme-color"]');
+      if (metaTheme) metaTheme.setAttribute('content', '#0C0C0E');
+    } else {
+      root.classList.remove('dark');
+      root.setAttribute('data-theme', 'light');
+      const metaTheme = document.querySelector('meta[name="theme-color"]');
+      if (metaTheme) metaTheme.setAttribute('content', '#F5F5F2');
+    }
 
     // Contrast
     if (contrast === 'high') {
@@ -147,7 +185,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
       root.classList.remove('simple-ui-active');
       root.removeAttribute('data-simple-ui');
     }
-  }, [contrast, motion, textSize, simpleUIMode]);
+  }, [theme, contrast, motion, textSize, simpleUIMode]);
 
   // Unified Multi-Language Speech Synthesis Helper
   const speakText = (
@@ -223,6 +261,9 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   return (
     <AccessibilityContext.Provider
       value={{
+        theme,
+        setTheme,
+        toggleTheme,
         textSize,
         setTextSize,
         simpleUIMode,
@@ -248,6 +289,8 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
         playAudioAsset,
         playNarratorWelcome,
         playNarratorCue,
+        isAccessibilityModalOpen,
+        setIsAccessibilityModalOpen,
       }}
     >
       {children}

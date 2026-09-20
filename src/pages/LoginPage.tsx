@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { TTSButton } from '../components/TTSButton';
 import { InteractiveCat } from '../components/InteractiveCat';
+import { gentleShakeVariants, useMotionSafe } from '../utils/motion';
 import { 
   Eye, 
   EyeOff, 
@@ -23,6 +26,7 @@ export const LoginPage: React.FC = () => {
   const location = useLocation();
   const { signIn, isLoading, error, clearError, fillDemoAccount, user, isConfigured } = useAuth();
   const { t } = useAccessibility();
+  const { isReduced } = useMotionSafe();
 
   // Form state
   const [email, setEmail] = useState('');
@@ -35,27 +39,38 @@ export const LoginPage: React.FC = () => {
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const [isErrorActive, setIsErrorActive] = useState(false);
 
-  // Validation & UI states
   const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [requiresVerification, setRequiresVerification] = useState(false);
 
   // Clear previous errors when user edits
   useEffect(() => {
+    if (authError) setAuthError(null);
     if (error) clearError();
     if (requiresVerification) setRequiresVerification(false);
   }, [email, password]);
 
   // Activate concerned reaction if an authentication error occurs
   useEffect(() => {
-    if (error && !requiresVerification) {
+    if ((authError || error) && !requiresVerification) {
       setIsErrorActive(true);
       const timer = setTimeout(() => setIsErrorActive(false), 2800);
       return () => clearTimeout(timer);
     }
-  }, [error, requiresVerification]);
+  }, [authError, error, requiresVerification]);
+
+  // Handle role parameter from query (e.g. from Landing Page portal switcher)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const roleParam = params.get('role');
+    if (roleParam === 'patient' || roleParam === 'caregiver' || roleParam === 'doctor') {
+      handleSelectDemo(roleParam);
+    }
+  }, [location.search]);
 
   const validateForm = (): boolean => {
     let isValid = true;
@@ -92,39 +107,60 @@ export const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isLoading || isSuccess) return;
+    if (isSubmitting || isLoading || isSuccess) return;
 
     if (!validateForm()) return;
 
-    const result = await signIn({
-      email: email.trim(),
-      password
-    });
+    setIsSubmitting(true);
+    setAuthError(null);
 
-    if (result.success && result.user) {
-      setIsSuccess(true);
-      setSuccessMessage(`Welcome back, ${result.user.name}!`);
+    try {
+      // Direct call to standard Supabase Auth (v2) signInWithPassword
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
 
-      // Short celebratory feedback under 1 second before navigating
-      setTimeout(() => {
-        const params = new URLSearchParams(location.search);
-        const returnUrl = params.get('redirect');
-        if (returnUrl) {
-          navigate(returnUrl);
-          return;
-        }
-
-        if (result.user?.role === 'doctor') {
-          navigate('/doctor');
-        } else if (result.user?.role === 'caregiver') {
-          navigate('/caregiver');
+      if (signInError) {
+        setIsSubmitting(false);
+        // Error handling: Catch and display error directly from Supabase response
+        setAuthError(signInError.message);
+        if (signInError.message.toLowerCase().includes('email not confirmed')) {
+          setRequiresVerification(true);
         } else {
-          navigate('/patient');
+          setIsErrorActive(true);
+          setTimeout(() => setIsErrorActive(false), 2800);
         }
-      }, 950);
-    } else if (result.requiresEmailVerification) {
-      setRequiresVerification(true);
-    } else {
+        return;
+      }
+
+      if (data.user) {
+        setIsSuccess(true);
+        const userName = data.user.user_metadata?.name || data.user.email?.split('@')[0] || 'Care Member';
+        setSuccessMessage(`Welcome back, ${userName}!`);
+
+        setTimeout(() => {
+          const params = new URLSearchParams(location.search);
+          const returnUrl = params.get('redirect');
+          if (returnUrl && returnUrl.startsWith('/')) {
+            navigate(returnUrl, { replace: true });
+            return;
+          }
+
+          const userRole = data.user?.user_metadata?.role;
+          if (userRole === 'doctor') {
+            navigate('/doctor', { replace: true });
+          } else if (userRole === 'caregiver') {
+            navigate('/caregiver', { replace: true });
+          } else {
+            navigate('/patient', { replace: true });
+          }
+        }, 950);
+      }
+    } catch (err: any) {
+      setIsSubmitting(false);
+      const errMsg = err?.message || 'An unexpected error occurred during sign in.';
+      setAuthError(errMsg);
       setIsErrorActive(true);
       setTimeout(() => setIsErrorActive(false), 2800);
     }
@@ -219,14 +255,18 @@ export const LoginPage: React.FC = () => {
         </div>
 
         {/* 4. MAIN LOGIN CARD */}
-        <div className="frost-white-intense rounded-3xl p-6 sm:p-9 shadow-2xl border border-ner-border/90 relative z-10 pt-7 sm:pt-8">
+        <motion.div 
+          variants={isReduced ? undefined : gentleShakeVariants}
+          animate={isErrorActive ? 'shake' : 'idle'}
+          className="frost-white-intense dark:bg-[#17171C] rounded-3xl p-6 sm:p-9 shadow-2xl border border-ner-border/90 dark:border-gray-800 relative z-10 pt-7 sm:pt-8"
+        >
           
-          <div className="flex items-center justify-between mb-5 pb-3 border-b border-ner-border/60">
+          <div className="flex items-center justify-between mb-5 pb-3 border-b border-ner-border/60 dark:border-gray-800">
             <div className="text-left">
               <span className="text-[10px] font-mono uppercase tracking-widest text-ner-terracotta font-bold block">
                 [ Secure Authentication ]
               </span>
-              <h2 className="text-lg sm:text-xl font-bold text-ner-black mt-0.5">
+              <h2 className="text-lg sm:text-xl font-bold text-ner-black dark:text-white mt-0.5">
                 Sign in to your account
               </h2>
             </div>
@@ -239,15 +279,15 @@ export const LoginPage: React.FC = () => {
           </div>
 
           {/* 3-Role Quick Selector */}
-          <div className="mb-5 p-2 rounded-2xl bg-ner-offwhite border-2 border-ner-border">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-ner-black/60 font-bold block mb-1.5 text-center">
+          <div className="mb-5 p-2 rounded-2xl bg-ner-offwhite dark:bg-[#141418] border-2 border-ner-border dark:border-gray-800">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-ner-black/60 dark:text-gray-300 font-bold block mb-1.5 text-center">
               Select Role Profile
             </span>
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => handleSelectDemo('patient')}
-                className="py-2.5 px-2 rounded-xl bg-white hover:bg-ner-black hover:text-white border border-ner-border text-xs font-mono font-bold transition-all text-ner-black shadow-xs active:scale-95 text-center flex flex-col items-center gap-1 min-h-[52px]"
+                className="py-2.5 px-2 rounded-xl bg-white dark:bg-gray-800 hover:bg-ner-black hover:text-white dark:hover:bg-gray-700 border border-ner-border dark:border-gray-700 text-xs font-mono font-bold transition-all text-ner-black dark:text-white shadow-xs active:scale-95 text-center flex flex-col items-center gap-1 min-h-[52px]"
                 title={t.loginRoleDescPatient}
               >
                 <span className="text-base">👵</span>
@@ -256,7 +296,7 @@ export const LoginPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleSelectDemo('caregiver')}
-                className="py-2.5 px-2 rounded-xl bg-white hover:bg-ner-black hover:text-white border border-ner-border text-xs font-mono font-bold transition-all text-ner-black shadow-xs active:scale-95 text-center flex flex-col items-center gap-1 min-h-[52px]"
+                className="py-2.5 px-2 rounded-xl bg-white dark:bg-gray-800 hover:bg-ner-black hover:text-white dark:hover:bg-gray-700 border border-ner-border dark:border-gray-700 text-xs font-mono font-bold transition-all text-ner-black dark:text-white shadow-xs active:scale-95 text-center flex flex-col items-center gap-1 min-h-[52px]"
                 title={t.loginRoleDescCaregiver}
               >
                 <span className="text-base">👨‍👩‍👧</span>
@@ -265,7 +305,7 @@ export const LoginPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleSelectDemo('doctor')}
-                className="py-2.5 px-2 rounded-xl bg-white hover:bg-ner-black hover:text-white border border-ner-border text-xs font-mono font-bold transition-all text-ner-black shadow-xs active:scale-95 text-center flex flex-col items-center gap-1 min-h-[52px]"
+                className="py-2.5 px-2 rounded-xl bg-white dark:bg-gray-800 hover:bg-ner-black hover:text-white dark:hover:bg-gray-700 border border-ner-border dark:border-gray-700 text-xs font-mono font-bold transition-all text-ner-black dark:text-white shadow-xs active:scale-95 text-center flex flex-col items-center gap-1 min-h-[52px]"
                 title={t.loginRoleDescDoctor}
               >
                 <span className="text-base">🩺</span>
@@ -279,19 +319,19 @@ export const LoginPage: React.FC = () => {
             <div 
               role="alert"
               aria-live="polite"
-              className="mb-5 p-4 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 text-xs animate-fade-in"
+              className="mb-5 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800/70 text-amber-900 dark:text-amber-200 text-xs animate-fade-in"
             >
               <div className="flex items-start gap-2.5">
-                <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <strong className="font-bold block">Email Verification Required</strong>
-                  <p className="mt-0.5 text-amber-800">
+                  <p className="mt-0.5 text-amber-800 dark:text-amber-300">
                     Your email address has not been verified yet. Please check your inbox for the confirmation link.
                   </p>
                   <div className="mt-2.5">
                     <Link
                       to={`/verify-email?email=${encodeURIComponent(email.trim())}`}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 text-white font-mono text-[11px] font-bold hover:bg-amber-700 transition-colors shadow-xs"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 dark:bg-amber-700 text-white font-mono text-[11px] font-bold hover:bg-amber-700 dark:hover:bg-amber-600 transition-colors shadow-xs"
                     >
                       <Send className="w-3 h-3" />
                       <span>Verify Email / Resend Link</span>
@@ -303,16 +343,16 @@ export const LoginPage: React.FC = () => {
           )}
 
           {/* Error Banner */}
-          {error && !requiresVerification && (
+          {(authError || (error && !requiresVerification)) && (
             <div 
               role="alert"
               aria-live="polite"
-              className="mb-5 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2.5 animate-fade-in"
+              className="mb-5 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-800 dark:text-rose-200 text-xs flex items-start gap-2.5 animate-fade-in"
             >
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+              <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
               <div>
                 <strong className="font-bold block">Sign In Notice</strong>
-                <span>{error}</span>
+                <span>{authError || error}</span>
               </div>
             </div>
           )}
@@ -322,7 +362,7 @@ export const LoginPage: React.FC = () => {
             <div 
               role="alert"
               aria-live="polite"
-              className="mb-5 p-4 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs flex items-start gap-2.5 animate-fade-in"
+              className="mb-5 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800/70 text-emerald-900 dark:text-emerald-200 text-xs flex items-start gap-2.5 animate-fade-in"
             >
               <CheckCircle2 className="w-4 h-4 text-ner-sage shrink-0 mt-0.5" />
               <div>
@@ -339,12 +379,12 @@ export const LoginPage: React.FC = () => {
             <div>
               <label 
                 htmlFor="email" 
-                className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-1.5"
+                className="block text-xs font-mono font-bold text-ner-black dark:text-gray-200 uppercase tracking-wider mb-1.5"
               >
                 Email Address
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ner-black/40">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ner-black/40 dark:text-gray-400">
                   <Mail className="w-4 h-4" />
                 </div>
                 <input
@@ -365,15 +405,15 @@ export const LoginPage: React.FC = () => {
                   disabled={isLoading || isSuccess}
                   aria-invalid={!!emailError}
                   aria-describedby={emailError ? 'email-error' : undefined}
-                  className={`w-full h-12 pl-10 pr-4 rounded-2xl bg-white border text-sm text-ner-black placeholder:text-ner-black/35 transition-all focus:outline-none ${
+                  className={`w-full h-12 pl-10 pr-4 rounded-2xl bg-white dark:bg-[#141418] border text-sm text-ner-black dark:text-white placeholder:text-ner-black/35 dark:placeholder:text-gray-500 input-smooth ${
                     emailError 
-                      ? 'border-rose-400 bg-rose-50/40 focus:border-rose-500 focus:ring-2 focus:ring-rose-200' 
-                      : 'border-ner-border focus:border-ner-black focus:ring-2 focus:ring-ner-black/10'
+                      ? 'border-rose-400 dark:border-rose-500 bg-rose-50/40 dark:bg-rose-950/20 focus:border-rose-500 focus:ring-2 focus:ring-rose-200' 
+                      : 'border-ner-border dark:border-gray-700 focus:border-ner-black dark:focus:border-ner-terracotta focus:ring-2 focus:ring-ner-black/10'
                   }`}
                 />
               </div>
               {emailError && (
-                <p id="email-error" className="text-xs text-rose-600 mt-1 font-mono flex items-center gap-1">
+                <p id="email-error" className="text-xs text-rose-600 dark:text-rose-400 mt-1 font-mono flex items-center gap-1">
                   <AlertCircle className="w-3 h-3 shrink-0" />
                   <span>{emailError}</span>
                 </p>
@@ -385,7 +425,7 @@ export const LoginPage: React.FC = () => {
               <div className="flex items-center justify-between mb-1.5">
                 <label 
                   htmlFor="password" 
-                  className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider"
+                  className="block text-xs font-mono font-bold text-ner-black dark:text-gray-200 uppercase tracking-wider"
                 >
                   Password
                 </label>
@@ -397,7 +437,7 @@ export const LoginPage: React.FC = () => {
                 </Link>
               </div>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ner-black/40">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ner-black/40 dark:text-gray-400">
                   <Lock className="w-4 h-4" />
                 </div>
                 <input
@@ -418,10 +458,10 @@ export const LoginPage: React.FC = () => {
                   disabled={isLoading || isSuccess}
                   aria-invalid={!!passwordError}
                   aria-describedby={passwordError ? 'password-error' : undefined}
-                  className={`w-full h-12 pl-10 pr-11 rounded-2xl bg-white border text-sm text-ner-black placeholder:text-ner-black/35 transition-all focus:outline-none ${
+                  className={`w-full h-12 pl-10 pr-11 rounded-2xl bg-white dark:bg-[#141418] border text-sm text-ner-black dark:text-white placeholder:text-ner-black/35 dark:placeholder:text-gray-500 input-smooth ${
                     passwordError 
-                      ? 'border-rose-400 bg-rose-50/40 focus:border-rose-500 focus:ring-2 focus:ring-rose-200' 
-                      : 'border-ner-border focus:border-ner-black focus:ring-2 focus:ring-ner-black/10'
+                      ? 'border-rose-400 dark:border-rose-500 bg-rose-50/40 dark:bg-rose-950/20 focus:border-rose-500 focus:ring-2 focus:ring-rose-200' 
+                      : 'border-ner-border dark:border-gray-700 focus:border-ner-black dark:focus:border-ner-terracotta focus:ring-2 focus:ring-ner-black/10'
                   }`}
                 />
                 <button
@@ -429,13 +469,13 @@ export const LoginPage: React.FC = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? 'Hide password text' : 'Show password text'}
                   disabled={isLoading || isSuccess}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-ner-black/40 hover:text-ner-black transition-colors focus:outline-none"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-ner-black/40 dark:text-gray-400 hover:text-ner-black dark:hover:text-white transition-colors focus:outline-none"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4 text-ner-terracotta" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
               {passwordError && (
-                <p id="password-error" className="text-xs text-rose-600 mt-1 font-mono flex items-center gap-1">
+                <p id="password-error" className="text-xs text-rose-600 dark:text-rose-400 mt-1 font-mono flex items-center gap-1">
                   <AlertCircle className="w-3 h-3 shrink-0" />
                   <span>{passwordError}</span>
                 </p>
@@ -446,7 +486,7 @@ export const LoginPage: React.FC = () => {
             <div className="flex items-center justify-between pt-1">
               <label 
                 htmlFor="rememberMe" 
-                className="flex items-center gap-2.5 cursor-pointer select-none text-xs text-ner-black/75"
+                className="flex items-center gap-2.5 cursor-pointer select-none text-xs text-ner-black/75 dark:text-gray-300"
               >
                 <input
                   id="rememberMe"
@@ -454,12 +494,12 @@ export const LoginPage: React.FC = () => {
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
                   disabled={isLoading || isSuccess}
-                  className="w-4 h-4 rounded border-ner-border text-ner-black focus:ring-ner-black/20 focus:ring-2 cursor-pointer accent-ner-black"
+                  className="w-4 h-4 rounded border-ner-border dark:border-gray-700 text-ner-black focus:ring-ner-black/20 focus:ring-2 cursor-pointer accent-ner-black dark:accent-ner-terracotta"
                 />
                 <span>Remember this device</span>
               </label>
 
-              <span className="text-[10px] font-mono text-ner-black/40 flex items-center gap-1">
+              <span className="text-[10px] font-mono text-ner-black/40 dark:text-gray-400 flex items-center gap-1">
                 <ShieldCheck className="w-3 h-3 text-ner-sage" />
                 <span>Secure Neural Auth</span>
               </span>
@@ -469,15 +509,10 @@ export const LoginPage: React.FC = () => {
             <div className="pt-2">
               <button
                 type="submit"
-                id="signin-btn"
-                disabled={isLoading || isSuccess}
-                className={`w-full h-12 rounded-2xl font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 ${
-                  isLoading || isSuccess
-                    ? 'bg-ner-black/70 text-white/90 cursor-not-allowed'
-                    : 'bg-ner-black text-white hover:bg-ner-black/85 hover:shadow-xl'
-                }`}
+                disabled={isSubmitting || isLoading || isSuccess}
+                className="w-full h-12 rounded-2xl bg-ner-black dark:bg-ner-terracotta text-white hover:bg-ner-black/90 dark:hover:bg-[#d43f25] active:scale-[0.99] font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed group focus:outline-none focus:ring-2 focus:ring-ner-black focus:ring-offset-2"
               >
-                {isLoading ? (
+                {isSubmitting || isLoading ? (
                   <>
                     <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -522,7 +557,7 @@ export const LoginPage: React.FC = () => {
               </Link>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Security Notice */}
         <div className="mt-5 text-center text-xs font-mono text-ner-black/50">

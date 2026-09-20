@@ -114,26 +114,26 @@ export const RoleSwitcherModal: React.FC = () => {
                   onClick={() => handleSelectRole(item.id, item.path)}
                   className={`group cursor-pointer rounded-2xl p-4 sm:p-5 border transition-all duration-200 relative ${
                     isSelected
-                      ? 'bg-white border-ner-black shadow-md ring-2 ring-ner-black/10'
-                      : 'bg-white/70 hover:bg-white border-ner-border hover:border-ner-black/40'
+                      ? 'bg-white dark:bg-ner-terracotta border-ner-black dark:border-ner-terracotta shadow-md ring-2 ring-ner-black/10 text-ner-black dark:text-white'
+                      : 'bg-white/70 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 border-ner-border dark:border-gray-700 hover:border-ner-black/40 text-ner-black/70 dark:text-white'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3 sm:gap-4">
                     <div className="flex items-start gap-3 sm:gap-3.5">
-                      <div className="p-2.5 sm:p-3 rounded-xl bg-ner-offwhite border border-ner-border group-hover:scale-105 transition-transform shrink-0">
+                      <div className="p-2.5 sm:p-3 rounded-xl bg-ner-offwhite dark:bg-gray-700/60 border border-ner-border dark:border-gray-600 group-hover:scale-105 transition-transform shrink-0">
                         {item.icon}
                       </div>
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-bold text-base sm:text-lg text-ner-black">{item.title}</h3>
-                          <span className="text-[11px] sm:text-xs px-2 py-0.5 rounded-md bg-ner-black/5 text-ner-black/70 font-medium">
+                          <h3 className="font-bold text-base sm:text-lg text-ner-black dark:text-white">{item.title}</h3>
+                          <span className="text-[11px] sm:text-xs px-2 py-0.5 rounded-md bg-ner-black/5 dark:bg-white/10 text-ner-black/70 dark:text-white/80 font-medium">
                             {item.badge}
                           </span>
                         </div>
                         <p className="text-xs font-semibold text-ner-terracotta mt-0.5">
                           {item.persona}
                         </p>
-                        <p className="text-xs sm:text-sm text-ner-black/70 mt-1 leading-relaxed">
+                        <p className="text-xs sm:text-sm text-ner-black/70 dark:text-gray-300 mt-1 leading-relaxed">
                           {item.tagline}
                         </p>
                       </div>
@@ -141,11 +141,11 @@ export const RoleSwitcherModal: React.FC = () => {
 
                     <div className="flex items-center gap-2 shrink-0">
                       {isSelected ? (
-                        <span className="w-7 h-7 rounded-full bg-ner-black text-white flex items-center justify-center shadow-xs">
+                        <span className="w-7 h-7 rounded-full bg-ner-black dark:bg-white text-white dark:text-ner-black flex items-center justify-center shadow-xs">
                           <Check className="w-4 h-4" />
                         </span>
                       ) : (
-                        <span className="w-7 h-7 rounded-full border border-ner-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-ner-black text-xs">
+                        <span className="w-7 h-7 rounded-full border border-ner-black/20 dark:border-gray-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-ner-black dark:text-white text-xs">
                           →
                         </span>
                       )}

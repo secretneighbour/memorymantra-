@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { TTSButton } from '../components/TTSButton';
 import { 
@@ -55,6 +56,8 @@ export const SignupPage: React.FC = () => {
     password?: string;
     confirmPassword?: string;
   }>({});
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
 
@@ -85,37 +88,67 @@ export const SignupPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isLoading || isSuccess) return;
+    if (isSubmitting || isLoading || isSuccess) return;
+    setAuthError(null);
     clearError();
 
     if (!validate()) return;
 
+    setIsSubmitting(true);
     const resolvedLocation = location === 'Other / Custom' ? customLocation.trim() || 'North Eastern Region' : location;
 
-    const result = await signUp({
-      name: name.trim(),
-      email: email.trim(),
-      password,
-      role,
-      location: resolvedLocation
-    });
+    try {
+      // Direct call to standard Supabase Auth (v2) signUp
+      const emailRedirectTo = typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined;
 
-    if (result.success) {
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: email.trim().toLowerCase(),
+        password,
+        options: {
+          data: {
+            name: name.trim(),
+            role,
+            location: resolvedLocation,
+          },
+          emailRedirectTo,
+        },
+      });
+
+      if (signUpError) {
+        setIsSubmitting(false);
+        // Error handling: Catch and display error directly from Supabase response
+        setAuthError(signUpError.message);
+        return;
+      }
+
+      // Check if user already exists
+      if (data.user && data.user.identities && data.user.identities.length === 0) {
+        setIsSubmitting(false);
+        setAuthError('An account with this email address already exists. Please sign in instead.');
+        return;
+      }
+
       setIsSuccess(true);
 
-      if (result.requiresEmailVerification) {
-        setStatusMessage('Account created! A real verification link has been sent to your email.');
+      // In Supabase v2, if email confirmation is required, session is null
+      const requiresEmailVerification = !data.session;
+      if (requiresEmailVerification) {
+        setStatusMessage('Account created! Please check your inbox to verify your email address.');
         setTimeout(() => {
           navigate(`/verify-email?email=${encodeURIComponent(email.trim())}`);
-        }, 1100);
+        }, 1200);
       } else {
-        setStatusMessage('Account created and verified! Preparing your care space...');
+        setStatusMessage('Account created and verified! Preparing your care dashboard...');
         setTimeout(() => {
           if (role === 'doctor') navigate('/doctor');
           else if (role === 'caregiver') navigate('/caregiver');
           else navigate('/patient');
         }, 1000);
       }
+    } catch (err: any) {
+      setIsSubmitting(false);
+      const errMsg = err?.message || 'An unexpected error occurred during registration.';
+      setAuthError(errMsg);
     }
   };
 
@@ -161,14 +194,14 @@ export const SignupPage: React.FC = () => {
         </div>
 
         {/* Card */}
-        <div className="frost-white-intense rounded-3xl p-6 sm:p-9 shadow-2xl border border-ner-border/90">
+        <div className="frost-white-intense dark:bg-[#17171C] rounded-3xl p-6 sm:p-9 shadow-2xl border border-ner-border/90 dark:border-gray-800">
           
-          <div className="flex items-center justify-between mb-5 pb-3 border-b border-ner-border/60">
+          <div className="flex items-center justify-between mb-5 pb-3 border-b border-ner-border/60 dark:border-gray-800">
             <div className="text-left">
               <span className="text-[10px] font-mono uppercase tracking-widest text-ner-terracotta font-bold block">
                 [ Registration • Secure Account ]
               </span>
-              <h2 className="text-base sm:text-lg font-bold text-ner-black mt-0.5">
+              <h2 className="text-base sm:text-lg font-bold text-ner-black dark:text-white mt-0.5">
                 New User Registration
               </h2>
             </div>
@@ -179,18 +212,18 @@ export const SignupPage: React.FC = () => {
             />
           </div>
 
-          {error && (
-            <div role="alert" className="mb-4 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2.5 animate-fade-in text-left">
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+          {(authError || error) && (
+            <div role="alert" className="mb-4 p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-800 dark:text-rose-200 text-xs flex items-start gap-2.5 animate-fade-in text-left">
+              <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
               <div>
                 <strong className="font-bold block">Registration Notice</strong>
-                <span className="mt-0.5 block">{error}</span>
+                <span className="mt-0.5 block">{authError || error}</span>
               </div>
             </div>
           )}
 
           {isSuccess && (
-            <div role="alert" className="mb-4 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs flex items-start gap-2.5 animate-fade-in text-left">
+            <div role="alert" className="mb-4 p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800/70 text-emerald-900 dark:text-emerald-200 text-xs flex items-start gap-2.5 animate-fade-in text-left">
               <CheckCircle2 className="w-4 h-4 text-ner-sage shrink-0 mt-0.5" />
               <div>
                 <strong className="font-bold block">Success</strong>
@@ -203,7 +236,7 @@ export const SignupPage: React.FC = () => {
             
             {/* Role Selection Tabs */}
             <div>
-              <label className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-2 text-left">
+              <label className="block text-xs font-mono font-bold text-ner-black dark:text-gray-200 uppercase tracking-wider mb-2 text-left">
                 Select Your Role
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -212,11 +245,11 @@ export const SignupPage: React.FC = () => {
                   onClick={() => setRole('patient')}
                   className={`p-3 rounded-2xl border text-center transition-all flex flex-col items-center gap-1.5 ${
                     role === 'patient'
-                      ? 'bg-ner-black text-white border-ner-black shadow-sm'
-                      : 'bg-white text-ner-black border-ner-border hover:border-ner-black/40'
+                      ? 'bg-ner-black text-white border-ner-black shadow-sm dark:bg-ner-terracotta dark:border-ner-terracotta dark:text-white'
+                      : 'bg-white text-ner-black border-ner-border hover:border-ner-black/40 dark:bg-gray-800 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700'
                   }`}
                 >
-                  <User className="w-4 h-4 text-ner-terracotta" />
+                  <User className="w-4 h-4 text-ner-terracotta dark:text-white" />
                   <span className="text-xs font-bold font-mono">Patient</span>
                 </button>
 
@@ -225,11 +258,11 @@ export const SignupPage: React.FC = () => {
                   onClick={() => setRole('caregiver')}
                   className={`p-3 rounded-2xl border text-center transition-all flex flex-col items-center gap-1.5 ${
                     role === 'caregiver'
-                      ? 'bg-ner-black text-white border-ner-black shadow-sm'
-                      : 'bg-white text-ner-black border-ner-border hover:border-ner-black/40'
+                      ? 'bg-ner-black text-white border-ner-black shadow-sm dark:bg-ner-terracotta dark:border-ner-terracotta dark:text-white'
+                      : 'bg-white text-ner-black border-ner-border hover:border-ner-black/40 dark:bg-gray-800 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700'
                   }`}
                 >
-                  <Users className="w-4 h-4 text-ner-sage" />
+                  <Users className="w-4 h-4 text-ner-sage dark:text-white" />
                   <span className="text-xs font-bold font-mono">Caregiver</span>
                 </button>
 
@@ -238,11 +271,11 @@ export const SignupPage: React.FC = () => {
                   onClick={() => setRole('doctor')}
                   className={`p-3 rounded-2xl border text-center transition-all flex flex-col items-center gap-1.5 ${
                     role === 'doctor'
-                      ? 'bg-ner-black text-white border-ner-black shadow-sm'
-                      : 'bg-white text-ner-black border-ner-border hover:border-ner-black/40'
+                      ? 'bg-ner-black text-white border-ner-black shadow-sm dark:bg-ner-terracotta dark:border-ner-terracotta dark:text-white'
+                      : 'bg-white text-ner-black border-ner-border hover:border-ner-black/40 dark:bg-gray-800 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700'
                   }`}
                 >
-                  <Stethoscope className="w-4 h-4 text-ner-calmBlue" />
+                  <Stethoscope className="w-4 h-4 text-ner-calmBlue dark:text-white" />
                   <span className="text-xs font-bold font-mono">Doctor</span>
                 </button>
               </div>
@@ -250,11 +283,11 @@ export const SignupPage: React.FC = () => {
 
             {/* Name */}
             <div>
-              <label htmlFor="signup-name" className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-1 text-left">
+              <label htmlFor="signup-name" className="block text-xs font-mono font-bold text-ner-black dark:text-gray-200 uppercase tracking-wider mb-1 text-left">
                 Full Name
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ner-black/40">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ner-black/40 dark:text-gray-400">
                   <User className="w-4 h-4" />
                 </div>
                 <input
@@ -266,11 +299,11 @@ export const SignupPage: React.FC = () => {
                     if (formErrors.name) setFormErrors({ ...formErrors, name: undefined });
                   }}
                   placeholder="e.g. Full Name"
-                  className="w-full h-11 pl-10 pr-4 rounded-2xl bg-white border border-ner-border text-sm text-ner-black focus:outline-none focus:border-ner-black focus:ring-2 focus:ring-ner-black/10"
+                  className="w-full h-11 pl-10 pr-4 rounded-2xl bg-white dark:bg-[#141418] border border-ner-border dark:border-gray-700 text-sm text-ner-black dark:text-white placeholder:text-ner-black/35 dark:placeholder:text-gray-500 focus:outline-none focus:border-ner-black dark:focus:border-ner-terracotta focus:ring-2 focus:ring-ner-black/10"
                 />
               </div>
               {formErrors.name && (
-                <p className="text-xs text-rose-600 mt-1 font-mono flex items-center gap-1">
+                <p className="text-xs text-rose-600 dark:text-rose-400 mt-1 font-mono flex items-center gap-1">
                   <AlertCircle className="w-3 h-3 shrink-0" />
                   <span>{formErrors.name}</span>
                 </p>
@@ -279,11 +312,11 @@ export const SignupPage: React.FC = () => {
 
             {/* Email */}
             <div>
-              <label htmlFor="signup-email" className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-1 text-left">
+              <label htmlFor="signup-email" className="block text-xs font-mono font-bold text-ner-black dark:text-gray-200 uppercase tracking-wider mb-1 text-left">
                 Email Address
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ner-black/40">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ner-black/40 dark:text-gray-400">
                   <Mail className="w-4 h-4" />
                 </div>
                 <input
@@ -295,11 +328,11 @@ export const SignupPage: React.FC = () => {
                     if (formErrors.email) setFormErrors({ ...formErrors, email: undefined });
                   }}
                   placeholder="e.g. user@smriticare.in"
-                  className="w-full h-11 pl-10 pr-4 rounded-2xl bg-white border border-ner-border text-sm text-ner-black focus:outline-none focus:border-ner-black focus:ring-2 focus:ring-ner-black/10"
+                  className="w-full h-11 pl-10 pr-4 rounded-2xl bg-white dark:bg-[#141418] border border-ner-border dark:border-gray-700 text-sm text-ner-black dark:text-white placeholder:text-ner-black/35 dark:placeholder:text-gray-500 focus:outline-none focus:border-ner-black dark:focus:border-ner-terracotta focus:ring-2 focus:ring-ner-black/10"
                 />
               </div>
               {formErrors.email && (
-                <p className="text-xs text-rose-600 mt-1 font-mono flex items-center gap-1">
+                <p className="text-xs text-rose-600 dark:text-rose-400 mt-1 font-mono flex items-center gap-1">
                   <AlertCircle className="w-3 h-3 shrink-0" />
                   <span>{formErrors.email}</span>
                 </p>
@@ -308,21 +341,21 @@ export const SignupPage: React.FC = () => {
 
             {/* Regional Location in NER */}
             <div>
-              <label htmlFor="signup-location" className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-1 text-left">
+              <label htmlFor="signup-location" className="block text-xs font-mono font-bold text-ner-black dark:text-gray-200 uppercase tracking-wider mb-1 text-left">
                 Regional Location (NER)
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ner-black/40">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ner-black/40 dark:text-gray-400">
                   <MapPin className="w-4 h-4" />
                 </div>
                 <select
                   id="signup-location"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  className="w-full h-11 pl-10 pr-4 rounded-2xl bg-white border border-ner-border text-sm text-ner-black focus:outline-none focus:border-ner-black focus:ring-2 focus:ring-ner-black/10"
+                  className="w-full h-11 pl-10 pr-4 rounded-2xl bg-white dark:bg-[#141418] border border-ner-border dark:border-gray-700 text-sm text-ner-black dark:text-white focus:outline-none focus:border-ner-black dark:focus:border-ner-terracotta focus:ring-2 focus:ring-ner-black/10"
                 >
                   {NER_LOCATIONS.map((loc) => (
-                    <option key={loc} value={loc}>
+                    <option key={loc} value={loc} className="dark:bg-[#141418] dark:text-white">
                       {loc}
                     </option>
                   ))}
@@ -334,7 +367,7 @@ export const SignupPage: React.FC = () => {
                   value={customLocation}
                   onChange={(e) => setCustomLocation(e.target.value)}
                   placeholder="Enter your location (City, State)"
-                  className="w-full h-10 mt-2 px-3.5 rounded-xl bg-white border border-ner-border text-xs text-ner-black focus:outline-none focus:border-ner-black focus:ring-1 focus:ring-ner-black/10"
+                  className="w-full h-10 mt-2 px-3.5 rounded-xl bg-white dark:bg-[#141418] border border-ner-border dark:border-gray-700 text-xs text-ner-black dark:text-white placeholder:text-ner-black/35 dark:placeholder:text-gray-500 focus:outline-none focus:border-ner-black dark:focus:border-ner-terracotta focus:ring-1 focus:ring-ner-black/10"
                 />
               )}
             </div>
@@ -342,11 +375,11 @@ export const SignupPage: React.FC = () => {
             {/* Password & Confirm */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label htmlFor="signup-password" className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-1 text-left">
+                <label htmlFor="signup-password" className="block text-xs font-mono font-bold text-ner-black dark:text-gray-200 uppercase tracking-wider mb-1 text-left">
                   Password
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ner-black/40">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ner-black/40 dark:text-gray-400">
                     <Lock className="w-4 h-4" />
                   </div>
                   <input
@@ -358,19 +391,19 @@ export const SignupPage: React.FC = () => {
                       if (formErrors.password) setFormErrors({ ...formErrors, password: undefined });
                     }}
                     placeholder="Min 6 chars"
-                    className="w-full h-11 pl-10 pr-10 rounded-2xl bg-white border border-ner-border text-sm text-ner-black focus:outline-none focus:border-ner-black focus:ring-2 focus:ring-ner-black/10"
+                    className="w-full h-11 pl-10 pr-10 rounded-2xl bg-white dark:bg-[#141418] border border-ner-border dark:border-gray-700 text-sm text-ner-black dark:text-white placeholder:text-ner-black/35 dark:placeholder:text-gray-500 focus:outline-none focus:border-ner-black dark:focus:border-ner-terracotta focus:ring-2 focus:ring-ner-black/10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-ner-black/40 hover:text-ner-black"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-ner-black/40 dark:text-gray-400 hover:text-ner-black dark:hover:text-white"
                   >
                     {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                   </button>
                 </div>
                 {formErrors.password && (
-                  <p className="text-xs text-rose-600 mt-1 font-mono flex items-center gap-1">
+                  <p className="text-xs text-rose-600 dark:text-rose-400 mt-1 font-mono flex items-center gap-1">
                     <AlertCircle className="w-3 h-3 shrink-0" />
                     <span>{formErrors.password}</span>
                   </p>
@@ -378,11 +411,11 @@ export const SignupPage: React.FC = () => {
               </div>
 
               <div>
-                <label htmlFor="signup-confirm" className="block text-xs font-mono font-bold text-ner-black uppercase tracking-wider mb-1 text-left">
+                <label htmlFor="signup-confirm" className="block text-xs font-mono font-bold text-ner-black dark:text-gray-200 uppercase tracking-wider mb-1 text-left">
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ner-black/40">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ner-black/40 dark:text-gray-400">
                     <Lock className="w-4 h-4" />
                   </div>
                   <input
@@ -394,11 +427,11 @@ export const SignupPage: React.FC = () => {
                       if (formErrors.confirmPassword) setFormErrors({ ...formErrors, confirmPassword: undefined });
                     }}
                     placeholder="Repeat password"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl bg-white border border-ner-border text-sm text-ner-black focus:outline-none focus:border-ner-black focus:ring-2 focus:ring-ner-black/10"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl bg-white dark:bg-[#141418] border border-ner-border dark:border-gray-700 text-sm text-ner-black dark:text-white placeholder:text-ner-black/35 dark:placeholder:text-gray-500 focus:outline-none focus:border-ner-black dark:focus:border-ner-terracotta focus:ring-2 focus:ring-ner-black/10"
                   />
                 </div>
                 {formErrors.confirmPassword && (
-                  <p className="text-xs text-rose-600 mt-1 font-mono flex items-center gap-1">
+                  <p className="text-xs text-rose-600 dark:text-rose-400 mt-1 font-mono flex items-center gap-1">
                     <AlertCircle className="w-3 h-3 shrink-0" />
                     <span>{formErrors.confirmPassword}</span>
                   </p>
@@ -409,10 +442,10 @@ export const SignupPage: React.FC = () => {
             <div className="pt-2">
               <button
                 type="submit"
-                disabled={isLoading || isSuccess}
-                className="w-full h-12 rounded-2xl bg-ner-black text-white hover:bg-ner-black/85 font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 disabled:opacity-50"
+                disabled={isSubmitting || isLoading || isSuccess}
+                className="w-full h-12 rounded-2xl bg-ner-black dark:bg-ner-terracotta text-white hover:bg-ner-black/85 dark:hover:bg-[#d43f25] font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 disabled:opacity-50"
               >
-                {isLoading ? (
+                {isSubmitting || isLoading ? (
                   <>
                     <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>

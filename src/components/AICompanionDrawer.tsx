@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useRole } from '../context/RoleContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { VoiceDictationButton } from './VoiceDictationButton';
@@ -219,21 +220,31 @@ export const AICompanionDrawer: React.FC = () => {
     navigate(route);
   };
 
-  if (!isAICompanionOpen) return null;
-
   return (
-    <>
-      {/* Mobile Backdrop */}
-      <div 
-        onClick={() => {
-          stopSpeaking();
-          setIsAICompanionOpen(false);
-        }}
-        className="fixed inset-0 bg-black/40 backdrop-blur-xs z-[10000] transition-opacity animate-fade-in"
-        aria-hidden="true"
-      />
+    <AnimatePresence>
+      {isAICompanionOpen && (
+        <>
+          {/* Backdrop */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.22 }}
+            onClick={() => {
+              stopSpeaking();
+              setIsAICompanionOpen(false);
+            }}
+            className="fixed inset-0 bg-black/40 backdrop-blur-xs z-[10000]"
+            aria-hidden="true"
+          />
 
-      <div className="fixed inset-y-0 right-0 z-[10000] w-full max-w-md bg-ner-offwhite border-l border-ner-black/20 shadow-2xl flex flex-col animate-slide-left pt-[env(safe-area-inset-top,0px)]">
+          <motion.div 
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-y-0 right-0 z-[10000] w-full max-w-md bg-ner-offwhite border-l border-ner-black/20 shadow-2xl flex flex-col pt-[env(safe-area-inset-top,0px)]"
+          >
         {/* Header */}
         <div className="p-3.5 sm:p-4 border-b border-ner-border bg-white flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -302,8 +313,8 @@ export const AICompanionDrawer: React.FC = () => {
                 onClick={() => setLanguage(lang.code)}
                 className={`text-[11px] px-2 py-0.5 rounded-full font-medium transition ${
                   language === lang.code
-                    ? 'bg-ner-black text-white font-bold'
-                    : 'bg-white border border-ner-border text-ner-black/70 hover:bg-slate-100'
+                    ? 'bg-ner-black dark:bg-ner-terracotta text-white font-bold'
+                    : 'bg-white dark:bg-gray-800 border border-ner-border dark:border-gray-700 text-ner-black/70 dark:text-white hover:bg-slate-100 dark:hover:bg-gray-700'
                 }`}
               >
                 {lang.label}
@@ -326,7 +337,7 @@ export const AICompanionDrawer: React.FC = () => {
                 className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                   isSelected
                     ? 'bg-ner-terracotta text-white shadow-xs'
-                    : 'bg-ner-offwhite hover:bg-ner-border/40 text-ner-black/70'
+                    : 'bg-ner-offwhite dark:bg-gray-800 hover:bg-ner-border/40 dark:hover:bg-gray-700 text-ner-black/70 dark:text-white border border-transparent dark:border-gray-700'
                 }`}
               >
                 {m.icon}
@@ -417,7 +428,7 @@ export const AICompanionDrawer: React.FC = () => {
               <button
                 key={idx}
                 onClick={() => handleSend(q)}
-                className="text-xs bg-ner-offwhite hover:bg-ner-black hover:text-white border border-ner-border px-2.5 py-1.5 rounded-full transition-all duration-150 text-ner-black/80 font-medium active:scale-95"
+                className="text-xs bg-ner-offwhite dark:bg-gray-800 hover:bg-ner-black hover:text-white dark:hover:bg-gray-700 border border-ner-border dark:border-gray-700 px-2.5 py-1.5 rounded-full transition-all duration-150 text-ner-black/80 dark:text-white font-medium active:scale-95"
               >
                 {q}
               </button>
@@ -459,7 +470,9 @@ export const AICompanionDrawer: React.FC = () => {
             </button>
           </form>
         </div>
-      </div>
+      </motion.div>
     </>
+  )}
+</AnimatePresence>
   );
 };

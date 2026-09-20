@@ -44,7 +44,8 @@ export const NorthEastOfflineMap: React.FC<NorthEastOfflineMapProps> = ({
   onMapClickCoordinates,
   isSimpleMode = false,
 }) => {
-  const { t } = useAccessibility();
+  const { t, theme } = useAccessibility();
+  const isDark = theme === 'dark';
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState<{ width: number; height: number }>({ width: 600, height: 420 });
 
@@ -253,9 +254,10 @@ export const NorthEastOfflineMap: React.FC<NorthEastOfflineMapProps> = ({
           {/* Subtle Coordinate Grid */}
           <defs>
             <pattern id="offline-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e2e8f0" strokeWidth="0.8" />
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke={isDark ? '#272730' : '#e2e8f0'} strokeWidth="0.8" />
             </pattern>
           </defs>
+          <rect width="100%" height="100%" fill={isDark ? '#141418' : '#fafafa'} />
           <rect width="100%" height="100%" fill="url(#offline-grid)" />
 
           {/* 1. State Boundaries Polygons */}
@@ -273,8 +275,8 @@ export const NorthEastOfflineMap: React.FC<NorthEastOfflineMapProps> = ({
               <g key={state.code}>
                 <path
                   d={pathData}
-                  fill={state.color}
-                  stroke={state.strokeColor}
+                  fill={isDark ? '#1A1A22' : state.color}
+                  stroke={isDark ? '#33333E' : state.strokeColor}
                   strokeWidth={1.5}
                   strokeLinejoin="round"
                   className="transition-colors"
@@ -286,7 +288,9 @@ export const NorthEastOfflineMap: React.FC<NorthEastOfflineMapProps> = ({
                     y={centerPt.y}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    className="text-[11px] font-mono font-bold fill-slate-500/80 uppercase tracking-widest pointer-events-none"
+                    className={`text-[11px] font-mono font-bold uppercase tracking-widest pointer-events-none ${
+                      isDark ? 'fill-zinc-400' : 'fill-slate-500/80'
+                    }`}
                   >
                     {state.name}
                   </text>
