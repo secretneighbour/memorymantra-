@@ -279,7 +279,7 @@ export const PageNarrator: React.FC = () => {
 
     // Fallback if the page has dynamic or canvas content
     if (extracted.length < 2) {
-      const pageTitle = document.title || 'Smriti Care';
+      const pageTitle = document.title || 'Memory Mantra';
       const heading = document.querySelector('h1')?.innerText?.trim() || '';
       const fallbackList: string[] = [];
       if (heading) fallbackList.push(heading);

@@ -1,7 +1,8 @@
-// SMRITICARE - Service Worker for Automatic Map Tile Caching
+// MEMORY MANTRA - Service Worker for Automatic Map Tile Caching
 // Handles silent background caching of OpenStreetMap tiles with Cache-First strategy.
 
-const TILE_CACHE_NAME = 'smriticare-osm-tiles-v1';
+const TILE_CACHE_NAME = 'memory-mantra-osm-tiles-v1';
+const LEGACY_TILE_CACHE_NAME = 'smriticare-osm-tiles-v1';
 
 // Hostnames for OpenStreetMap standard tile servers
 const OSM_TILE_DOMAINS = [
@@ -22,7 +23,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames
-          .filter((name) => name.startsWith('smriticare-') && name !== TILE_CACHE_NAME)
+          .filter((name) => (name.startsWith('smriticare-') || name.startsWith('memory-mantra-')) && name !== TILE_CACHE_NAME && name !== LEGACY_TILE_CACHE_NAME)
           .map((name) => caches.delete(name))
       );
     }).then(() => self.clients.claim())
@@ -43,11 +44,18 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    caches.open(TILE_CACHE_NAME).then(async (cache) => {
-      // 1. Check local Cache API first
-      const cachedTile = await cache.match(event.request);
+    (async () => {
+      // 1. Check local Cache API first (primary then legacy fallback)
+      const primaryCache = await caches.open(TILE_CACHE_NAME);
+      const cachedTile = await primaryCache.match(event.request);
       if (cachedTile) {
         return cachedTile;
+      }
+
+      const legacyCache = await caches.open(LEGACY_TILE_CACHE_NAME);
+      const legacyTile = await legacyCache.match(event.request);
+      if (legacyTile) {
+        return legacyTile;
       }
 
       // 2. Fetch from network and store silently for offline use

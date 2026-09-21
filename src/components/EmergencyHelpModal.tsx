@@ -58,8 +58,8 @@ export const EmergencyHelpModal: React.FC = () => {
     setIsSending(true);
 
     const message = selectedUrgency === 'critical'
-      ? `[URGENT] Smriti Care SOS Alert: ${activePatient.name} requires immediate medical/care assistance. Please call back immediately.`
-      : `Smriti Care Alert: ${activePatient.name} requested gentle assistance/check-in. Please contact them when free.`;
+      ? `[URGENT] Memory Mantra SOS Alert: ${activePatient.name} requires immediate medical/care assistance. Please call back immediately.`
+      : `Memory Mantra Alert: ${activePatient.name} requested gentle assistance/check-in. Please contact them when free.`;
 
     try {
       const log = await sendEmergencySMS(targetContact.id, message);
@@ -77,8 +77,8 @@ export const EmergencyHelpModal: React.FC = () => {
   const currentSmsBody = targetContact 
     ? encodeURIComponent(
         selectedUrgency === 'critical'
-          ? `[URGENT] Smriti Care SOS Alert: ${activePatient.name} requires immediate assistance.`
-          : `Smriti Care Alert: ${activePatient.name} requested gentle check-in assistance.`
+          ? `[URGENT] Memory Mantra SOS Alert: ${activePatient.name} requires immediate assistance.`
+          : `Memory Mantra Alert: ${activePatient.name} requested gentle check-in assistance.`
       )
     : '';
 
@@ -260,8 +260,8 @@ export const EmergencyHelpModal: React.FC = () => {
               </span>
               <p className="text-xs sm:text-sm text-ner-black/85 italic bg-ner-offwhite p-3 rounded-xl border border-ner-border/60">
                 "{selectedUrgency === 'critical'
-                  ? `[URGENT] Smriti Care SOS Alert: ${activePatient.name} requires immediate medical/care assistance. Please call back immediately.`
-                  : `Smriti Care Alert: ${activePatient.name} requested gentle assistance/check-in. Please contact them when free.`}"
+                  ? `[URGENT] Memory Mantra SOS Alert: ${activePatient.name} requires immediate medical/care assistance. Please call back immediately.`
+                  : `Memory Mantra Alert: ${activePatient.name} requested gentle assistance/check-in. Please contact them when free.`}"
               </p>
             </div>
 

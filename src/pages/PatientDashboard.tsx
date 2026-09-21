@@ -228,7 +228,7 @@ export const PatientDashboard: React.FC = () => {
             </div>
           </StaggerItem>
 
-          {/* Card 2: Smriti Memory Companion */}
+          {/* Card 2: Memory Mantra Companion */}
           <StaggerItem>
             <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-ner-border hover:border-ner-black shadow-sm space-y-4 tactile-card">
               <div className="flex items-center gap-3">

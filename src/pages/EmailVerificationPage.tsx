@@ -188,7 +188,7 @@ export const EmailVerificationPage: React.FC = () => {
             <p className="font-semibold text-ner-black">Next Steps:</p>
             <ol className="list-decimal list-inside space-y-1.5 text-ner-black/80">
               <li>Open your email application (check Spam/Junk if not in inbox).</li>
-              <li>Click the verification link from <strong>SmritiCare / NEURO NER</strong>.</li>
+              <li>Click the verification link from <strong>Memory Mantra</strong>.</li>
               <li>Return here and click <strong>"I've verified my email"</strong> below.</li>
             </ol>
           </div>

@@ -39,7 +39,7 @@ export const defaultRoutineSteps: RoutineStep[] = [
     title: 'Cognitive Memory Exercise',
     icon: '🧠',
     category: 'exercise',
-    note: '5 minutes of daily memory and pattern exercises on SmritiCare.'
+    note: '5 minutes of daily memory and pattern exercises on Memory Mantra.'
   },
   {
     id: 'rout-5',

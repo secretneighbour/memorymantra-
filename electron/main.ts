@@ -9,19 +9,35 @@ const isDev = !app.isPackaged && (process.env.NODE_ENV === 'development' || proc
 const devServerUrl = process.env.VITE_DEV_SERVER_URL || 'http://localhost:3000';
 
 function getMemoryStorageDir(): string {
-  const dir = path.join(app.getPath('userData'), 'smriti-memories');
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  const newDir = path.join(app.getPath('userData'), 'memory-mantra-memories');
+  const legacyDir = path.join(app.getPath('userData'), 'smriti-memories');
+  if (fs.existsSync(legacyDir) && !fs.existsSync(newDir)) {
+    try {
+      fs.renameSync(legacyDir, newDir);
+    } catch (_) {
+      return legacyDir;
+    }
   }
-  return dir;
+  if (!fs.existsSync(newDir)) {
+    fs.mkdirSync(newDir, { recursive: true });
+  }
+  return newDir;
 }
 
 function getUserDataStoreDir(): string {
-  const dir = path.join(app.getPath('userData'), 'smriti-store');
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  const newDir = path.join(app.getPath('userData'), 'memory-mantra-store');
+  const legacyDir = path.join(app.getPath('userData'), 'smriti-store');
+  if (fs.existsSync(legacyDir) && !fs.existsSync(newDir)) {
+    try {
+      fs.renameSync(legacyDir, newDir);
+    } catch (_) {
+      return legacyDir;
+    }
   }
-  return dir;
+  if (!fs.existsSync(newDir)) {
+    fs.mkdirSync(newDir, { recursive: true });
+  }
+  return newDir;
 }
 
 function createWindow(): void {
@@ -30,7 +46,7 @@ function createWindow(): void {
     : path.join(__dirname, '../build/icon.png');
 
   mainWindow = new BrowserWindow({
-    title: 'Smriti Care',
+    title: 'Memory Mantra',
     width: 1440,
     height: 900,
     minWidth: 1024,
@@ -49,7 +65,7 @@ function createWindow(): void {
   });
 
   // Clean title
-  mainWindow.setTitle('Smriti Care');
+  mainWindow.setTitle('Memory Mantra');
 
   // Prevent title from resetting if unwanted
   mainWindow.on('page-title-updated', (e) => {
@@ -66,16 +82,16 @@ function createWindow(): void {
 
   // Load URL in dev, file in production
   if (isDev) {
-    console.log(`[Smriti Care] Connecting to development server at: ${devServerUrl}`);
+    console.log(`[Memory Mantra] Connecting to development server at: ${devServerUrl}`);
     mainWindow.loadURL(devServerUrl).catch((err) => {
-      console.error('[Smriti Care] Failed to load dev server:', err);
+      console.error('[Memory Mantra] Failed to load dev server:', err);
     });
     mainWindow.webContents.openDevTools({ mode: 'detach' });
   } else {
     const indexPath = path.join(__dirname, '../dist/index.html');
-    console.log(`[Smriti Care] Loading production assets from: ${indexPath}`);
+    console.log(`[Memory Mantra] Loading production assets from: ${indexPath}`);
     mainWindow.loadFile(indexPath).catch((err) => {
-      console.error('[Smriti Care] Failed to load production index.html:', err);
+      console.error('[Memory Mantra] Failed to load production index.html:', err);
     });
   }
 
@@ -141,17 +157,21 @@ function setupIpcHandlers(): void {
       fs.writeFileSync(fullPath, buffer);
       return { success: true, filePath: fullPath, relativePath: sanitizedName };
     } catch (err: any) {
-      console.error('[Smriti Care IPC] Error saving media:', err);
+      console.error('[Memory Mantra IPC] Error saving media:', err);
       return { success: false, error: err.message };
     }
   });
 
-  // Storage: Read Memory media
+  // Storage: Read Memory media with backward compatibility
   ipcMain.handle('storage:readMemoryMedia', async (_event, filePath: string) => {
     try {
       const storageDir = getMemoryStorageDir();
-      const resolvedPath = path.isAbsolute(filePath) ? filePath : path.join(storageDir, path.basename(filePath));
-      if (!resolvedPath.startsWith(storageDir)) {
+      const legacyDir = path.join(app.getPath('userData'), 'smriti-memories');
+      let resolvedPath = path.isAbsolute(filePath) ? filePath : path.join(storageDir, path.basename(filePath));
+      if (!fs.existsSync(resolvedPath) && fs.existsSync(path.join(legacyDir, path.basename(filePath)))) {
+        resolvedPath = path.join(legacyDir, path.basename(filePath));
+      }
+      if (!resolvedPath.startsWith(storageDir) && !resolvedPath.startsWith(legacyDir)) {
         throw new Error('Access denied: Path outside safe storage directory');
       }
 
@@ -183,12 +203,16 @@ function setupIpcHandlers(): void {
     }
   });
 
-  // Storage: Load structured user data (JSON)
+  // Storage: Load structured user data (JSON) with legacy fallback
   ipcMain.handle('storage:loadUserData', async (_event, key: string) => {
     try {
       const dir = getUserDataStoreDir();
+      const legacyDir = path.join(app.getPath('userData'), 'smriti-store');
       const safeKey = key.replace(/[^a-zA-Z0-9_-]/g, '');
-      const filePath = path.join(dir, `${safeKey}.json`);
+      let filePath = path.join(dir, `${safeKey}.json`);
+      if (!fs.existsSync(filePath) && fs.existsSync(path.join(legacyDir, `${safeKey}.json`))) {
+        filePath = path.join(legacyDir, `${safeKey}.json`);
+      }
       if (!fs.existsSync(filePath)) {
         return { success: true, data: null };
       }
@@ -229,7 +253,7 @@ function setupIpcHandlers(): void {
         dataBase64: base64,
       };
     } catch (err) {
-      console.error('[Smriti Care IPC] File selection error:', err);
+      console.error('[Memory Mantra IPC] File selection error:', err);
       return { canceled: true };
     }
   });

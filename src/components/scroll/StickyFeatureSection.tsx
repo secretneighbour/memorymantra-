@@ -107,7 +107,7 @@ export const StickyFeatureSection: React.FC = () => {
       accentColor: '#E67E22',
       preview: {
         type: 'companion',
-        title: 'Smriti Multilingual Companion',
+        title: 'Memory Mantra Multilingual Companion',
         metrics: [
           { label: 'Dialects Supported', val: '8 Regional' },
           { label: 'Mode', val: 'Audio + Visual' },

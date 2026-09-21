@@ -35,6 +35,18 @@ export const isSupabaseConfigured = (): boolean => {
   );
 };
 
+// Backward-compatible auth session restoration:
+// If memory_mantra_auth_token is missing but legacy smriti_care_auth_token exists, copy it over
+if (typeof window !== 'undefined' && window.localStorage) {
+  try {
+    const legacyToken = window.localStorage.getItem('smriti_care_auth_token');
+    const currentToken = window.localStorage.getItem('memory_mantra_auth_token');
+    if (legacyToken && !currentToken) {
+      window.localStorage.setItem('memory_mantra_auth_token', legacyToken);
+    }
+  } catch (_) {}
+}
+
 /**
  * Centralized Supabase Client:
  * Initialized once in this dedicated file using environment variables.
@@ -50,11 +62,11 @@ export const supabase: SupabaseClient = createClient(
       detectSessionInUrl: true,
       flowType: 'pkce',
       storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-      storageKey: 'smriti_care_auth_token',
+      storageKey: 'memory_mantra_auth_token',
     },
     global: {
       headers: {
-        'x-application-name': 'smriti-care-production-auth',
+        'x-application-name': 'memory-mantra-production-auth',
       },
     },
   }

@@ -2,7 +2,7 @@ import { TranslationDictionary } from '../types';
 
 export const hi: TranslationDictionary = {
   // Brand & General
-  appName: 'स्मृतिकेयर (SmritiCare)',
+  appName: 'Memory Mantra',
   tagline: 'मस्तिष्क की देखभाल, आत्मीयता के साथ।',
   sihBadge: 'एस.आई.एच 2026 • पी.एस 26003',
   demoModeBadge: 'एस.आई.एच प्रोटोटाइप डेमो',
@@ -827,7 +827,7 @@ export const hi: TranslationDictionary = {
   simpleUIPriorityTitle: 'आज की आवश्यक देखभाल',
   simpleUIMyDay: 'मेरा दिन और स्वास्थ्य',
   simpleUIPlayGame: 'आज का खेल खेलें',
-  simpleUIChatSmriti: 'स्मृति AI से बात करें',
+  simpleUIChatSmriti: 'Memory Mantra AI से बात करें',
   simpleUIReminders: 'आज के रिमाइंडर्स',
   simpleUIFamilyHelp: 'परिवार को कॉल करें या मदद लें',
 

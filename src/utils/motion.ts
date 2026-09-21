@@ -3,7 +3,7 @@ import { useAccessibility } from '../context/AccessibilityContext';
 import { useReducedMotion } from 'framer-motion';
 
 /**
- * SMRITI CARE MOTION DESIGN TOKENS
+ * MEMORY MANTRA MOTION DESIGN TOKENS
  * "Every movement should communicate something."
  *
  * Timings:
@@ -185,7 +185,7 @@ export const gentleShakeVariants: Variants = {
  * useMotionSafe Hook
  * Automatically handles reduced motion preferences:
  * - Checks OS level `prefers-reduced-motion`
- * - Checks Smriti Care AccessibilityContext `motion === 'reduced'`
+ * - Checks Memory Mantra AccessibilityContext `motion === 'reduced'`
  * - Checks `simpleUIMode`
  *
  * When motion is disabled, returns instantaneous transitions (0.001ms)

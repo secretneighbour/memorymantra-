@@ -425,7 +425,7 @@ export const NorthEastOfflineMap: React.FC<NorthEastOfflineMapProps> = ({
           )}
         </svg>
 
-        {/* 6. Smriti Care Important Places Interactive Markers */}
+        {/* 6. Memory Mantra Important Places Interactive Markers */}
         <div className="absolute inset-0 pointer-events-none">
           {places.map((place) => {
             if (!place.coordinates) return null;

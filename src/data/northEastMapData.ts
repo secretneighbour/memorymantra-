@@ -1,5 +1,5 @@
 /**
- * SMRITI CARE — NORTH-EASTERN REGION OF INDIA OFFLINE GEOSPATIAL DATASET
+ * MEMORY MANTRA — NORTH-EASTERN REGION OF INDIA OFFLINE GEOSPATIAL DATASET
  * 
  * Legally Distributable Regional Dataset
  * Sources: OpenStreetMap contributors (ODbL) & Natural Earth Public Domain

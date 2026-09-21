@@ -51,9 +51,8 @@ export const ImportantPlacesMap: React.FC = () => {
     return typeof navigator !== 'undefined' ? navigator.onLine : true;
   });
 
-  // Map Mode State (Auto, Force Online, Force Offline)
   const [mapMode, setMapMode] = useState<MapMode>(() => {
-    return (localStorage.getItem('smriti_map_mode') as MapMode) || 'auto';
+    return ((localStorage.getItem('memory_mantra_map_mode') || localStorage.getItem('smriti_map_mode')) as MapMode) || 'auto';
   });
 
   // Location Permission and Coordinates
@@ -97,6 +96,7 @@ export const ImportantPlacesMap: React.FC = () => {
   // Sync map mode preference
   const handleSetMapMode = (mode: MapMode) => {
     setMapMode(mode);
+    localStorage.setItem('memory_mantra_map_mode', mode);
     localStorage.setItem('smriti_map_mode', mode);
   };
 

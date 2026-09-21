@@ -213,7 +213,7 @@ export const MemoryNetwork: React.FC = () => {
             })}
           </svg>
 
-          {/* Central Core: SMRITI CARE Node */}
+          {/* Central Core: MEMORY MANTRA Node */}
           <motion.div
             className="z-20 w-32 h-32 sm:w-36 sm:h-36 rounded-full bg-ner-black text-white p-3 flex flex-col items-center justify-center text-center shadow-2xl border-2 border-ner-terracotta cursor-pointer group"
             whileHover={{ scale: 1.05 }}
@@ -225,7 +225,7 @@ export const MemoryNetwork: React.FC = () => {
               {t.networkCoreNode}
             </span>
             <span className="font-bold text-xs sm:text-sm tracking-tight text-white mt-0.5">
-              SMRITI CARE
+              MEMORY MANTRA
             </span>
             <span className="text-[9px] font-mono text-white/50 mt-0.5">
               {t.networkEcosystem}
@@ -292,7 +292,7 @@ export const MemoryNetwork: React.FC = () => {
               <span className="font-mono text-[9px] uppercase tracking-widest text-ner-terracotta font-bold block">
                 {t.networkEcosystem}
               </span>
-              <h3 className="font-bold text-sm text-white">SMRITI CARE ARCHITECTURE</h3>
+              <h3 className="font-bold text-sm text-white">MEMORY MANTRA ARCHITECTURE</h3>
             </div>
           </div>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-white/80">

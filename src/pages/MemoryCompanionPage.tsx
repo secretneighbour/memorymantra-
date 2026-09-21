@@ -75,12 +75,12 @@ export const MemoryCompanionPage: React.FC = () => {
 
   // Pinned anchors and caregiver memory notes state
   const [pinnedList, setPinnedList] = useState<PinnedMemoryContext[]>(() => {
-    const saved = localStorage.getItem('smriti_pinned_memories');
+    const saved = localStorage.getItem('memory_mantra_pinned_memories') || localStorage.getItem('smriti_pinned_memories');
     return saved ? JSON.parse(saved) : initialPinnedMemories;
   });
 
   const [memoryNotes, setMemoryNotes] = useState<MemoryNote[]>(() => {
-    const saved = localStorage.getItem('smriti_memory_notes');
+    const saved = localStorage.getItem('memory_mantra_memory_notes') || localStorage.getItem('smriti_memory_notes');
     return saved ? JSON.parse(saved) : initialMemoryNotes;
   });
 
@@ -105,7 +105,7 @@ export const MemoryCompanionPage: React.FC = () => {
       {
         id: 'msg-init',
         role: 'assistant',
-        text: `নমস্কাৰ / Hello ${activePatient?.name || 'Aai'}! I am Smriti, your dedicated memory companion. I am right here to help you remember your day, recall cherished songs of Assam, or simply have a peaceful chat. How can I brighten your day?`,
+        text: `নমস্কাৰ / Hello ${activePatient?.name || 'Aai'}! I am Memory Mantra, your dedicated memory companion. I am right here to help you remember your day, recall cherished songs of Assam, or simply have a peaceful chat. How can I brighten your day?`,
         timestamp: 'Just now',
         provider: 'gemini-3.8-flash',
         suggestedReplies: [
@@ -122,13 +122,17 @@ export const MemoryCompanionPage: React.FC = () => {
     MemoryCompanionService.saveSessionHistory(messages);
   }, [messages]);
 
-  // Persist pinned memories & notes
+  // Persist pinned memories & notes (dual write for seamless migration)
   useEffect(() => {
-    localStorage.setItem('smriti_pinned_memories', JSON.stringify(pinnedList));
+    const val = JSON.stringify(pinnedList);
+    localStorage.setItem('memory_mantra_pinned_memories', val);
+    localStorage.setItem('smriti_pinned_memories', val);
   }, [pinnedList]);
 
   useEffect(() => {
-    localStorage.setItem('smriti_memory_notes', JSON.stringify(memoryNotes));
+    const val = JSON.stringify(memoryNotes);
+    localStorage.setItem('memory_mantra_memory_notes', val);
+    localStorage.setItem('smriti_memory_notes', val);
   }, [memoryNotes]);
 
   useEffect(() => {
@@ -318,7 +322,7 @@ export const MemoryCompanionPage: React.FC = () => {
       {
         id: `init-${Date.now()}`,
         role: 'assistant',
-        text: `Hello ${activePatient?.name || 'Aai'}! Smriti is refreshed and ready. What would you like to explore or talk about together?`,
+        text: `Hello ${activePatient?.name || 'Aai'}! Memory Mantra is refreshed and ready. What would you like to explore or talk about together?`,
         timestamp: 'Just now',
         provider: 'gemini-3.8-flash',
         suggestedReplies: [
@@ -390,7 +394,7 @@ export const MemoryCompanionPage: React.FC = () => {
             <div className="flex flex-wrap items-center gap-2 mb-2.5">
               <span className="text-xs font-mono uppercase tracking-widest px-3 py-1 rounded-full bg-ner-terracotta/10 text-ner-terracotta font-bold flex items-center gap-1.5 border border-ner-terracotta/20">
                 <Bot className="w-3.5 h-3.5" />
-                <span>Smriti AI Memory Companion</span>
+                <span>Memory Mantra AI Memory Companion</span>
               </span>
               <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 font-semibold flex items-center gap-1">
                 <Sparkle className="w-3 h-3 text-emerald-600" />
@@ -411,7 +415,7 @@ export const MemoryCompanionPage: React.FC = () => {
 
           <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
             <TTSButton
-              text={`${t.memoryCompanion}. ${t.remindersSubtitle}. Smriti is ready to assist with daily schedule and gentle memories.`}
+              text={`${t.memoryCompanion}. ${t.remindersSubtitle}. Memory Mantra is ready to assist with daily schedule and gentle memories.`}
               label={t.btnListen}
               size="md"
             />
@@ -580,7 +584,7 @@ export const MemoryCompanionPage: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="font-bold text-sm text-ner-black flex items-center gap-1.5">
-                      <span>Smriti Conversation</span>
+                      <span>Memory Mantra Conversation</span>
                       <span className="text-[10px] font-mono font-normal px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
                         Live AI
                       </span>
@@ -711,7 +715,7 @@ export const MemoryCompanionPage: React.FC = () => {
                   <div className="flex items-start animate-fade-in">
                     <div className="bg-ner-offwhite border border-ner-border rounded-2xl p-3.5 text-xs text-ner-black/70 flex items-center gap-2 shadow-xs">
                       <Loader2 className="w-4 h-4 animate-spin text-ner-terracotta" />
-                      <span>Smriti is thinking gently with love...</span>
+                      <span>Memory Mantra is thinking gently with love...</span>
                     </div>
                   </div>
                 )}
@@ -752,7 +756,7 @@ export const MemoryCompanionPage: React.FC = () => {
                       type="text"
                       value={inputQuery}
                       onChange={(e) => setInputQuery(e.target.value)}
-                      placeholder="Ask Smriti about schedule, songs, tea, or memories..."
+                      placeholder="Ask Memory Mantra about schedule, songs, tea, or memories..."
                       className="flex-1 bg-transparent text-sm sm:text-base text-ner-black focus:outline-none placeholder:text-ner-black/40"
                     />
                     <VoiceDictationButton

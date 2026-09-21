@@ -2,7 +2,7 @@ import { TranslationDictionary } from '../types';
 
 export const en: TranslationDictionary = {
   // Brand & General
-  appName: 'SmritiCare',
+  appName: 'Memory Mantra',
   tagline: 'Cognitive Care, Made Human.',
   sihBadge: 'SIH 2026 • PS 26003',
   demoModeBadge: 'SIH PROTOTYPE DEMO',
@@ -66,7 +66,7 @@ export const en: TranslationDictionary = {
   roleDoctor: 'Doctor',
 
   // Landing Page Hero
-  heroSubtitle: '[ smriticare — 01 ]',
+  heroSubtitle: '[ memory mantra — 01 ]',
   heroTitleLine1: 'Helping every',
   heroTitleLine2: 'memory stay',
   heroTitleLine3: 'connected.',
@@ -74,7 +74,7 @@ export const en: TranslationDictionary = {
   btnStartPatientCare: 'Start Patient Care',
   btnRoleSwitcher: 'Role Switcher',
   btnListen: 'Listen',
-  ttsHeroIntro: 'Helping every memory stay connected. Welcome to SmritiCare, an AI-assisted cognitive platform for elderly dementia care in North Eastern India.',
+  ttsHeroIntro: 'Helping every memory stay connected. Welcome to Memory Mantra, an AI-assisted cognitive platform for elderly dementia care in North Eastern India.',
   widgetTelemetryTitle: '8 States Monitored',
   widgetTelemetrySubtitle: 'Assam • Manipur • Meghalaya + 5',
   widgetSessionTitle: 'Active Session',
@@ -145,7 +145,7 @@ export const en: TranslationDictionary = {
 
   // Landing Page AI Assistance
   aiTag: '[ intelligent companion ]',
-  aiTitle: 'Smriti Companion: Always here with a gentle voice.',
+  aiTitle: 'Memory Mantra Companion: Always here with a gentle voice.',
   aiDescription: 'Powered by Gemini 3.8, our multi-dialect AI assistant talks with patients using culturally respectful, reassuring language.',
   aiFeature1Title: 'Dialect-Adaptive Reminiscence',
   aiFeature1Desc: 'Seamlessly speaks in Assamese, Bengali, Meitei, Khasi, Mizo, Nagamese, Hindi, and English.',
@@ -195,7 +195,7 @@ export const en: TranslationDictionary = {
   neuroAssistiveEcosystem: 'NEURO-COGNITIVE ASSISTIVE ECOSYSTEM',
 
   // Landing Page CTA
-  ctaTag: '[ join smriticare ]',
+  ctaTag: '[ join memory mantra ]',
   ctaTitle: 'Empower your family with compassionate cognitive support.',
   ctaDesc: 'Start with personalized dementia exercises, routine assistance, and family care tracking today.',
   btnEnterApp: 'Enter Patient Care Suite',
@@ -372,7 +372,7 @@ export const en: TranslationDictionary = {
 
   // Role Selection & Switcher Modal
   roleSwitcherTitle: 'Choose Your Experience Mode',
-  roleSwitcherDesc: 'SmritiCare adapts its entire layout, typography, and tools to match your role.',
+  roleSwitcherDesc: 'Memory Mantra adapts its entire layout, typography, and tools to match your role.',
   roleModalTag: 'Multi-Role Architecture',
   rolePatientTitle: 'Elderly Patient Mode',
   rolePatientPersona: 'Visitor (Patient)',
@@ -397,9 +397,9 @@ export const en: TranslationDictionary = {
   doctorRoleBenefit3: 'Clinical intervention recommendations',
 
   // Authentication
-  authLoginTitle: 'Welcome Back to SmritiCare',
-  authLoginSubtitle: 'Sign in to access personalized memory care and family circle support.',
-  authSignupTitle: 'Create a SmritiCare Account',
+  authLoginTitle: 'Welcome Back to Memory Mantra',
+  authLoginSubtitle: 'Secure access to your personal cognitive dashboard, memories, and care circle.',
+  authSignupTitle: 'Create a Memory Mantra Account',
   authSignupSubtitle: 'Join our compassionate community supporting cognitive wellness.',
   authEmailLabel: 'Email Address',
   authPasswordLabel: 'Password',
@@ -466,7 +466,7 @@ export const en: TranslationDictionary = {
   readAloud: 'Spoken Narration & Audio Test',
   speechTestTitle: 'Voice Synthesis Test',
   speechTestDesc: 'Ensure your device speaker delivers clear and comfortable audio.',
-  speechTestSample: 'Hello! I am Smriti, your personal memory companion. I am right here with you today.',
+  speechTestSample: 'Hello! I am Memory Mantra, your personal memory companion. I am right here with you today.',
   btnTestAudioVoice: 'Test Voice Speaker',
   voiceSpeedTitle: 'Voice Speed',
   voiceSpeedDesc: 'Choose how fast the companion speaks.',
@@ -488,7 +488,7 @@ export const en: TranslationDictionary = {
   footerAccessibility: 'Accessibility',
   footerPrivacy: 'Privacy Policy',
   footerTerms: 'Terms of Care',
-  footerCopyright: '© 2026 SmritiCare. Built for Smart India Hackathon.',
+  footerCopyright: '© 2026 Memory Mantra. Built for Smart India Hackathon.',
   footerSimulationNotice: 'Clinical simulation prototype for healthcare education and research.',
 
   // Help & Emergency Modal
@@ -507,10 +507,10 @@ export const en: TranslationDictionary = {
   callEmergencyNowText: 'Call 112',
 
   // AI Companion
-  aiCompanionTitle: 'Smriti Memory Companion',
+  aiCompanionTitle: 'Memory Mantra Memory Companion',
   aiCompanionBadge: 'Gemini 3.8 AI',
-  aiCompanionGreeting: 'Hello! I am Smriti, your personal memory companion. How are you feeling today? You can ask me about your schedule, family, or cherished memories.',
-  aiCompanionPlaceholder: 'Type or speak your thoughts warmly...',
+  aiCompanionGreeting: 'Hello! I am Memory Mantra, your personal memory companion. How are you feeling today? You can ask me about your schedule, family, or cherished memories.',
+  aiCompanionPlaceholder: 'Type a message or tap the microphone to speak...',
   aiCompanionSend: 'Send',
   aiCompanionQuick1: 'What is my schedule today?',
   aiCompanionQuick2: 'Tell me about Kaziranga National Park',
@@ -519,14 +519,14 @@ export const en: TranslationDictionary = {
   aiCompanionQuick5: 'Remind me of my morning medicine',
   aiCompanionVoiceOn: 'Voice On',
   aiCompanionVoiceOff: 'Voice Off',
-  aiCompanionThinking: 'Smriti is thinking warmly...',
+  aiCompanionThinking: 'Memory Mantra is thinking warmly...',
 
   // Offline / Network
   offlineActiveMsg: 'Offline Mode: All cognitive games and saved memories remain fully accessible.',
   onlineSyncedMsg: 'Online: All care data synced with Care Circle.',
 
   // Scroll Sections - Memory Network
-  networkBadge: '[ 02 // SMRITI DIGITAL MEMORY SYSTEM ]',
+  networkBadge: '[ 02 // MEMORY MANTRA DIGITAL MEMORY SYSTEM ]',
   networkTitle: 'Interconnected Care Network',
   networkDescription: 'A synchronized, digital memory architecture that links the patient’s inner recollections with family members, daily care routines, and clinical oversight.',
   networkCoreNode: 'CORE NODE',
@@ -658,11 +658,11 @@ export const en: TranslationDictionary = {
   pillarMotionDesc: 'Respects vestibular sensitivities with gentle fades instead of jarring rotations or rapid motion.',
 
   // Scroll Sections - Final CTA
-  finalCtaBadge: 'SMRITI CARE // 100% OFFLINE READY',
-  finalCtaTitleLine1: 'Cognitive Care,',
-  finalCtaTitleLine2: 'Made Human.',
+  finalCtaBadge: 'MEMORY MANTRA // 100% OFFLINE READY',
+  finalCtaTitleLine1: 'Dementia care designed for',
+  finalCtaTitleLine2: 'the people of North East India.',
   finalCtaSubtitle: 'Designed around people, memories, and everyday care.',
-  finalCtaButton: 'EXPLORE SMRITI CARE',
+  finalCtaButton: 'EXPLORE MEMORY MANTRA',
   finalCtaPatientPortal: 'Patient Portal',
   finalCtaPatientSub: 'Daily games & routines',
   finalCtaCaregiverHub: 'Caregiver Hub',
@@ -671,7 +671,7 @@ export const en: TranslationDictionary = {
   finalCtaClinicalSub: 'Longitudinal analytics',
   finalCtaMemoryVault: 'Memory Vault',
   finalCtaMemorySub: 'Archived recollections',
-  finalCtaCopyright: '© 2026 SMRITI CARE // NORTHEAST INDIA INITIATIVE',
+  finalCtaCopyright: '© 2026 MEMORY MANTRA // NORTHEAST INDIA INITIATIVE',
 
   // Authentication & Account
   loginTitle: 'Sign in to your account',
@@ -697,7 +697,7 @@ export const en: TranslationDictionary = {
   loginVerifyEmailLink: 'Verify Email →',
   loginDemoRolesLink: 'Explore Demo Roles →',
   loginSecurityNotice: 'Protected by 256-bit encryption & regional privacy standards.',
-  loginAudioPrompt: 'Welcome to SMRITI CARE. Please enter your email and password to sign into your cognitive care circle.',
+  loginAudioPrompt: 'Welcome to MEMORY MANTRA. Please enter your email and password to sign into your cognitive care circle.',
   loginErrorEmail: 'Please enter your email address.',
   loginErrorEmailFormat: 'Please enter a valid email format (e.g. name@domain.com).',
   loginErrorPassword: 'Please enter your password.',
@@ -827,7 +827,7 @@ export const en: TranslationDictionary = {
   simpleUIPriorityTitle: 'Today’s Essential Care',
   simpleUIMyDay: 'My Day & Wellbeing',
   simpleUIPlayGame: 'Play Today’s Game',
-  simpleUIChatSmriti: 'Talk with Smriti AI',
+  simpleUIChatSmriti: 'Talk with Memory Mantra AI',
   simpleUIReminders: 'Today’s Reminders',
   simpleUIFamilyHelp: 'Call Family or Get Help',
 
@@ -839,24 +839,24 @@ export const en: TranslationDictionary = {
   textSizeRecommendation: 'Recommended for elderly users for maximum readability',
 
   // Walkthrough / Onboarding
-  walkthroughTitle: 'Welcome to Smriti Care',
-  walkthroughSubtitle: 'A gentle, simple guide to your memory, daily support, and cognitive wellbeing companion.',
-  walkthroughStep1Title: 'Welcome to Smriti Care',
-  walkthroughStep1Desc: 'A compassionate companion designed to support memory, cognitive vitality, daily medication, and loved ones connection.',
-  walkthroughStep2Title: 'Your Memory Vault',
-  walkthroughStep2Desc: 'Relive cherished family photographs, joyful festival celebrations, regional folk songs, and comforting reminiscence stories.',
-  walkthroughStep3Title: 'Keep Your Mind Active',
-  walkthroughStep3Desc: 'Play 9 gentle, clinically inspired cognitive games that adapt to your pace and celebrate every step you take.',
-  walkthroughStep4Title: 'Your Daily Journey',
-  walkthroughStep4Desc: 'A gentle morning check-in that tracks mood, energy, and physical comfort in under 30 seconds with voice guidance.',
-  walkthroughStep5Title: 'Never Miss a Reminder',
-  walkthroughStep5Desc: 'Friendly spoken alarms for morning medicines, wholesome meals, hydration, and doctor visits.',
-  walkthroughStep6Title: 'Stay Connected with Family',
-  walkthroughStep6Desc: 'Your primary caregivers and family circle are always one tap away to support you with love and care.',
+  walkthroughTitle: 'Welcome to Memory Mantra',
+  walkthroughSubtitle: 'A gentle guide to the key features designed to support you and your family.',
+  walkthroughStep1Title: 'Welcome to Memory Mantra',
+  walkthroughStep1Desc: 'A dedicated platform created for elderly cognitive wellness and memory preservation across North Eastern India.',
+  walkthroughStep2Title: 'Therapeutic Cognitive Games',
+  walkthroughStep2Desc: 'Engaging, culturally tailored games like Majuli Mask Match and Bihu Rhythm to keep your mind sharp and active.',
+  walkthroughStep3Title: 'Compassionate AI Companion',
+  walkthroughStep3Desc: 'A warm, patient conversational companion that speaks 8 regional languages, ready to listen and reminisce.',
+  walkthroughStep4Title: 'Memory Vault & Reminiscence',
+  walkthroughStep4Desc: 'Preserve cherished family photos, audio recordings, and stories in a secure, accessible personal vault.',
+  walkthroughStep5Title: 'Circle of Care & Telemetry',
+  walkthroughStep5Desc: 'Connect patients, family caregivers, and healthcare clinicians with real-time wellbeing tracking and alerts.',
+  walkthroughStep6Title: 'Offline-First & Low Bandwidth',
+  walkthroughStep6Desc: 'Fully operational even without internet connectivity, ensuring uninterrupted care in remote areas.',
   walkthroughStep7Title: 'Emergency Help & SMS',
   walkthroughStep7Desc: 'If you ever feel unwell or need urgent assistance, tap Help to notify your trusted contacts instantly via SMS.',
   walkthroughSkip: 'Skip Tour',
-  walkthroughGetStarted: 'Get Started with Smriti Care',
+  walkthroughGetStarted: 'Get Started with Memory Mantra',
   walkthroughReplayBtn: 'Replay Walkthrough Tour',
 
   // Emergency SMS & Contacts
@@ -880,7 +880,7 @@ export const en: TranslationDictionary = {
   // Important Places & Map
   placesTitle: 'Important Places & Familiar Map',
   placesSubtitle: 'Privacy-first landmark orientation keeping home, family residences, doctors, and clinics easily accessible.',
-  placesPrivacyNotice: 'Privacy Guarantee: All location coordinates remain stored on your local device. Smriti Care does not continuously track your location.',
+  placesPrivacyNotice: 'Privacy Guarantee: All location coordinates remain stored on your local device. Memory Mantra does not continuously track your location.',
   placeCategoryHome: 'Home Residence',
   placeCategoryDoctor: 'Doctor / Clinic',
   placeCategoryHospital: 'Hospital',
@@ -949,13 +949,13 @@ export const en: TranslationDictionary = {
   loginPasswordMinLength: 'Password must contain at least 6 characters.',
 
   // USP & Presentation
-  uspBadge: 'THE SMRITI CARE DIFFERENCE',
+  uspBadge: 'THE MEMORY MANTRA DIFFERENCE',
   uspHeading: 'Personalized Memory-Assisted Cognitive Care',
   uspSubheading: 'Bringing games, memories, reminders, and family together around the person.',
-  uspStatement: 'Not just a cognitive game. Not just a reminder app. Not just a photo vault. Smriti Care brings them together around the person’s own memories, routines, and support circle.',
-  uspDisclaimer: 'Smriti Care is designed for cognitive wellness, daily reassurance, and reminiscence therapy. It does not diagnose, predict, or medically treat neurodegenerative conditions.',
+  uspStatement: 'Not just a cognitive game. Not just a reminder app. Not just a photo vault. Memory Mantra brings them together around the person’s own memories, routines, and support circle.',
+  uspDisclaimer: 'Memory Mantra is designed for cognitive wellness, daily reassurance, and reminiscence therapy. It does not diagnose, predict, or medically treat neurodegenerative conditions.',
   presentationNav: 'Product Presentation',
-  presentationTitle: 'Smriti Care Product Deck',
+  presentationTitle: 'Memory Mantra Product Deck',
   presentationSubtitle: 'Comprehensive architecture, clinical methodology, and technical innovation review.',
   slidePrev: 'Previous Slide',
   slideNext: 'Next Slide',

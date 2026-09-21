@@ -10,10 +10,10 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
     navigator.serviceWorker
       .register('/sw.js')
       .then((registration) => {
-        console.info('[SMRITICARE] Service Worker active with scope:', registration.scope);
+        console.info('[MEMORY MANTRA] Service Worker active with scope:', registration.scope);
       })
       .catch((error) => {
-        console.warn('[SMRITICARE] Service Worker registration failed:', error);
+        console.warn('[MEMORY MANTRA] Service Worker registration failed:', error);
       });
   });
 }

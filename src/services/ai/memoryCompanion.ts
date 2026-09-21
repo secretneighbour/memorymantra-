@@ -29,8 +29,10 @@ export interface CompanionResponse {
   voicePrompt?: string;
 }
 
-const STORAGE_KEY = 'smriti_companion_chat_history_v2';
-const CLIENT_CACHE_KEY_PREFIX = 'smriti_ai_cache_';
+const STORAGE_KEY = 'memory_mantra_companion_chat_history_v2';
+const LEGACY_STORAGE_KEY = 'smriti_companion_chat_history_v2';
+const CLIENT_CACHE_KEY_PREFIX = 'memory_mantra_ai_cache_';
+const LEGACY_CLIENT_CACHE_KEY_PREFIX = 'smriti_ai_cache_';
 const CLIENT_CACHE_MAX_AGE_MS = 10 * 60 * 1000; // 10 minutes cache to avoid redundant API billing
 
 interface ClientCacheEntry {
@@ -47,10 +49,11 @@ function getClientCachedResponse(key: string): CompanionResponse | null {
     return mem.response;
   }
 
-  // 2. Check browser sessionStorage
+  // 2. Check browser sessionStorage (primary then legacy fallback)
   if (typeof window !== 'undefined' && window.sessionStorage) {
     try {
-      const raw = window.sessionStorage.getItem(CLIENT_CACHE_KEY_PREFIX + key);
+      const raw = window.sessionStorage.getItem(CLIENT_CACHE_KEY_PREFIX + key) ||
+                  window.sessionStorage.getItem(LEGACY_CLIENT_CACHE_KEY_PREFIX + key);
       if (raw) {
         const parsed: ClientCacheEntry = JSON.parse(raw);
         if (now - parsed.timestamp < CLIENT_CACHE_MAX_AGE_MS) {
@@ -58,6 +61,7 @@ function getClientCachedResponse(key: string): CompanionResponse | null {
           return parsed.response;
         } else {
           window.sessionStorage.removeItem(CLIENT_CACHE_KEY_PREFIX + key);
+          window.sessionStorage.removeItem(LEGACY_CLIENT_CACHE_KEY_PREFIX + key);
         }
       }
     } catch {
@@ -77,6 +81,7 @@ function setClientCachedResponse(key: string, response: CompanionResponse): void
   if (typeof window !== 'undefined' && window.sessionStorage) {
     try {
       window.sessionStorage.setItem(CLIENT_CACHE_KEY_PREFIX + key, JSON.stringify(entry));
+      window.sessionStorage.setItem(LEGACY_CLIENT_CACHE_KEY_PREFIX + key, JSON.stringify(entry));
     } catch {
       // Ignore sessionStorage errors
     }
@@ -89,7 +94,7 @@ export class MemoryCompanionService {
    */
   public static loadSessionHistory(): StructuredChatMessage[] {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -107,7 +112,9 @@ export class MemoryCompanionService {
    */
   public static saveSessionHistory(messages: StructuredChatMessage[]): void {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-20)));
+      const payload = JSON.stringify(messages.slice(-20));
+      localStorage.setItem(STORAGE_KEY, payload);
+      localStorage.setItem(LEGACY_STORAGE_KEY, payload);
     } catch (e) {
       console.warn('Failed to save session history:', e);
     }
@@ -119,6 +126,7 @@ export class MemoryCompanionService {
   public static clearSessionHistory(): void {
     try {
       localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
     } catch (e) {
       console.warn('Failed to clear session history:', e);
     }

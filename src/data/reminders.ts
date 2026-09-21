@@ -15,7 +15,7 @@ export const initialReminders: ReminderItem[] = [
     time: '10:30 AM',
     title: 'Cognitive Memory Exercise',
     category: 'exercise',
-    doseOrNote: 'Complete Heritage Memory Match on SmritiCare',
+    doseOrNote: 'Complete Heritage Memory Match on Memory Mantra',
     completed: true,
     priority: 'normal',
   },

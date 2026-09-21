@@ -40,7 +40,7 @@ export const WalkthroughModal: React.FC = () => {
       desc: t.walkthroughStep1Desc,
       icon: <Sparkles className="w-8 h-8 text-ner-terracotta" />,
       accentColor: 'bg-ner-terracotta/15 text-ner-terracotta border-ner-terracotta/30',
-      badge: '01 // SMRITI CARE'
+      badge: '01 // MEMORY MANTRA'
     },
     {
       stepNumber: 2,
@@ -107,6 +107,7 @@ export const WalkthroughModal: React.FC = () => {
   };
 
   const handleClose = () => {
+    localStorage.setItem('memory_mantra_walkthrough_completed', 'true');
     localStorage.setItem('smriti_walkthrough_completed', 'true');
     setIsWalkthroughOpen(false);
     setCurrentStep(0);

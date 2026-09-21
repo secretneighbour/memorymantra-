@@ -1,5 +1,5 @@
 /**
- * SMRITICARE - Medical Services Locator Offline Service
+ * MEMORY MANTRA - Medical Services Locator Offline Service
  * 
  * Provides:
  * 1. Automatic data caching to LocalStorage for Overpass API geospatial results.
@@ -36,9 +36,12 @@ export const DEFAULT_COORDINATES: Coordinates = {
 };
 
 const STORAGE_KEYS = {
-  LATEST_LOCATION: 'smriticare_latest_location',
-  LATEST_MEDICAL_DATA: 'smriticare_latest_medical_data',
-  MAP_PREFIX: 'smriticare_medical_data_'
+  LATEST_LOCATION: 'memory_mantra_latest_location',
+  LEGACY_LATEST_LOCATION: 'smriticare_latest_location',
+  LATEST_MEDICAL_DATA: 'memory_mantra_latest_medical_data',
+  LEGACY_LATEST_MEDICAL_DATA: 'smriticare_latest_medical_data',
+  MAP_PREFIX: 'memory_mantra_medical_data_',
+  LEGACY_MAP_PREFIX: 'smriticare_medical_data_'
 };
 
 /**
@@ -50,10 +53,10 @@ export function registerMapServiceWorker(): void {
       navigator.serviceWorker
         .register('/sw.js')
         .then((reg) => {
-          console.debug('[SMRITICARE PWA] Map Tile Caching SW active with scope:', reg.scope);
+          console.debug('[MEMORY MANTRA PWA] Map Tile Caching SW active with scope:', reg.scope);
         })
         .catch((err) => {
-          console.warn('[SMRITICARE PWA] SW registration failed:', err);
+          console.warn('[MEMORY MANTRA PWA] SW registration failed:', err);
         });
     });
   }
@@ -64,7 +67,7 @@ export function registerMapServiceWorker(): void {
  */
 export function getSavedLocation(): Coordinates {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.LATEST_LOCATION);
+    const raw = localStorage.getItem(STORAGE_KEYS.LATEST_LOCATION) || localStorage.getItem(STORAGE_KEYS.LEGACY_LATEST_LOCATION);
     if (raw) {
       const parsed = JSON.parse(raw);
       if (typeof parsed.lat === 'number' && typeof parsed.lng === 'number') {
@@ -72,7 +75,7 @@ export function getSavedLocation(): Coordinates {
       }
     }
   } catch (err) {
-    console.warn('[SMRITICARE] Error reading saved coordinates:', err);
+    console.warn('[MEMORY MANTRA] Error reading saved coordinates:', err);
   }
   return DEFAULT_COORDINATES;
 }
@@ -83,8 +86,9 @@ export function getSavedLocation(): Coordinates {
 export function saveLocation(coords: Coordinates): void {
   try {
     localStorage.setItem(STORAGE_KEYS.LATEST_LOCATION, JSON.stringify(coords));
+    localStorage.setItem(STORAGE_KEYS.LEGACY_LATEST_LOCATION, JSON.stringify(coords));
   } catch (err) {
-    console.warn('[SMRITICARE] Error persisting location:', err);
+    console.warn('[MEMORY MANTRA] Error persisting location:', err);
   }
 }
 
@@ -93,12 +97,12 @@ export function saveLocation(coords: Coordinates): void {
  */
 export function getCachedMedicalData(): CachedMedicalPayload | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.LATEST_MEDICAL_DATA);
+    const raw = localStorage.getItem(STORAGE_KEYS.LATEST_MEDICAL_DATA) || localStorage.getItem(STORAGE_KEYS.LEGACY_LATEST_MEDICAL_DATA);
     if (raw) {
       return JSON.parse(raw) as CachedMedicalPayload;
     }
   } catch (err) {
-    console.warn('[SMRITICARE] Error reading cached medical data:', err);
+    console.warn('[MEMORY MANTRA] Error reading cached medical data:', err);
   }
   return null;
 }
@@ -117,12 +121,15 @@ export function cacheMedicalData(coords: Coordinates, facilities: MedicalFacilit
 
     // Save as latest snapshot
     localStorage.setItem(STORAGE_KEYS.LATEST_MEDICAL_DATA, JSON.stringify(payload));
+    localStorage.setItem(STORAGE_KEYS.LEGACY_LATEST_MEDICAL_DATA, JSON.stringify(payload));
 
     // Also store spatial key for regional lookup
     const spatialKey = `${STORAGE_KEYS.MAP_PREFIX}${coords.lat.toFixed(3)}_${coords.lng.toFixed(3)}`;
     localStorage.setItem(spatialKey, JSON.stringify(payload));
+    const legacySpatialKey = `${STORAGE_KEYS.LEGACY_MAP_PREFIX}${coords.lat.toFixed(3)}_${coords.lng.toFixed(3)}`;
+    localStorage.setItem(legacySpatialKey, JSON.stringify(payload));
   } catch (err) {
-    console.warn('[SMRITICARE] Error caching medical facilities:', err);
+    console.warn('[MEMORY MANTRA] Error caching medical facilities:', err);
   }
 }
 

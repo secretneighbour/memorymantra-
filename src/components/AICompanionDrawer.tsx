@@ -410,7 +410,7 @@ export const AICompanionDrawer: React.FC = () => {
             <div className="flex flex-col items-start animate-fade-in">
               <div className="bg-white border border-ner-border rounded-2xl p-3.5 text-xs text-ner-black/70 flex items-center gap-2 shadow-xs">
                 <Loader2 className="w-4 h-4 animate-spin text-ner-terracotta" />
-                <span>Smriti is thinking gently...</span>
+                <span>Memory Mantra is thinking gently...</span>
               </div>
             </div>
           )}

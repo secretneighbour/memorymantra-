@@ -171,7 +171,7 @@ export const SignupPage: React.FC = () => {
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-ner-black">
-            Join the NEURO NER Care Circle
+            Join the Memory Mantra Care Circle
           </h1>
           <p className="text-xs sm:text-sm text-ner-black/70 font-light mt-1">
             Personalized cognitive assistance, family tracking, and clinical telemetry.
@@ -327,7 +327,7 @@ export const SignupPage: React.FC = () => {
                     setEmail(e.target.value);
                     if (formErrors.email) setFormErrors({ ...formErrors, email: undefined });
                   }}
-                  placeholder="e.g. user@smriticare.in"
+                  placeholder="e.g. user@memorymantra.in"
                   className="w-full h-11 pl-10 pr-4 rounded-2xl bg-white dark:bg-[#141418] border border-ner-border dark:border-gray-700 text-sm text-ner-black dark:text-white placeholder:text-ner-black/35 dark:placeholder:text-gray-500 focus:outline-none focus:border-ner-black dark:focus:border-ner-terracotta focus:ring-2 focus:ring-ner-black/10"
                 />
               </div>

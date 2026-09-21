@@ -1,8 +1,8 @@
 {
   "name": "neuro-ner",
-  "productName": "Smriti Care",
-  "description": "Smriti Care - Offline-First Cognitive & Dementia Care Companion",
-  "author": "Smriti Care Team",
+  "productName": "Memory Mantra",
+  "description": "Memory Mantra - Offline-First Cognitive & Dementia Care Companion",
+  "author": "Memory Mantra Team",
   "private": true,
   "version": "1.0.0",
   "type": "module",

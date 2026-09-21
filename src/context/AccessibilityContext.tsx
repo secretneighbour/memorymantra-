@@ -42,11 +42,8 @@ const AccessibilityContext = createContext<AccessibilityContextType | undefined>
 
 export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setThemeState] = useState<ThemeMode>(() => {
-    const saved = localStorage.getItem('smriti_theme') || localStorage.getItem('neuro_theme');
+    const saved = localStorage.getItem('memory_mantra_theme') || localStorage.getItem('smriti_theme') || localStorage.getItem('neuro_theme');
     if (saved === 'dark' || saved === 'light') return saved;
-    if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
     return 'light';
   });
   const [textSize, setTextSizeState] = useState<TextSize>(() => {
@@ -87,6 +84,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const setTheme = (newTheme: ThemeMode) => {
     setThemeState(newTheme);
+    localStorage.setItem('memory_mantra_theme', newTheme);
     localStorage.setItem('smriti_theme', newTheme);
     localStorage.setItem('neuro_theme', newTheme);
   };

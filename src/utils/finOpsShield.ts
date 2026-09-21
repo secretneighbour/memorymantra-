@@ -1,5 +1,5 @@
 /**
- * SMRITICARE - FinOps Shield & Free-Tier Optimization Utilities
+ * MEMORY MANTRA - FinOps Shield & Free-Tier Optimization Utilities
  * 
  * Provides:
  * 1. 24-hour LocalStorage cache for AI responses (keyed by prompt + context hash).
@@ -13,7 +13,8 @@
 // 1. DETERMINISTIC HASHING & AI RESPONSE CACHING (24-Hour TTL)
 // ============================================================================
 
-const AI_CACHE_PREFIX = 'smriti_finops_ai_';
+const AI_CACHE_PREFIX = 'memory_mantra_finops_ai_';
+const LEGACY_AI_CACHE_PREFIX = 'smriti_finops_ai_';
 const AI_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 export interface CachedAIResponse<T = any> {
@@ -30,25 +31,38 @@ export function hashPromptContext(input: string): string {
   let hash = 0x811c9dc5;
   for (let i = 0; i < input.length; i++) {
     hash ^= input.charCodeAt(i);
-    hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+    hash = Math.imul(hash, 0x01000193);
   }
-  return (hash >>> 0).toString(36);
+  return (hash >>> 0).toString(16);
 }
 
 /**
- * Builds a normalized composite key from user prompt and contextual state
+ * Builds a deterministic cache key from prompt text and optional parameters
  */
-export function generateAICompositeKey(
+export function buildAICacheKey(
   prompt: string,
-  userContext: { patientName?: string; mode?: string; language?: string } = {}
+  mode = 'general',
+  lang = 'en',
+  userId = 'guest'
 ): string {
-  const normalizedPrompt = prompt.trim().toLowerCase().replace(/\s+/g, ' ');
-  const normalizedUser = (userContext.patientName || 'default').trim().toLowerCase();
-  const normalizedMode = (userContext.mode || 'companion').toLowerCase();
-  const normalizedLang = (userContext.language || 'en').toLowerCase();
-
+  const normalizedPrompt = prompt.trim().toLowerCase();
+  const normalizedMode = mode.toLowerCase();
+  const normalizedLang = lang.toLowerCase();
+  const normalizedUser = userId.toLowerCase();
   const composite = `${normalizedUser}|${normalizedMode}|${normalizedLang}|${normalizedPrompt}`;
   return `${AI_CACHE_PREFIX}${hashPromptContext(composite)}`;
+}
+
+export function generateAICompositeKey(
+  prompt: string,
+  context?: { patientName?: string; mode?: string; language?: string }
+): string {
+  return buildAICacheKey(
+    prompt,
+    context?.mode || 'general',
+    context?.language || 'en',
+    context?.patientName || 'guest'
+  );
 }
 
 export class FinOpsAICache {
@@ -59,7 +73,8 @@ export class FinOpsAICache {
     if (typeof window === 'undefined' || !window.localStorage) return null;
 
     try {
-      const raw = localStorage.getItem(cacheKey);
+      const legacyKey = cacheKey.replace(AI_CACHE_PREFIX, LEGACY_AI_CACHE_PREFIX);
+      const raw = localStorage.getItem(cacheKey) || localStorage.getItem(legacyKey);
       if (!raw) return null;
 
       const entry: CachedAIResponse<T> = JSON.parse(raw);
@@ -71,6 +86,7 @@ export class FinOpsAICache {
 
       // Expired: prune item silently
       localStorage.removeItem(cacheKey);
+      localStorage.removeItem(legacyKey);
     } catch (err) {
       console.warn('[FinOps] Cache retrieval error:', err);
     }
@@ -93,6 +109,8 @@ export class FinOpsAICache {
       };
 
       localStorage.setItem(cacheKey, JSON.stringify(entry));
+      const legacyKey = cacheKey.replace(AI_CACHE_PREFIX, LEGACY_AI_CACHE_PREFIX);
+      localStorage.setItem(legacyKey, JSON.stringify(entry));
       this.pruneOldEntries();
     } catch (err) {
       console.warn('[FinOps] Cache storage error (quota exceeded):', err);
@@ -104,10 +122,9 @@ export class FinOpsAICache {
    */
   private static pruneOldEntries(): void {
     try {
-      const keys = Object.keys(localStorage).filter((k) => k.startsWith(AI_CACHE_PREFIX));
+      const keys = Object.keys(localStorage).filter((k) => k.startsWith(AI_CACHE_PREFIX) || k.startsWith(LEGACY_AI_CACHE_PREFIX));
       if (keys.length > 80) {
         // Remove oldest 20 entries
-        const now = Date.now();
         keys
           .map((k) => {
             try {
@@ -128,13 +145,13 @@ export class FinOpsAICache {
 }
 
 // ============================================================================
-// 2. GEOLOCATION & PLACES 5KM RADIUS CACHE
+// 2. SPATIAL RADIUS CACHE FOR PLACES / MEDICAL API (5km Radius)
 // ============================================================================
 
 /**
- * Calculates Haversine distance between two coordinates in kilometers
+ * Calculates distance between two coordinates in kilometers using Haversine formula
  */
-export function calculateDistanceKm(
+function calculateDistanceKm(
   lat1: number,
   lon1: number,
   lat2: number,
@@ -153,7 +170,8 @@ export function calculateDistanceKm(
   return R * c;
 }
 
-const PLACES_CACHE_KEY = 'smriti_places_spatial_cache';
+const PLACES_CACHE_KEY = 'memory_mantra_places_spatial_cache';
+const LEGACY_PLACES_CACHE_KEY = 'smriti_places_spatial_cache';
 
 export interface SpatialPlacesCache<T = any> {
   lat: number;
@@ -174,7 +192,7 @@ export class FinOpsPlacesCache {
     if (typeof window === 'undefined' || !window.localStorage) return null;
 
     try {
-      const raw = localStorage.getItem(PLACES_CACHE_KEY);
+      const raw = localStorage.getItem(PLACES_CACHE_KEY) || localStorage.getItem(LEGACY_PLACES_CACHE_KEY);
       if (!raw) return null;
 
       const parsed: SpatialPlacesCache<T> = JSON.parse(raw);
@@ -203,6 +221,7 @@ export class FinOpsPlacesCache {
         timestamp: Date.now(),
       };
       localStorage.setItem(PLACES_CACHE_KEY, JSON.stringify(payload));
+      localStorage.setItem(LEGACY_PLACES_CACHE_KEY, JSON.stringify(payload));
     } catch (e) {
       console.warn('[FinOps] Saving places cache failed:', e);
     }
@@ -283,7 +302,7 @@ export class ButtonCooldownGuard {
 // ============================================================================
 
 export const ELDERLY_QUOTA_FALLBACK = {
-  reply: 'Smriti is taking a short rest. Please try again in a few minutes.',
+  reply: 'Memory Mantra is taking a short rest. Please try again in a few minutes.',
   language: 'English',
   actionRoute: '/memory',
   actionLabel: "View Today's Timeline",

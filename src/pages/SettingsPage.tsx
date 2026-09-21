@@ -251,7 +251,7 @@ export const SettingsPage: React.FC = () => {
               Live Scalable Typography Preview • [{textSize.toUpperCase()}]
             </span>
             <p className="text-sm sm:text-base font-medium text-ner-black dark:text-white">
-              "Smriti Care: Keeping memories alive with calm, accessible typography."
+              "Memory Mantra: Keeping memories alive with calm, accessible typography."
             </p>
           </div>
         </div>

@@ -89,13 +89,13 @@ export const MobileBottomNav: React.FC = () => {
           <button
             onClick={() => setIsAICompanionOpen(true)}
             className="w-12 h-12 rounded-full bg-ner-black dark:bg-[#1C1C22] text-white shadow-xl flex flex-col items-center justify-center border-2 border-white dark:border-zinc-700 active:scale-90 transition-transform group"
-            aria-label="Open Smriti AI Memory Companion"
+            aria-label="Open Memory Mantra AI Companion"
           >
             <Bot className="w-5 h-5 text-ner-terracotta group-hover:scale-110 transition-transform" />
             <span className="w-1.5 h-1.5 rounded-full bg-ner-sage animate-ping absolute top-2 right-2"></span>
           </button>
           <span className="text-[9px] font-mono font-bold tracking-tight text-ner-black/70 dark:text-zinc-400 text-center block mt-1">
-            Smriti AI
+            Mantra AI
           </span>
         </div>
 

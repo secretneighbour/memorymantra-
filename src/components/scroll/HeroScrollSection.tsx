@@ -140,7 +140,7 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
       <div className="global-site-wrapper flex items-center justify-between z-10 relative">
         <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full frost-white-intense text-xs font-mono font-bold text-ner-black shadow-sm">
           <span className="w-2 h-2 rounded-full bg-ner-terracotta animate-pulse" />
-          <span>SMRITI CARE // 2026.09</span>
+          <span>MEMORY MANTRA // 2026.09</span>
           <span className="text-ner-black/40 hidden sm:inline">|</span>
           <span className="text-ner-black/60 hidden sm:inline">{t.sihBadge}</span>
         </div>
@@ -354,7 +354,7 @@ export const HeroScrollSection: React.FC<HeroScrollSectionProps> = ({
         </button>
 
         <span className="text-[11px] font-mono text-ner-black/40 hidden sm:inline">
-          [ 01 / 10 • SMRITI ARCHITECTURE ]
+          [ 01 / 10 • MEMORY MANTRA ARCHITECTURE ]
         </span>
       </motion.div>
     </section>

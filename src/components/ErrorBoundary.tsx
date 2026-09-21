@@ -42,7 +42,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </h1>
             
             <p className="text-sm text-slate-600 mb-6 leading-relaxed">
-              Smriti Care encountered an unexpected issue. You can try refreshing the page or restarting the session.
+              Memory Mantra encountered an unexpected issue. You can try refreshing the page or restarting the session.
             </p>
 
             {this.state.error && (

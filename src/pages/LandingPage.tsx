@@ -29,7 +29,7 @@ export const LandingPage: React.FC = () => {
         {/* 01 // HERO SECTION */}
         <HeroScrollSection onScrollToExplore={handleScrollToExplore} />
 
-        {/* 02 // SMRITI DIGITAL MEMORY INTERCONNECTED NETWORK */}
+        {/* 02 // MEMORY MANTRA DIGITAL MEMORY INTERCONNECTED NETWORK */}
         <div ref={exploreRef}>
           <ScrollReveal translateY={36} duration={0.8} threshold={0.1}>
             <MemoryNetwork />

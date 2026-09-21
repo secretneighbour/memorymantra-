@@ -1,8 +1,8 @@
-# SmritiCare (NEURO NER) — Cognitive Wellness & Dementia Care Platform
+# Memory Mantra (NEURO NER) — Cognitive Wellness & Dementia Care Platform
 
 A modern, accessibility-first cognitive support platform designed for elderly individuals with memory impairments, family caregivers, and healthcare clinicians. 
 
-Built with a high-contrast industrial aesthetic inspired by Nothing OS and Dieter Rams design principles, SmritiCare combines cognitive therapy games, memory vaults, clinical telemetry, and interactive physical UI elements.
+Built with a high-contrast industrial aesthetic inspired by Nothing OS and Dieter Rams design principles, Memory Mantra combines cognitive therapy games, memory vaults, clinical telemetry, and interactive physical UI elements.
 
 ---
 
@@ -61,7 +61,7 @@ Built with a high-contrast industrial aesthetic inspired by Nothing OS and Diete
 
 ## 💻 Programming Languages & Technologies Used
 
-SmritiCare is built using a modern full-stack architecture optimized for speed, accessibility, cross-platform compatibility, and strict type safety:
+Memory Mantra is built using a modern full-stack architecture optimized for speed, accessibility, cross-platform compatibility, and strict type safety:
 
 | Language / Technology | Files / Extensions | Role in Project |
 | :--- | :--- | :--- |
@@ -71,7 +71,7 @@ SmritiCare is built using a modern full-stack architecture optimized for speed, 
 | **CSS3 & Tailwind CSS** | `.css`, Tailwind utilities | **Design System & Visual Styling**: Industrial high-contrast design tokens (Nothing OS style), fluid typography, custom keyframe animations, dyslexia font support, and WCAG AAA compliance. |
 | **SQL (PostgreSQL)** | `.sql` | **Database & Security**: Relational tables for daily check-ins, game telemetry, user profiles, medication reminders, memory vault metadata, and Row-Level Security (RLS) policies in Supabase. |
 | **JSON** | `.json` | **Configuration & Packaging**: `package.json` dependencies, `tsconfig.json` compiler options, `electron-builder.json` Windows packaging definitions, and `metadata.json`. |
-| **NSIS Scripting** | Embedded NSIS | **Windows Installer Automation**: Embedded NSIS routines for building the Windows setup installer (`Smriti-Care-Setup.exe`), Start Menu shortcuts, and uninstaller logic. |
+| **NSIS Scripting** | Embedded NSIS | **Windows Installer Automation**: Embedded NSIS routines for building the Windows setup installer (`Memory-Mantra-Setup.exe`), Start Menu shortcuts, and uninstaller logic. |
 | **Web Speech API** | Browser Native API | **Speech Synthesis (TTS) & Recognition (STT)**: Multi-language narration across all 8 supported North-East & Indian languages, plus voice recognition for interactive voice-guided check-ins. |
 | **Web Audio API** | Browser Native API | **Calming Harmonic Audio Engine**: Generates real-time 528Hz and 396Hz harmonic chimes for peaceful audio feedback during voice interactions. |
 
@@ -95,15 +95,15 @@ If you already have the `release/` folder or downloaded the build artifacts:
    ```text
    release\win-unpacked\
    ```
-3. Locate **`Smriti Care.exe`**.
-4. **Double-click `Smriti Care.exe`** to launch the native desktop application immediately.
-   *(Optional: Right-click `Smriti Care.exe` $\rightarrow$ **Show more options** $\rightarrow$ **Send to** $\rightarrow$ **Desktop (create shortcut)** for quick future access).*
+3. Locate **`Memory Mantra.exe`**.
+4. **Double-click `Memory Mantra.exe`** to launch the native desktop application immediately.
+   *(Optional: Right-click `Memory Mantra.exe` $\rightarrow$ **Show more options** $\rightarrow$ **Send to** $\rightarrow$ **Desktop (create shortcut)** for quick future access).*
 
 #### Option B: Install with the Setup Installer
 1. Navigate into the `release\` directory.
-2. Double-click **`Smriti-Care-Setup.exe`**.
+2. Double-click **`Memory-Mantra-Setup.exe`**.
 3. Follow the on-screen installer prompts.
-4. Once installed, search for **"Smriti Care"** in the Windows Start Menu or double-click the shortcut on your desktop.
+4. Once installed, search for **"Memory Mantra"** in the Windows Start Menu or double-click the shortcut on your desktop.
 
 > 💡 **Note on Windows SmartScreen**: If Windows Defender shows *"Windows protected your PC"*, click **"More info"** $\rightarrow$ **"Run anyway"** (this occurs because the local build is self-packaged and not signed with a commercial Microsoft code signing certificate).
 
@@ -164,7 +164,7 @@ To run the application inside a dedicated, borderless Windows native window with
 3. What happens automatically:
    - Compiles Electron's `main.ts` and `preload.ts` into `dist-electron/`.
    - Starts Vite development server in the background on port `3000`.
-   - Launches a dedicated `1440x900` native Windows desktop window titled **Smriti Care**.
+   - Launches a dedicated `1440x900` native Windows desktop window titled **Memory Mantra**.
    - Changes you make to code in `src/` will hot-reload instantly inside the desktop window!
 
 ---
@@ -179,9 +179,9 @@ To compile and package the entire app into a redistributable Windows setup insta
    npm run electron:build
    ```
 3. When the build finishes, your freshly built Windows binaries will be located in the `release/` folder:
-   - **`release\Smriti-Care-Setup.exe`**: Ready-to-install Windows installer.
-   - **`release\Smriti-Care-Setup.zip`**: Portable zip archive you can extract on any Windows PC.
-   - **`release\win-unpacked\Smriti Care.exe`**: Direct portable executable folder.
+   - **`release\Memory-Mantra-Setup.exe`**: Ready-to-install Windows installer.
+   - **`release\Memory-Mantra-Setup.zip`**: Portable zip archive you can extract on any Windows PC.
+   - **`release\win-unpacked\Memory Mantra.exe`**: Direct portable executable folder.
 
 ---
 
@@ -203,9 +203,9 @@ To compile and package the entire app into a redistributable Windows setup insta
 - **Where are local memories and user data saved on Windows?**:
   In desktop mode, photos and user data are stored locally in the standard Windows user data directory:
   ```text
-  %APPDATA%\Smriti Care\smriti-memories\
+  %APPDATA%\Memory Mantra\memory-mantra-memories\
   ```
-  (Usually located at `C:\Users\<YourUsername>\AppData\Roaming\Smriti Care`).
+  *(Backward compatibility: existing files in `%APPDATA%\Smriti Care\smriti-memories\` are automatically read and migrated).*
 
 ---
 
@@ -257,7 +257,7 @@ To compile and package the entire app into a redistributable Windows setup insta
 
 ## 🔑 Environment Variables & API Keys
 
-SmritiCare uses environment variables to connect to external services such as **Google Gemini AI** and **Supabase**. All credentials are stored in a local `.env` file in the project root.
+Memory Mantra uses environment variables to connect to external services such as **Google Gemini AI** and **Supabase**. All credentials are stored in a local `.env` file in the project root.
 
 > 🛡️ **Security Note**: Never commit your `.env` file or actual secrets to public version control or GitHub. The `.env` file is already listed in `.gitignore` to protect your privacy.
 
@@ -293,7 +293,7 @@ Open the `.env` file in VS Code or any text editor (Notepad, nano, etc.). It sho
 
 ```env
 # ==========================================
-# SMRITICARE ENVIRONMENT CONFIGURATION
+# MEMORY MANTRA ENVIRONMENT CONFIGURATION
 # ==========================================
 
 # 1. Google Gemini AI (Optional for Advanced Reminiscence & Clinical AI)
@@ -363,7 +363,7 @@ If you are running or sharing the application within **Google AI Studio** or dep
 * **What it powers**: User registration, login, doctor telemetry, clinical notes sync, and persistent caregiver tracking.
 * **How to get your keys**:
   1. Go to [supabase.com](https://supabase.com) and click **"Start your project"** or sign in.
-  2. Create a new organization and project (e.g., named `smriti-care`).
+  2. Create a new organization and project (e.g., named `memory-mantra`).
   3. Once your project is ready, click the **Project Settings** (gear icon at the bottom of the left sidebar).
   4. Click **"API"** under the Configuration section.
   5. Look for the **Project URL**:
@@ -393,19 +393,19 @@ If you are running or sharing the application within **Google AI Studio** or dep
 
 Don't have API keys yet or just want to test the app? **No problem!**
 
-SmritiCare includes an automatic **Zero-Config Demo Mode**:
+Memory Mantra includes an automatic **Zero-Config Demo Mode**:
 - If `.env` is empty or missing, the application automatically falls back to client-side demo accounts.
 - On the login screen, simply click any **1-Click Demo Account**:
-  - 🟢 **Patient Demo** (`patient@smriticare.org`)
-  - 🔵 **Caregiver Demo** (`caregiver@smriticare.org`)
-  - 🟣 **Doctor Demo** (`doctor@smriticare.org`)
+  - 🟢 **Patient Demo** (`patient@memorymantra.in`)
+  - 🔵 **Caregiver Demo** (`caregiver@memorymantra.in`)
+  - 🟣 **Doctor Demo** (`doctor@memorymantra.in`)
 - All 9 clinical cognitive training games, the interactive cat, memory vault, and local voice narrator will work smoothly without any cloud configuration.
 
 ---
 
 ## 🚀 Major Architectural Changes & Refactorings Log
 
-This section provides an executive summary and technical breakdown of recent major system refactorings, security audits, UI responsive fixes, and state management upgrades implemented across SmritiCare.
+This section provides an executive summary and technical breakdown of recent major system refactorings, security audits, UI responsive fixes, and state management upgrades implemented across Memory Mantra.
 
 ---
 
@@ -462,7 +462,7 @@ This section provides an executive summary and technical breakdown of recent maj
 ### 3. Fixed-Pinned Responsive Header & Navigation System
 * **Files Modified:** `src/components/Navbar.tsx`, `src/index.css`
 * **The Problem:**
-  On standard laptop displays ($1366 \times 768$ and $1440 \times 900$), all primary navigation links were previously collapsed behind a mobile hamburger drawer, leaving an empty void in the header. Subsequent horizontal scrolling attempts caused the `"SMRITICARE (R)"` logo to scroll out of view.
+  On standard laptop displays ($1366 \times 768$ and $1440 \times 900$), all primary navigation links were previously collapsed behind a mobile hamburger drawer, leaving an empty void in the header. Subsequent horizontal scrolling attempts caused the `"MEMORY MANTRA (R)"` logo to scroll out of view.
 * **Architecture & Solution:**
   1. **Tripartite Structural Layout**:
      - **Left Side (`.logo-wrapper`)**: Permanently pinned to the left with `flex-shrink: 0`, ensuring the brand identifier never scrolls or moves.
@@ -536,7 +536,7 @@ This section provides an executive summary and technical breakdown of recent maj
   Cognitive accessibility settings (text scaling, simple UI, contrast, voice assistance) should never require an account, as elderly users need accessible controls before they can even read or complete sign-in.
 * **Architecture & Solution:**
   1. **Decoupled Accessibility**: The complete accessibility control suite is available directly from the unauthenticated landing page, navigation header, and modal dialogs.
-  2. **Full In-Browser Persistence**: Preferences are saved locally to `localStorage` (`smriti_accessibility_prefs`, `smriti_theme`, `smriti_font_size`) and persist across browser reloads, through sign-in, and after logout.
+  2. **Full In-Browser Persistence**: Preferences are saved locally to `localStorage` (`memory_mantra_theme`, `memory_mantra_font_size`, with automatic fallback and migration for legacy `smriti_*` keys) and persist across browser reloads, through sign-in, and after logout.
   3. **Data Privacy**: No private patient or clinical telemetry is ever stored in accessibility preference stores.
 
 ---
@@ -550,10 +550,10 @@ This section provides an executive summary and technical breakdown of recent maj
      - Canvas Background: Near-black (`#0A0A0C`).
      - Secondary Surfaces: Deep charcoal (`#141418`).
      - Cards & Containers: Charcoal (`#17171C` / `rgba(23, 23, 28, 0.92)`).
-     - Typography: Pure white headings & body (`#FFFFFF`), soft light gray secondary (`#A1A1AA`), and strategic Smriti Care terracotta red (`#DE4A30`).
+     - Typography: Pure white headings & body (`#FFFFFF`), soft light gray secondary (`#A1A1AA`), and strategic Memory Mantra terracotta red (`#DE4A30`).
   2. **Option & Standard Button Styling Pass**:
      - Standard/option buttons in dark mode render with dark grey background (`#2A2A2A` / `dark:bg-gray-800`), crisp white text (`#FFFFFF`), and subtle dark borders (`#3F3F4A` / `dark:border-gray-700`).
-     - Selected/active states highlight with Smriti Care terracotta orange/red (`#DE4A30`) with white typography.
+     - Selected/active states highlight with Memory Mantra terracotta orange/red (`#DE4A30`) with white typography.
      - Primary action buttons ("SIGN IN", "LISTEN ALOUD") preserve their bold terracotta styling.
   3. **Anti-White-Flash Engineering**:
      - Pre-render inline theme detection script in `index.html` applies `.dark` before React mounts.
@@ -563,7 +563,7 @@ This section provides an executive summary and technical breakdown of recent maj
 
 ## 🧩 Comprehensive Modules Catalog
 
-SmritiCare is structured into **23 comprehensive functional modules** covering client presentation, state management, cognitive game engines, AI therapy, clinical telemetry, regional inclusion, and native desktop integration:
+Memory Mantra is structured into **23 comprehensive functional modules** covering client presentation, state management, cognitive game engines, AI therapy, clinical telemetry, regional inclusion, and native desktop integration:
 
 ---
 
@@ -574,7 +574,7 @@ SmritiCare is structured into **23 comprehensive functional modules** covering c
 | :--- | :--- | :--- |
 | **Patient Dashboard** | `/src/pages/PatientDashboard.tsx` | Main command center for patients with dementia or MCI. Features **Simple UI Mode** toggle (5 distraction-free tactile cards: Today's Activity, Memory Companion, Daily Game, Reminders, and Help/SOS) alongside full telemetry, daily schedule, streak badges, dynamic `{displayName}` greeting, and mood check-in. |
 | **Important Places & Map** | `/src/pages/PlacesPage.tsx` | Privacy-first regional orientation map (Assam & Kamrup Metro landmarks: Home, GMCH Hospital, Doctor Clinic, Pharmacy, Family, Park). Dual online/offline vector canvas with 1-tap direct Call and Route actions, zero background GPS tracking. |
-| **Product Presentation Deck** | `/src/pages/PresentationPage.tsx` | In-app 10-slide interactive pitch deck detailing Smriti Care's executive vision, regional challenges, clinical architecture, cognitive game suite, AI companion, and clinical roadmap. Supports arrow navigation, thumbnail scrubber, speaker notes, and fullscreen. |
+| **Product Presentation Deck** | `/src/pages/PresentationPage.tsx` | In-app 10-slide interactive pitch deck detailing Memory Mantra's executive vision, regional challenges, clinical architecture, cognitive game suite, AI companion, and clinical roadmap. Supports arrow navigation, thumbnail scrubber, speaker notes, and fullscreen. |
 | **Caregiver Dashboard** | `/src/pages/CaregiverDashboard.tsx` | Telemetry portal for family and formal caregivers. Tracks patient routine adherence, sleep quality, game performance, medication logs, and monitors caregiver burden risk scores. |
 | **Doctor / Clinician Portal** | `/src/pages/DoctorDashboard.tsx` | Specialized clinical dashboard displaying longitudinal cognitive trajectories, estimated MMSE/MoCA scores via Recharts, reaction time curves, and exportable medical summary evaluations. |
 | **Cognitive Games Hub** | `/src/pages/GamesHub.tsx` | Game catalog organized across 5 clinical cognitive domains (Memory, Attention, Executive Function, Language, Visual-Spatial). Displays difficulty filters and personal best scores. |
@@ -650,7 +650,7 @@ SmritiCare is structured into **23 comprehensive functional modules** covering c
 * **Purpose:** Accessible 7-step guided onboarding tour for seniors and family caregivers.
 * **Key Capabilities:**
   - Full keyboard accessibility and high-contrast visuals.
-  - Persisted completion state in `localStorage` (`smriti_walkthrough_completed`).
+  - Persisted completion state in `localStorage` (`memory_mantra_walkthrough_completed`, with fallback for legacy `smriti_walkthrough_completed`).
   - Replayable on demand via Settings.
 
 ---
@@ -697,7 +697,7 @@ SmritiCare is structured into **23 comprehensive functional modules** covering c
 * **Location:** `/src/pages/MemoriesPage.tsx`, `/src/components/MemoryUploadModal.tsx`, `/src/data/memories.ts`
 * **Key Capabilities:**
   - Digital photo albums with voice note attachments and relationship tagging.
-  - Electron native filesystem persistence (`%APPDATA%/Smriti Care/smriti-memories/`).
+  - Electron native filesystem persistence (`%APPDATA%/Memory Mantra/memory-mantra-memories/`).
   - Interactive reminiscence therapy mode with memory reflection questions.
 
 ---
@@ -799,7 +799,7 @@ SmritiCare is structured into **23 comprehensive functional modules** covering c
 * **Key Capabilities:**
   - Dedicated native Windows desktop application with window control IPC channels.
   - Secure context isolation bridge (`window.electronAPI`).
-  - Local filesystem photo persistence in `%APPDATA%/Smriti Care/smriti-memories/`.
+  - Local filesystem photo persistence in `%APPDATA%/Memory Mantra/memory-mantra-memories/`.
 
 ---
 
@@ -863,7 +863,7 @@ neuro-ner/
 
 ## ⚡ Complete Guide: How to Use & Build Electron
 
-Smriti Care is architected as an **offline-first, native desktop application** using **Electron 33** and **Electron Builder**, paired with React 18 and Vite. This guide explains the desktop architecture, step-by-step development commands, packaging workflows, IPC security model, and troubleshooting techniques.
+Memory Mantra is architected as an **offline-first, native desktop application** using **Electron 33** and **Electron Builder**, paired with React 18 and Vite. This guide explains the desktop architecture, step-by-step development commands, packaging workflows, IPC security model, and troubleshooting techniques.
 
 ---
 
@@ -899,7 +899,7 @@ npm -v
 
 ### 3. Electron Architecture & Directory Layout
 
-Smriti Care strictly isolates the native Node.js runtime from the browser rendering context to prevent remote code execution vulnerabilities:
+Memory Mantra strictly isolates the native Node.js runtime from the browser rendering context to prevent remote code execution vulnerabilities:
 
 ```text
 smriticare-/
@@ -931,7 +931,7 @@ smriticare-/
 
 ### 4. Running Electron in Development Mode
 
-To run Smriti Care inside a live desktop window with **Hot Module Replacement (HMR)**:
+To run Memory Mantra inside a live desktop window with **Hot Module Replacement (HMR)**:
 
 ```bash
 npm run electron:dev
@@ -941,7 +941,7 @@ npm run electron:dev
 1. **Compiles Electron Scripts:** Runs `npm run build:electron` via `esbuild`, compiling `electron/main.ts` $\rightarrow$ `dist-electron/main.cjs` and `electron/preload.ts` $\rightarrow$ `dist-electron/preload.cjs` in under 100ms.
 2. **Starts Backend Server:** Launches the Node.js server via `cross-env NODE_ENV=development tsx server.ts` (or starts Vite on port 3000).
 3. **Waits for Server Readiness:** Uses the `wait-on` utility to wait for `http://localhost:3000` to return HTTP 200.
-4. **Launches Native Window:** Spawns `electron . --dev`, loading `http://localhost:3000` into a dedicated desktop window titled **Smriti Care**.
+4. **Launches Native Window:** Spawns `electron . --dev`, loading `http://localhost:3000` into a dedicated desktop window titled **Memory Mantra**.
 5. **Live Hot Reloading:** Any edits to files in `src/` (components, pages, styles) update instantly inside the desktop window without restarting Electron!
 
 > 💡 **Developer Tools:** Press `Ctrl + Shift + I` (Windows/Linux) or `Cmd + Option + I` (macOS) at any time inside the desktop window to toggle the Chromium Developer Tools console and element inspector.
@@ -964,7 +964,7 @@ This compiles:
 
 ### 6. Packaging & Building the Windows Executable (`.exe` Installer)
 
-To package Smriti Care into a complete, standalone redistributable Windows setup installer (`.exe`) and portable standalone application:
+To package Memory Mantra into a complete, standalone redistributable Windows setup installer (`.exe`) and portable standalone application:
 
 ```bash
 npm run electron:build
@@ -978,11 +978,11 @@ npm run electron:build
 #### Output Artifacts in `/release`:
 ```text
 release/
-├── Smriti-Care-Setup.exe          # Standard Windows x64 NSIS Installer (Install wizard with Start Menu shortcut)
-├── Smriti-Care-Setup.zip          # Portable compressed ZIP archive for offline USB distribution
-└── win-unpacked/                 # Unpacked standalone portable folder
-    ├── Smriti Care.exe           # Direct executable (Runs immediately without installation)
-    ├── resources/                # Embedded application bundle
+├── Memory-Mantra-Setup.exe          # Standard Windows x64 NSIS Installer (Install wizard with Start Menu shortcut)
+├── Memory-Mantra-Setup.zip          # Portable compressed ZIP archive for offline USB distribution
+└── win-unpacked/                    # Unpacked standalone portable folder
+    ├── Memory Mantra.exe            # Direct executable (Runs immediately without installation)
+    ├── resources/                   # Embedded application bundle
     └── ...
 ```
 
@@ -992,14 +992,14 @@ release/
 
 #### Option 1: Standalone Portable Execution (Fastest / No Install)
 1. Navigate to the `release/win-unpacked/` folder.
-2. Double-click **`Smriti Care.exe`**.
+2. Double-click **`Memory Mantra.exe`**.
 3. The app launches immediately with full local storage and native features.
-4. *Tip:* You can copy the entire `win-unpacked` folder onto a USB drive to run Smriti Care on any Windows 10 or 11 laptop without internet access or administrative privileges.
+4. *Tip:* You can copy the entire `win-unpacked` folder onto a USB drive to run Memory Mantra on any Windows 10 or 11 laptop without internet access or administrative privileges.
 
 #### Option 2: Windows Setup Installer
-1. Send **`release/Smriti-Care-Setup.exe`** to the user.
-2. Double-click `Smriti-Care-Setup.exe` and follow the guided setup wizard.
-3. The installer creates a desktop shortcut and registers Smriti Care in the Windows Start Menu and Add/Remove Programs.
+1. Send **`release/Memory-Mantra-Setup.exe`** to the user.
+2. Double-click `Memory-Mantra-Setup.exe` and follow the guided setup wizard.
+3. The installer creates a desktop shortcut and registers Memory Mantra in the Windows Start Menu and Add/Remove Programs.
 
 > 🛡️ **Windows Defender / SmartScreen Notice:** Because local hackathon and open-source builds are self-packaged without an expensive Microsoft EV Code Signing Certificate, Windows Defender SmartScreen may display *"Windows protected your PC"*. Simply click **"More info"** $\rightarrow$ **"Run anyway"**.
 
@@ -1007,7 +1007,7 @@ release/
 
 ### 8. Running on Linux & macOS
 
-Smriti Care is cross-platform and can be developed or packaged on Linux and macOS:
+Memory Mantra is cross-platform and can be developed or packaged on Linux and macOS:
 
 #### On Linux Desktop (Ubuntu, Debian, Fedora, Arch):
 ```bash
@@ -1046,7 +1046,7 @@ The preload script exposes `window.electronAPI` to React components. The table b
 | `window.electronAPI.close()` | `window:close` | None | Gracefully terminates and closes the desktop application. |
 | `window.electronAPI.isMaximized()` | `window:isMaximized` | None | Returns a boolean promise indicating if window is currently maximized. |
 | `window.electronAPI.openFileDialog()` | `dialog:openFile` | Filter options | Opens the native Windows file selection dialog to import family photos. |
-| `window.electronAPI.saveMemoryPhoto()` | `photos:save` | `{ name, buffer }` | Saves photo into `%APPDATA%/Smriti Care/smriti-memories/`. |
+| `window.electronAPI.saveMemoryPhoto()` | `photos:save` | `{ name, buffer }` | Saves photo into `%APPDATA%/Memory Mantra/memory-mantra-memories/`. |
 | `window.electronAPI.getMemoryPhotos()` | `photos:getAll` | None | Returns list of local image paths stored in `%APPDATA%`. |
 | `window.electronAPI.openExternal(url)` | `shell:openExternal` | `url: string` | Safely opens external hyperlinks in user's default browser (Chrome, Edge). |
 
@@ -1077,9 +1077,10 @@ Then re-run your npm command in your terminal.
 #### Q3: Where are patient photos and local memories stored on Windows?
 In Electron mode, all memory album photos are saved locally in:
 ```text
-%APPDATA%\Smriti Care\smriti-memories\
+%APPDATA%\Memory Mantra\memory-mantra-memories\
 ```
-*(Full path: `C:\Users\<YourUsername>\AppData\Roaming\Smriti Care\smriti-memories\`)*.  
+*(Full path: `C:\Users\<YourUsername>\AppData\Roaming\Memory Mantra\memory-mantra-memories\`)*.  
+*(Backward compatibility: existing files in `%APPDATA%\Smriti Care\smriti-memories\` are automatically read and migrated).*
 To view them, press `Win + R`, paste the path above, and press Enter.
 
 #### Q4: White Screen or `wait-on` Timeout when starting Electron

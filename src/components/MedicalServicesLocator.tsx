@@ -195,7 +195,7 @@ export const MedicalServicesLocator: React.FC = () => {
         }
         setStatus(navigator.onLine ? 'live' : 'offline');
       } catch (networkError) {
-        console.warn('[SMRITICARE] Network/Overpass fetch failed. Falling back to cached data:', networkError);
+        console.warn('[MEMORY MANTRA] Network/Overpass fetch failed. Falling back to cached data:', networkError);
         // Do NOT clear map. Fallback to localStorage data
         const fallbackData = getCachedMedicalData();
         if (fallbackData?.facilities) {
@@ -228,7 +228,7 @@ export const MedicalServicesLocator: React.FC = () => {
         },
         (geoError) => {
           // Silent fallback: Do NOT show alert or error dialog!
-          console.info('[SMRITICARE] Geolocation unavailable or timed out. Sticking to saved coordinates.', geoError.message);
+          console.info('[MEMORY MANTRA] Geolocation unavailable or timed out. Sticking to saved coordinates.', geoError.message);
           // Map remains stuck at initialCoords
           fetchFreshData(initialCoords);
         },
@@ -328,7 +328,7 @@ export const MedicalServicesLocator: React.FC = () => {
       {/* Leaflet Map Canvas */}
       <div 
         ref={mapContainerRef} 
-        id="smriticare-medical-map" 
+        id="memory-mantra-medical-map" 
         className="w-full h-[520px] z-0"
       />
 

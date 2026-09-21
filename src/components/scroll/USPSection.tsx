@@ -136,7 +136,7 @@ export const USPSection: React.FC = () => {
             </div>
             <div>
               <h4 className="text-lg font-bold tracking-tight">
-                Explore the Smriti Care Presentation Deck
+                Explore the Memory Mantra Presentation Deck
               </h4>
               <p className="text-xs sm:text-sm text-white/70">
                 10-slide comprehensive architectural and clinical overview for investors, caregivers & doctors.

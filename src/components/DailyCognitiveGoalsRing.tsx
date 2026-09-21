@@ -34,7 +34,7 @@ export const DailyCognitiveGoalsRing: React.FC<DailyCognitiveGoalsRingProps> = (
 
   // Load custom goal preference or default to activePatient.stats.totalToday (default 4 or 5)
   const [targetGoal, setTargetGoal] = useState<number>(() => {
-    const saved = localStorage.getItem('smriti_daily_cognitive_goal');
+    const saved = localStorage.getItem('memory_mantra_daily_cognitive_goal') || localStorage.getItem('smriti_daily_cognitive_goal');
     if (saved) {
       const parsed = parseInt(saved, 10);
       if (!isNaN(parsed) && parsed >= 2 && parsed <= 8) return parsed;
@@ -62,6 +62,7 @@ export const DailyCognitiveGoalsRing: React.FC<DailyCognitiveGoalsRingProps> = (
   // Handle changing daily goal
   const handleSetTarget = (newTarget: number) => {
     setTargetGoal(newTarget);
+    localStorage.setItem('memory_mantra_daily_cognitive_goal', newTarget.toString());
     localStorage.setItem('smriti_daily_cognitive_goal', newTarget.toString());
     setActivePatient({
       ...activePatient,

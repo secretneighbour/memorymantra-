@@ -47,7 +47,7 @@ export const AuthLoadingSplash: React.FC<AuthLoadingSplashProps> = ({ message })
         <div className="text-center space-y-1.5">
           <div className="flex items-center justify-center gap-1.5">
             <span className="font-mono text-sm sm:text-base font-bold tracking-widest text-ner-black uppercase">
-              {t.appName ? t.appName.toUpperCase() : 'SMRITI CARE'}
+              {t.appName ? t.appName.toUpperCase() : 'MEMORY MANTRA'}
             </span>
             <span className="font-mono text-xs text-ner-black/40 font-medium">
               (R)

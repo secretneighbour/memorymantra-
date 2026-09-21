@@ -67,7 +67,7 @@ const INITIAL_CONVERSATION: DemoMessage[] = [
   {
     id: 'demo-2',
     sender: 'ai',
-    role: 'SMRITI COMPANION',
+    role: 'MEMORY MANTRA COMPANION',
     text: 'Of course! At 4:00 PM your family caregiver is coming over for warm tea, and you both planned to complete the Brahmaputra Word Puzzle.',
     timestamp: '2:15 PM',
     provider: 'gemini-3.8-flash',
@@ -82,7 +82,7 @@ const INITIAL_CONVERSATION: DemoMessage[] = [
   {
     id: 'demo-4',
     sender: 'ai',
-    role: 'SMRITI COMPANION',
+    role: 'MEMORY MANTRA COMPANION',
     text: 'That was the classic recording by Dr. Bhupen Hazarika that your son uploaded to your Heritage Vault. Would you like me to play a gentle melody now?',
     timestamp: '2:16 PM',
     provider: 'gemini-3.8-flash',
@@ -167,12 +167,12 @@ export const AICompanionScrollSection: React.FC = () => {
   const handleAuditionVoice = () => {
     primeSpeechEngine();
     const greetings: Record<string, string> = {
-      en: `Hello ${displayName}. I am Smriti, your caring memory companion.`,
+      en: `Hello ${displayName}. I am Memory Mantra, your caring memory companion.`,
       as: `নমস্কাৰ ${displayName}। মই স্মৃতি, আপোনাৰ মৰমৰ সংগী।`,
       bn: `নমস্কার ${displayName}। আমি স্মৃতি, আপনার স্মৃতি সঙ্গী।`,
       hi: `नमस्ते ${displayName} जी। मैं स्मृति हूँ, आपकी अपनी देखभाल साथी।`,
       mni: `খুরুমজরি! ঐহাক স্মৃতিনি, নহাক্কী নুংশিরবা মেমোরী কম্প্যানিয়ননি।`,
-      kha: `Khublei! Nga dei ka Smriti, ka paralok ban kynmaw ia ki jingkynmaw ba thiang jong phi.`,
+      kha: `Khublei! Nga dei ka Memory Mantra, ka paralok ban kynmaw ia ki jingkynmaw ba thiang jong phi.`,
       bodo: `खुलुमबाय! आं स्मृती, नोंथांनि मोजां मोन्नाय गोसोखांथि लोगो।`,
     };
     const speech = greetings[selectedLang] || greetings.en;
@@ -239,7 +239,7 @@ export const AICompanionScrollSection: React.FC = () => {
       const aiMsg: DemoMessage = {
         id: aiMsgId,
         sender: 'ai',
-        role: 'SMRITI COMPANION',
+        role: 'MEMORY MANTRA COMPANION',
         text: aiReply,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         provider: companionResult.provider || 'gemini-3.8-flash',
@@ -259,7 +259,7 @@ export const AICompanionScrollSection: React.FC = () => {
       const fallbackMsg: DemoMessage = {
         id: `ai-err-${Date.now()}`,
         sender: 'ai',
-        role: 'SMRITI COMPANION',
+        role: 'MEMORY MANTRA COMPANION',
         text: fallbackReply,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         provider: 'offline-reassurance',
@@ -503,11 +503,11 @@ export const AICompanionScrollSection: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-ner-border/80">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-full bg-ner-black text-white flex items-center justify-center font-mono text-xs font-bold shadow-sm">
-                  SC
+                  MM
                 </div>
                 <div>
                   <h4 className="font-bold text-sm sm:text-base text-ner-black flex items-center gap-2">
-                    Smriti AI Dialogue
+                    Memory Mantra AI Dialogue
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200 font-bold">
                       Interactive
                     </span>
@@ -650,7 +650,7 @@ export const AICompanionScrollSection: React.FC = () => {
                 <div className="flex flex-col items-start animate-fade-in">
                   <span className="text-[9px] font-mono uppercase tracking-wider text-ner-terracotta mb-1 px-1 flex items-center gap-1">
                     <Loader2 className="w-3 h-3 animate-spin" />
-                    <span>Smriti is thinking gently...</span>
+                    <span>Memory Mantra is thinking gently...</span>
                   </span>
                   <div className="p-4 rounded-2xl bg-white border border-ner-border text-ner-black rounded-tl-xs shadow-md max-w-sm flex items-center gap-2">
                     <div className="flex gap-1">
@@ -703,7 +703,7 @@ export const AICompanionScrollSection: React.FC = () => {
                     type="text"
                     value={inputQuery}
                     onChange={(e) => setInputQuery(e.target.value)}
-                    placeholder={`Ask Smriti in ${NER_LANG_OPTIONS.find((l) => l.code === selectedLang)?.label || 'English'}...`}
+                    placeholder={`Ask Memory Mantra in ${NER_LANG_OPTIONS.find((l) => l.code === selectedLang)?.label || 'English'}...`}
                     className="w-full bg-white border border-ner-border rounded-2xl px-4 py-3 pr-11 text-xs sm:text-sm text-ner-black focus:outline-none focus:border-ner-black shadow-inner transition"
                   />
                   

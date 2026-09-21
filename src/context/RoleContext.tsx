@@ -132,7 +132,8 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isHelpModalOpen, setIsHelpModalOpen] = useState<boolean>(false);
   const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState<boolean>(false);
   const [isWalkthroughOpen, setIsWalkthroughOpen] = useState<boolean>(() => {
-    return localStorage.getItem('smriti_walkthrough_completed') !== 'true';
+    const val = localStorage.getItem('memory_mantra_walkthrough_completed') ?? localStorage.getItem('smriti_walkthrough_completed');
+    return val !== 'true';
   });
 
   const [importantPlaces, setImportantPlaces] = useState<ImportantPlace[]>(() => {
@@ -374,7 +375,7 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children
       alerts,
       wellbeingCheckIns,
       memories,
-      version: 'SmritiCare-NEURO-NER-v2.0'
+      version: 'MemoryMantra-NEURO-NER-v2.0'
     };
     return JSON.stringify(payload, null, 2);
   };
@@ -409,7 +410,7 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const sendEmergencySMS = async (contactId: string, customText?: string): Promise<EmergencySmsLog> => {
     const contact = emergencyContacts.find(c => c.id === contactId) || emergencyContacts[0];
-    const message = customText || `Smriti Care alert: ${activePatient.name} may need assistance. Please check in on them.`;
+    const message = customText || `Memory Mantra alert: ${activePatient.name} may need assistance. Please check in on them.`;
 
     const newLog: EmergencySmsLog = {
       id: `sms-${Date.now()}`,

@@ -1,7 +1,7 @@
 {
   "appId": "com.smriticare.app",
-  "productName": "Smriti Care",
-  "copyright": "Copyright © 2026 Smriti Care / NEURO NER",
+  "productName": "Memory Mantra",
+  "copyright": "Copyright © 2026 Memory Mantra / NEURO NER",
   "directories": {
     "output": "release",
     "buildResources": "build"
@@ -29,7 +29,7 @@
     "icon": "build/icon.ico",
     "signAndEditExecutable": false,
     "signExecutable": false,
-    "artifactName": "Smriti-Care-Setup.${ext}"
+    "artifactName": "Memory-Mantra-Setup.${ext}"
   },
   "nsis": {
     "oneClick": false,
@@ -38,7 +38,7 @@
     "allowToChangeInstallationDirectory": true,
     "createDesktopShortcut": true,
     "createStartMenuShortcut": true,
-    "shortcutName": "Smriti Care",
-    "uninstallDisplayName": "Smriti Care"
+    "shortcutName": "Memory Mantra",
+    "uninstallDisplayName": "Memory Mantra"
   }
 }

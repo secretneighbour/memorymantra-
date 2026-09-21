@@ -38,7 +38,7 @@ export const PresentationPage: React.FC = () => {
     {
       id: 1,
       badge: '01 // EXECUTIVE VISION',
-      title: 'SMRITI CARE',
+      title: 'MEMORY MANTRA',
       subtitle: 'Cognitive Care, Made Human.',
       icon: <Sparkles className="w-10 h-10 text-ner-terracotta" />,
       content: (
@@ -65,7 +65,7 @@ export const PresentationPage: React.FC = () => {
           </div>
         </div>
       ),
-      speakerNotes: 'Introduce the core mission of Smriti Care: addressing the cognitive decline of elderly individuals through personalized, respectful technology.'
+      speakerNotes: 'Introduce the core mission of Memory Mantra: addressing the cognitive decline of elderly individuals through personalized, respectful technology.'
     },
     {
       id: 2,
@@ -99,7 +99,7 @@ export const PresentationPage: React.FC = () => {
     },
     {
       id: 3,
-      badge: '03 // THE SMRITI SOLUTION',
+      badge: '03 // THE MEMORY MANTRA SOLUTION',
       title: 'Personalized Memory-Assisted Cognitive Care',
       subtitle: 'A single, unified platform connecting patient, family, caregiver, and doctor.',
       icon: <Heart className="w-10 h-10 text-ner-terracotta" />,
@@ -135,7 +135,7 @@ export const PresentationPage: React.FC = () => {
           </div>
         </div>
       ),
-      speakerNotes: 'Explain how Smriti Care is not just a game or a reminder app, but the complete synthesis centered around the human.'
+      speakerNotes: 'Explain how Memory Mantra is not just a game or a reminder app, but the complete synthesis centered around the human.'
     },
     {
       id: 4,
@@ -396,7 +396,7 @@ export const PresentationPage: React.FC = () => {
           </Link>
           <div>
             <span className="text-[10px] font-mono uppercase font-bold text-ner-terracotta tracking-widest block">
-              Smriti Care Pitch Deck
+              Memory Mantra Pitch Deck
             </span>
             <span className="text-sm font-bold text-ner-black">
               {active.badge}

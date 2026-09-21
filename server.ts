@@ -1,3 +1,15 @@
+// Load .env synchronously FIRST — before any other code runs.
+// dotenv.config() is synchronous and guaranteed to populate process.env
+// before the rawKeys array is built below.
+import { createRequire } from "module";
+const _require = createRequire(import.meta.url);
+try {
+  const dotenv = _require("dotenv");
+  dotenv.config();
+} catch (_) {
+  // dotenv not available; rely on environment already being set
+}
+
 import express from "express";
 import path from "path";
 import fs from "fs";
@@ -49,7 +61,7 @@ function getNextHealthyKey(): { client: GoogleGenAI; keyIndex: number; key: stri
           new GoogleGenAI({
             apiKey: state.key,
             httpOptions: {
-              headers: { "User-Agent": "smriticare-backend-finops" },
+              headers: { "User-Agent": "memorymantra-backend-finops" },
             },
           })
         );
@@ -72,7 +84,7 @@ function getNextHealthyKey(): { client: GoogleGenAI; keyIndex: number; key: stri
       new GoogleGenAI({
         apiKey: soonest.key,
         httpOptions: {
-          headers: { "User-Agent": "smriticare-backend-finops" },
+          headers: { "User-Agent": "memorymantra-backend-finops" },
         },
       })
     );
@@ -338,7 +350,7 @@ async function startServer() {
       }
 
       // System instruction customized for elderly dementia & cognitive care in NER
-      const systemInstruction = `You are "Smriti" (স্মৃতি), an empathetic, gentle, reassuring AI Memory and Cognitive Companion designed specifically for elderly individuals living with mild cognitive impairment or dementia in North-Eastern India (Assam, Meghalaya, Manipur, etc.).
+      const systemInstruction = `You are "Memory Mantra" (স্মৃতি), an empathetic, gentle, reassuring AI Memory and Cognitive Companion designed specifically for elderly individuals living with mild cognitive impairment or dementia in North-Eastern India (Assam, Meghalaya, Manipur, etc.).
 
 Patient Profile:
 - Name: ${patientName}
@@ -461,7 +473,7 @@ JSON Output Schema:
         if (!generatedReply && quotaExhausted) {
           console.warn("[FinOps Shield] All API keys in quota limit/cooldown. Providing graceful elderly reassurance.");
           return res.json({
-            reply: "Smriti is taking a short rest. Please try again in a few minutes.",
+            reply: "Memory Mantra is taking a short rest. Please try again in a few minutes.",
             provider: "quota-fallback",
             language: langLabel,
             actionRoute: "/memory",

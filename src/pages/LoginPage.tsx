@@ -217,7 +217,7 @@ export const LoginPage: React.FC = () => {
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-ner-black">
-              NEURO NER
+              MEMORY MANTRA
             </h1>
           </div>
 
@@ -401,7 +401,7 @@ export const LoginPage: React.FC = () => {
                     if (emailError) setEmailError(null);
                   }}
                   autoComplete="email"
-                  placeholder="e.g. user@smriticare.in"
+                  placeholder="e.g. user@memorymantra.in"
                   disabled={isLoading || isSuccess}
                   aria-invalid={!!emailError}
                   aria-describedby={emailError ? 'email-error' : undefined}

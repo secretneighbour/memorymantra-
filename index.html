@@ -9,11 +9,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="format-detection" content="telephone=no" />
-    <title>NEURO NER — Cognitive Care, Made Human | SIH 2026</title>
-    <meta name="application-name" content="NEURO NER" />
-    <meta name="author" content="NEURO NER" />
-    <meta name="description" content="NEURO NER — AI-Based Cognitive Gaming and Memory Assistance Platform for Elderly Dementia Patients in North Eastern Region (NER) — Cognitive Care, Made Human. Smart India Hackathon 2026." />
-    <meta property="og:title" content="NEURO NER — Cognitive Care, Made Human" />
+    <title>Memory Mantra — Cognitive Care, Made Human</title>
+    <meta name="application-name" content="Memory Mantra" />
+    <meta name="author" content="Memory Mantra" />
+    <meta name="description" content="Memory Mantra — AI-Based Cognitive Gaming and Memory Assistance Platform for Elderly Dementia Patients in North Eastern Region (NER) — Cognitive Care, Made Human. Smart India Hackathon 2026." />
+    <meta property="og:title" content="Memory Mantra — Cognitive Care, Made Human" />
     <meta property="og:description" content="AI-Based Cognitive Gaming and Memory Assistance Platform for Elderly Dementia Patients in North Eastern Region (NER) — Cognitive Care, Made Human." />
     <!-- Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,8 +24,8 @@
     <script>
       (function() {
         try {
-          var saved = localStorage.getItem('smriti_theme') || localStorage.getItem('neuro_theme');
-          var isDark = saved === 'dark' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          var saved = localStorage.getItem('memory_mantra_theme') || localStorage.getItem('smriti_theme') || localStorage.getItem('neuro_theme');
+          var isDark = saved === 'dark';
           if (isDark) {
             document.documentElement.classList.add('dark');
             document.documentElement.setAttribute('data-theme', 'dark');
@@ -34,6 +34,8 @@
           } else {
             document.documentElement.classList.remove('dark');
             document.documentElement.setAttribute('data-theme', 'light');
+            var meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.setAttribute('content', '#F5F5F2');
           }
         } catch (e) {}
       })();

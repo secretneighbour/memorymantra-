@@ -278,7 +278,7 @@ export const AccessibilityModal: React.FC = () => {
           {/* Live Preview */}
           <div className="p-3 rounded-xl bg-ner-offwhite dark:bg-[#141418] border border-ner-border dark:border-gray-800 text-center">
             <p className="text-xs sm:text-sm font-medium text-ner-black dark:text-white">
-              "Smriti Care: Keeping every memory connected with calm typography."
+              "Memory Mantra: Keeping every memory connected with calm typography."
             </p>
           </div>
         </div>
@@ -422,7 +422,7 @@ export const AccessibilityModal: React.FC = () => {
 
           <div className="flex items-center justify-between pt-2">
             <button
-              onClick={() => speakText(`Hello, welcome to Smriti Care. This is a voice narration sample in ${currentLangMeta.name}.`, language)}
+              onClick={() => speakText(`Hello, welcome to Memory Mantra. This is a voice narration sample in ${currentLangMeta.name}.`, language)}
               className="px-4 py-2 rounded-xl bg-ner-terracotta text-white text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2 hover:bg-ner-terracotta/90 active:scale-95 transition"
             >
               <Volume2 className="w-3.5 h-3.5" />

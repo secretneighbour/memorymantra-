@@ -108,10 +108,10 @@ body {
 }
 
 /* ========================================================================= */
-/* PREMIUM SMRITI CARE DARK MODE SYSTEM                                       */
+/* PREMIUM MEMORY MANTRA DARK MODE SYSTEM                                     */
 /* Foundation: Near-Black (#0A0A0C) + Deep Charcoal (#141418)                 */
 /* Typography: Pure White Headings (#FFFFFF) + Soft Gray Secondary (#A1A1AA)  */
-/* Strategic Accent: Smriti Care Terracotta Red (#DE4A30 / #EF4444)           */
+/* Strategic Accent: Memory Mantra Terracotta Red (#DE4A30 / #EF4444)         */
 /* ========================================================================= */
 .dark {
   --bg-color: #0A0A0C;
@@ -760,28 +760,33 @@ body {
 /* ========================================================================= */
 /* STRATEGIC RED SYSTEM: High-contrast Emergency & Alert Accents              */
 /* ========================================================================= */
-.smriti-red-badge {
+.smriti-red-badge,
+.mantra-red-badge {
   background-color: #D71921;
   color: #FFFFFF;
   border: 1px solid #B01017;
 }
 
-.smriti-red-outline {
+.smriti-red-outline,
+.mantra-red-outline {
   border-color: #D71921;
   color: #D71921;
 }
 
-.smriti-red-btn {
+.smriti-red-btn,
+.mantra-red-btn {
   background-color: #D71921;
   color: #FFFFFF;
   transition: all 0.2s ease;
 }
 
-.smriti-red-btn:hover {
+.smriti-red-btn:hover,
+.mantra-red-btn:hover {
   background-color: #B01017;
 }
 
-.smriti-red-btn:active {
+.smriti-red-btn:active,
+.mantra-red-btn:active {
   transform: scale(0.98);
 }
 
